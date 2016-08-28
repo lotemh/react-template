@@ -9,34 +9,22 @@
  */
 
 import React, { PropTypes } from 'react';
-import Layout from '../../components/Layout';
-import s from './styles.css';
-import { title, html } from './index.md';
+import ElasticPlayer from '../../components/ElasticPlayer';
 
 class HomePage extends React.Component {
 
-  static propTypes = {
-    articles: PropTypes.array.isRequired,
-  };
-
   componentDidMount() {
-    document.title = title;
+    document.title = "Elastic Player";
   }
 
   render() {
     return (
-      <Layout className={s.content}>
-        <div dangerouslySetInnerHTML={{ __html: html }} />
-        <h4>Articles</h4>
-        <ul>
-          {this.props.articles.map((article, i) =>
-            <li key={i}><a href={article.url}>{article.title}</a> by {article.author}</li>
-          )}
-        </ul>
-        <p>
-          <br /><br />
-        </p>
-      </Layout>
+        <div className="App">
+          <div className="menu">
+            <h1>Elastic Media Player Demo</h1>
+          </div>
+          <ElasticPlayer numOfPlayers={3}/>
+        </div>
     );
   }
 

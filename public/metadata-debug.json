@@ -1,0 +1,130 @@
+{
+  "productionDate" : "14-08-16",
+  "segments" : {
+    "b1" : {
+      "in" : 21120,
+      "next" : "h2",
+      "no_action" : "h2",
+      "out" : 103080
+    },
+    "b2" : {
+      "in" : 119640,
+      "next" : "h3",
+      "no_action" : "h3",
+      "out" : 993080,
+      "previous" : "h1"
+    },
+    "b3" : {
+      "in" : 1003680,
+      "next" : "h4",
+      "no_action" : "h4",
+      "out" : 1044240,
+      "previous" : "h2"
+    },
+    "b4" : {
+      "in" : 1060000,
+      "next" : "h5",
+      "no_action" : "h5",
+      "out" : 1250000,
+      "previous" : "h3"
+    },
+    "b5" : {
+      "in" : 1260720,
+      "next" : "h6",
+      "no_action" : "h6",
+      "out" : 1310080,
+      "previous" : "h4"
+    },
+    "b6" : {
+      "in" : 1328840,
+      "next" : "h7",
+      "no_action" : "h7",
+      "out" : 1342160,
+      "previous" : "h5"
+    },
+    "b7" : {
+      "in" : 1355720,
+      "next" : "h8",
+      "no_action" : "h8",
+      "out" : 1614720,
+      "previous" : "h6"
+    },
+    "h1" : {
+      "extend" : "b1",
+      "in" : 0,
+      "next" : "h2",
+      "no_action" : "h2",
+      "out" : 21120
+    },
+    "h2" : {
+      "extend" : "b2",
+      "in" : 103080,
+      "next" : "h3",
+      "no_action" : "h3",
+      "out" : 119640,
+      "previous" : "h1"
+    },
+    "h3" : {
+      "extend" : "b3",
+      "in" : 993080,
+      "next" : "h4",
+      "no_action" : "h4",
+      "out" : 1003680,
+      "previous" : "h2"
+    },
+    "h4" : {
+      "extend" : "b4",
+      "in" : 1044240,
+      "next" : "h5",
+      "no_action" : "t4",
+      "out" : 1060000,
+      "previous" : "h3"
+    },
+    "h5" : {
+      "extend" : "b5",
+      "in" : 1250000,
+      "next" : "h6",
+      "no_action" : "h6",
+      "out" : 1260720,
+      "previous" : "h4"
+    },
+    "h6" : {
+      "extend" : "b6",
+      "in" : 1310080,
+      "next" : "h7",
+      "no_action" : "h7",
+      "out" : 1328840,
+      "previous" : "h5"
+    },
+    "h7" : {
+      "extend" : "b7",
+      "in" : 1342160,
+      "next" : "h8",
+      "no_action" : "h8",
+      "out" : 1355720,
+      "previous" : "h6"
+    },
+    "h8" : {
+      "in" : 1614720,
+      "next" : "h9",
+      "no_action" : "h9",
+      "out" : 1646080,
+      "previous" : "h7"
+    },
+    "h9" : {
+      "in" : 1646080,
+      "out" : 1652360,
+      "previous" : "h8"
+    },
+    "root" : {
+      "next" : "h1"
+    },
+    "t4" : {
+      "in" : 1652360,
+      "no_action" : "h5",
+      "out" : 1653000
+    }
+  },
+  "status" : "Uploaded",
+  "title" : "TITLE:debug\r"
+}

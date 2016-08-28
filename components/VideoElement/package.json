@@ -1,0 +1,6 @@
+{
+  "name": "VideoElement",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./VideoElement.js"
+}
