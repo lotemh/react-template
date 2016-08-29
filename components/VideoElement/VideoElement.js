@@ -10,6 +10,7 @@ class VideoElement extends React.Component {
       isPlaying: false,
       isHidden: true
     };
+    this.loading = null;
   }
 
   getClassName(){
@@ -33,13 +34,11 @@ class VideoElement extends React.Component {
   hide(){
     this.setState({isHidden: true});
   }
-  prepare(src, callback){
+  prepare(src, segmentTitle){
     var playerDomElement = this.getPlayer();
     this.refs.source.setAttribute('src', src);
     playerDomElement.load();
-    playerDomElement.addEventListener('loadeddata', function() {
-      callback();
-    }, false);
+    this.loading = segmentTitle;
   }
   seek(timestamp){
     var timeInSeconds = timestamp/1000;
@@ -50,6 +49,14 @@ class VideoElement extends React.Component {
   }
   getId(){
     return this.props.playerId;
+  }
+  addLoadedDataEvent(listener){
+    this.getPlayer().addEventListener('loadeddata', function() {
+      if (this.loading) {
+        listener(this.loading);
+        this.loading = null;
+      }
+    }.bind(this), false);
   }
   addTimeUpdateEvent(listener){
     this.getPlayer().addEventListener("timeupdate", listener, false);

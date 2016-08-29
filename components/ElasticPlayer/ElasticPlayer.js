@@ -44,7 +44,7 @@ var ElasticPlayer = React.createClass({
           {
             players.map(function(elm, i){
               return (
-                <VideoElement ref={"player" + i} playerId={"player" + i}/>
+                <VideoElement key={"player" + i} ref={"player" + i} playerId={"player" + i}/>
               )
             })
           }

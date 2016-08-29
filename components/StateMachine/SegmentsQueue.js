@@ -26,6 +26,10 @@ class SegmentsQueue {
     var segmentIndex = this.queue.indexOf(segment);
     this.queue.splice(segmentIndex, 1);
   }
+
+  get(title){
+    return this.queue.find(seg => seg.title === title);
+  }
 }
 
 

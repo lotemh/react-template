@@ -1,36 +1,26 @@
 import SegmentsQueue from "./SegmentsQueue";
 import Logger from "../Logger/Logger";
+import SegmentManager from "./SegmentManager";
+
 /**
  * Created by user on 8/28/2016.
  */
 
 class StateMachine {
   constructor(players, logger){
-    this.activeSegment = null;
     this.logger = logger || new Logger();
     this.players = players;
     this.activePlayer = null;
+    this.players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)))
   }
 
-  load(episodeMetadataId){
+  loadSegments(episodeMetadataId){
 
   }
 
   setSegments(segments){
-    this.segments = segments;
-    for (var segment in segments){
-      segments[segment].title = segment;
-    }
-    this.activeSegment = segments.root;
-    this.segmentsQueue = this.insertNextSegmentToPrepareQueue();
-    this.prepareSegments(this.segmentsQueue);
-  }
-
-  getSegment(key){
-    if (key === undefined){
-      return undefined;
-    }
-    return this.segments[key];
+    this.segmentsManager = new SegmentManager(segments, this.logger);
+    this.prepareSegments(this.segmentsManager.getPrepareQueue());
   }
 
   setContentUrl(url){
@@ -45,7 +35,7 @@ class StateMachine {
     this.activePlayer = player;
     this.activePlayer.show();
     this.activePlayer.play();
-    this.logger.log("play segment " + this.activeSegment.title);
+    this.logger.log("play segment " + this.segmentsManager.getActive().title);
   }
 
   prepare(player, segment){
@@ -54,14 +44,18 @@ class StateMachine {
     var inTime = segment.in;
     // var outTime = segment.out;
     var videoSegment = this.buildSrc(src, inTime);
+    var segmentsManager = this.segmentsManager;
     return new Promise(function(resolve) {
-      var callback = function(){
-        console.log("video for segment " + segment.title +" loaded");
-        resolve();
-      };
-      player.prepare(videoSegment, callback);
       segment.player = player;
+      segmentsManager.setLoading(segment, resolve);
+      console.log("prepare video for segment " + segment.title);
+      player.prepare(videoSegment, segment.title);
     });
+  }
+
+  onDataLoaded(segmentTitle) {
+    console.log("video for segment " + segmentTitle +" loaded");
+    this.segmentsManager.setReady(segmentTitle);
   }
 
   buildSrc(src, inTime, outTime) {
@@ -94,13 +88,13 @@ class StateMachine {
     this.logger.log("handle action " + action);
     this.clearCurrentInterval();
     var oldPlayer = this.activePlayer;
-    var oldSegment = this.activeSegment;
+    var oldSegment = this.segmentsManager.getActive();
     var followingSegment = this.getNextSegmentAccordingToAction(action);
     if (followingSegment === undefined){
       return;
     }
-    if (this.shouldContinuePlaying(this.activeSegment, followingSegment)){
-      this.logger.log("continue playing segment " + this.activeSegment.title);
+    if (this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
+      this.logger.log("continue playing segment " + this.segmentsManager.getActive().title);
       this.handleAction2(oldPlayer, nextPlayer, oldSegment, followingSegment);
       return;
     }
@@ -114,48 +108,31 @@ class StateMachine {
         oldPlayer = null;
       }
       this.prepare(nextPlayer, followingSegment);
-
     }
     var switchPlayers = true;
     this.handleAction2(oldPlayer, nextPlayer, oldSegment, followingSegment, switchPlayers);
   }
 
   handleAction2(oldPlayer, nextPlayer, oldSegment, followingSegment, switchPlayers) {
-    this.activeSegment = followingSegment;
+    this.segmentsManager.setActive(followingSegment);
     if (switchPlayers) {
       this.switchPlayers(oldPlayer, nextPlayer);
     }
-    this.onSegmentEnd(this.activeSegment, this.noAction.bind(this));
-    // this.onTimeUpdated(this.activeSegment, this.noAction.bind(this));
+    this.onSegmentEnd(this.segmentsManager.getActive(), this.noAction.bind(this));
+    // this.onTimeUpdated(this.segmentsManager.getActive(), this.noAction.bind(this));
 
-    //clear segment no action if needed
-    var oldNoAction = this.getSegment(oldSegment.no_action);
-    if (oldNoAction && oldNoAction.player &&
-      oldNoAction.player !== this.activePlayer) {
-      this.players.push(oldNoAction.player);
-      this.logger.log("return player " + oldNoAction.player.getId());
-      oldNoAction.player = undefined;
-    }
-    var segmentsToPrepare2 = this.getSegmentsToPrepare(this.segmentsQueue);
-    this.prepareSegments(segmentsToPrepare2);
-  }
+    //todo: stop current loading if needed
+    var deprecatedSegments = this.segmentsManager.getDeprecatedSegments();
+    deprecatedSegments.forEach(function(deprecated){
+      if (deprecated.player) {
+        this.players.push(deprecated.player);
+        this.logger.log("return player " + deprecated.player.getId());
+        deprecated.player = undefined;
+      }
+    }, this);
 
-  getSegmentsToPrepare(segmentsQueue) {
-    this.insertNextSegmentToPrepareQueue(segmentsQueue);
-    var noActionSegment = this.getSegment(this.activeSegment.no_action);
-    segmentsQueue.add(noActionSegment);
-    if (noActionSegment !== undefined) {
-      var noActionSegment2 = this.getSegment(noActionSegment.no_action);
-      segmentsQueue.add(noActionSegment2);
-    }
-    return segmentsQueue;
-  }
-
-  insertNextSegmentToPrepareQueue(segmentsQueue) {
-    segmentsQueue = segmentsQueue || new SegmentsQueue();
-    var nextSegment = this.getNextSegment();
-    segmentsQueue.add(nextSegment);
-    return segmentsQueue;
+    this.segmentsManager.setSegmentsQueue();
+    this.prepareSegments(this.segmentsManager.getPrepareQueue());
   }
 
   switchPlayers(oldPlayer, nextPlayer) {
@@ -171,12 +148,8 @@ class StateMachine {
   }
 
   getNextSegmentAccordingToAction(action) {
-    var segmentName = this.activeSegment[action];
-    return this.getSegment(segmentName);
-  }
-
-  getNextSegment() {
-    return this.getSegment(this.activeSegment.next);
+    var segmentName = this.segmentsManager.getActive()[action];
+    return this.segmentsManager.get(segmentName);
   }
 
   getFreePlayer(){
@@ -200,11 +173,16 @@ class StateMachine {
   }
 
   prepareSegments(segments) {
+    if (this.segmentsManager.isLoading()){
+      return;
+    }
     var nextSegment = segments.next();
-    if (nextSegment === undefined ||
-      this.shouldContinuePlaying(this.activeSegment, nextSegment) ||
-      nextSegment.player !== undefined
-    ){
+    if (nextSegment === undefined){
+      return;
+    }
+    if (nextSegment.player !== undefined  ||
+      this.shouldContinuePlaying(this.segmentsManager.getActive(), nextSegment)){
+      this.prepareSegments(this.segmentsManager.getPrepareQueue());
       return;
     }
     var freePlayer = this.getFreePlayer();
@@ -213,7 +191,7 @@ class StateMachine {
     }
 
     this.prepare(freePlayer, nextSegment).then(function(){
-      this.prepareSegments(segments);
+      this.prepareSegments(this.segmentsManager.getPrepareQueue());
     }.bind(this));
   }
 
