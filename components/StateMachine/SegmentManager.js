@@ -2,27 +2,37 @@
  * Created by user on 8/29/2016.
  */
 import SegmentsQueue from "./SegmentsQueue";
+import Segment from "../Segment";
 
 class SegmentManager {
   constructor(segments, logger){
     //todo: clone segments
     for (var segment in segments){
       segments[segment].title = segment;
+      segments[segment] = new Segment(segments[segment], segment);
     }
     this.segments = segments;
-    this.segmentsQueue = new SegmentsQueue();
     this.activeSegment = this.segments.root;
-    this.segmentsQueue.add(this.getNext());
+    // this.segmentsQueue = new SegmentsQueue();
+    // this.segmentsQueue.add(this.getNext());
     this.readySegments = {};
     this.segmentLoading = null;
     this.logger = logger;
+  }
+
+  getSegments(){
+    return this.segments;
+  }
+
+  getSegmentsSet(){
+    return Object.keys(this.getSegments()).map(seg => this.get(seg));
   }
 
   get(key){
     if (key === undefined){
       return undefined;
     }
-    return this.segments[key];
+    return this.getSegments()[key];
   }
 
   getNext() {
@@ -49,7 +59,7 @@ class SegmentManager {
   setReady(segment){
     var loadedSegment = this.segmentLoading;
     this.segmentLoading = null;
-    this.readySegments[segment.title] = segment;
+    this.readySegments[segment] = segment;
     loadedSegment.loadedCallback();
   }
 

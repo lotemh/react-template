@@ -66,7 +66,7 @@ class VideoElement extends React.Component {
   }
   render() {
     return (
-      <video id={this.props.playerId} className={this.getClassName()} preload="">
+      <video id={this.props.playerId} className={this.getClassName()} preload="none">
         <source type="video/mp4" ref="source" src="https://s3.eu-central-1.amazonaws.com/phase1-episodes/mm080616.mp4"/>
       </video>
     );
