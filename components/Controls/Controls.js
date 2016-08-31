@@ -4,17 +4,11 @@ var Controls = React.createClass({
   play(){
     this.props.stateMachine.play();
   },
-  next(){
-    this.props.stateMachine.next();
-  },
   pause(){
     this.props.stateMachine.pause();
   },
-  previous(){
-    this.props.stateMachine.previous();
-  },
-  extend(){
-    this.props.stateMachine.onExtendClick();
+  eventHandler(event){
+    this.props.stateMachine.actionHandler(event.target.id);
   },
   render(){
     return (
@@ -26,13 +20,13 @@ var Controls = React.createClass({
             <button id="pause" onClick={this.pause}>Pause</button>
           </span>
           <span>
-            <button id="next" onClick={this.next}>next</button>
+            <button id="next" onClick={this.eventHandler}>next</button>
           </span>
           <span>
-            <button id="prev" onClick={this.previous}>previous</button>
+            <button id="previous" onClick={this.eventHandler}>previous</button>
           </span>
           <span>
-            <button onClick={this.extend}>extend</button>
+            <button id="extend" onClick={this.eventHandler}>extend</button>
           </span>
       </div>
     );
