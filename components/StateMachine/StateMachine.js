@@ -6,6 +6,18 @@ import SegmentManager from "./SegmentManager";
  * Created by user on 8/28/2016.
  */
 
+function buildSrc(src, inTime, outTime) {
+  var segment = src + "#t=" + getTimeInSeconds(inTime);
+  if (outTime) {
+    segment += "," + getTimeInSeconds(outTime);
+  }
+  return segment;
+}
+
+function getTimeInSeconds(timeInMili){
+  return timeInMili/1000;
+}
+
 class StateMachine {
   constructor(players, logger){
     this.logger = logger || new Logger();
@@ -45,27 +57,13 @@ class StateMachine {
     this.activePlayer = player;
     this.activePlayer.show();
     this.activePlayer.play();
-    this.logger.log("play segment " + this.segmentsManager.getActive().title);
+    this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + this.activePlayer.getId());
   }
 
   //private?
   onDataLoaded(segmentTitle) {
-    console.log("video for segment " + segmentTitle +" loaded");
+    this.logger.log("video for segment " + segmentTitle +" loaded");
     this.segmentsManager.setReady(segmentTitle);
-  }
-
-  //private?
-  buildSrc(src, inTime, outTime) {
-    var segment = src + "#t=" + this.getTimeInSeconds(inTime);
-    if (outTime) {
-      segment += "," + this.getTimeInSeconds(outTime);
-    }
-    return segment;
-  }
-
-  //private?
-  getTimeInSeconds(timeInMili){
-    return timeInMili/1000;
   }
 
   prepareNextSegment(player, segment){
@@ -86,17 +84,17 @@ class StateMachine {
     this.logger.log("handle action " + action);
     this.clearCurrentInterval();
     var oldPlayer = this.activePlayer;
-    var oldSegment = this.segmentsManager.getActive();
     var followingSegment = this.getNextSegmentAccordingToAction(action);
     if (followingSegment === undefined){
       return;
     }
     if (this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
       this.logger.log("continue playing segment " + this.segmentsManager.getActive().title);
-      this.handleAction2(oldPlayer, nextPlayer, oldSegment, followingSegment);
+      this.handleAction2(oldPlayer, null, followingSegment, false);
       return;
     }
     var nextPlayer = followingSegment.player;
+    var switchPlayers = true;
     if (nextPlayer){
       followingSegment.player = undefined;
     } else {
@@ -104,16 +102,16 @@ class StateMachine {
       if (!nextPlayer){
         nextPlayer = this.activePlayer;
         oldPlayer = null;
+        // switchPlayers = false;
       }
-      this.prepare(nextPlayer, followingSegment).then(function(){
-          this.prepareSegments(this.segmentsManager.getSegmentsToPrepare());
-        }.bind(this));
+      return this.prepare(nextPlayer, followingSegment).then(function(){
+        this.handleAction2(oldPlayer, nextPlayer, followingSegment, switchPlayers);
+      }.bind(this));
     }
-    var switchPlayers = true;
-    this.handleAction2(oldPlayer, nextPlayer, oldSegment, followingSegment, switchPlayers);
+    this.handleAction2(oldPlayer, nextPlayer, followingSegment, switchPlayers);
   }
 
-  handleAction2(oldPlayer, nextPlayer, oldSegment, followingSegment, switchPlayers) {
+  handleAction2(oldPlayer, nextPlayer, followingSegment, switchPlayers) {
     this.segmentsManager.setActive(followingSegment);
     if (switchPlayers) {
       this.switchPlayers(oldPlayer, nextPlayer);
@@ -122,29 +120,24 @@ class StateMachine {
     // this.onTimeUpdated(this.segmentsManager.getActive(), this.noAction.bind(this));
 
     //todo: stop current loading if needed
-    var deprecatedSegments = this.segmentsManager.getDeprecatedSegments();
-    deprecatedSegments.forEach(function(deprecated){
-      this.unloadSegment(deprecated);
-    }, this);
-
-    this.segmentsManager.setSegmentsQueue();
+    this.updateSegments(this.segmentsManager.getSegmentsSet());
     this.prepareSegments(this.segmentsManager.getSegmentsToPrepare());
   }
 
   unloadSegment(deprecated){
-    if (deprecated.player) {
-      this.players.push(deprecated.player);
-      this.logger.log("return player " + deprecated.player.getId());
-      deprecated.player = undefined;
+    var deprecatedPlayer = deprecated.player;
+    if (deprecatedPlayer && deprecatedPlayer !== this.activePlayer) {
+      this.players.push(deprecatedPlayer);
+      this.logger.log("return player " + deprecatedPlayer.getId());
     }
+    deprecated.player = undefined;
   }
 
   switchPlayers(oldPlayer, nextPlayer) {
-    if (oldPlayer === nextPlayer){
-      return;
-    }
     this.activatePlayer(nextPlayer);
-    this.deactivatePlayer(oldPlayer);
+    if (oldPlayer !== nextPlayer){
+      this.deactivatePlayer(oldPlayer);
+    }
   }
 
   noAction(){
@@ -209,14 +202,13 @@ class StateMachine {
     var src = segment.src || this.contentUrl;
     var inTime = segment.in;
     // var outTime = segment.out;
-    var videoSegment = this.buildSrc(src, inTime);
+    var videoSegment = buildSrc(src, inTime);
     var segmentsManager = this.segmentsManager;
     segment.player = player;
 
     return new Promise(function(resolve, reject) {
       segment.cancelLoading = reject;
       segmentsManager.setLoading(segment, resolve);
-      console.log("prepare video for segment " + segment.title);
       player.prepare(videoSegment, segment.title);
     });
   }
@@ -226,8 +218,8 @@ class StateMachine {
     var currentTime = this.activePlayer.getCurrentTime();
     if (currentTime >= out - 0.01){
       callback();
-      console.log("current time: ", currentTime);
-      console.log("out time: ", out);
+      this.logger.log("current time: " + currentTime);
+      this.logger.log("out time: " + out);
       return;
     }
     var delay = Math.max(out - currentTime , 0.01);
@@ -250,8 +242,8 @@ class StateMachine {
       if (currentTime >= out - 0.01){
         this.activePlayer.removeTimeUpdateEvent(timeUpdatedListener);
         callback();
-        console.log("current time: ", currentTime);
-        console.log("out time: ", out);
+        this.logger.log("current time: ", currentTime);
+        this.logger.log("out time: ", out);
       }
     }
     this.activePlayer.addTimeUpdateEvent(timeUpdatedListener.bind(this));
@@ -259,20 +251,17 @@ class StateMachine {
 
   updateSegments(segmentsSet){
     var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+    var that = this;
     segmentsSet.forEach(function(segment){
-      if (segmentsToPrepare.includes(segment)){
-        if (!segment.isReady() && !segment.isLoading()){
-          //add to queue
-        }
-      } else {
+      if (!segmentsToPrepare.get(segment.title)){
         if (segment.isReady()){
-          this.unloadSegment(segment);
+          that.unloadSegment(segment);
         } else if (segment.isLoading()){
           //cancel loading in the player?
           segment.cancelLoading();
         }
       }
-    })
+    });
 
   }
 }

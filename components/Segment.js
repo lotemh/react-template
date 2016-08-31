@@ -4,18 +4,18 @@
 
 class Segment{
   constructor(segment, title){
-    segment.title = title;
-    segment.player = null;
-    segment.isLoading = false;
-    return segment;
+    Object.keys(segment).forEach(key => this[key] = segment[key]);
+    this.title = title;
+    this.player = null;
+    this.isLoadingFlag = false;
   }
-  
+
   isReady(){
     return this.player !== null;
   }
-  
+
   isLoading(){
-    return this.isLoading;
+    return this.isLoadingFlag;
   }
 }
 

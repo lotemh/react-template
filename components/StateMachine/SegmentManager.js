@@ -8,13 +8,10 @@ class SegmentManager {
   constructor(segments, logger){
     //todo: clone segments
     for (var segment in segments){
-      segments[segment].title = segment;
       segments[segment] = new Segment(segments[segment], segment);
     }
     this.segments = segments;
     this.activeSegment = this.segments.root;
-    // this.segmentsQueue = new SegmentsQueue();
-    // this.segmentsQueue.add(this.getNext());
     this.readySegments = {};
     this.segmentLoading = null;
     this.logger = logger;
@@ -47,22 +44,15 @@ class SegmentManager {
     this.activeSegment = segment;
   }
 
-  getPrepareQueue(){
-    return this.segmentsQueue;
-  }
-
-  insertNextSegmentToPrepareQueue() {
-    var nextSegment = this.getNext();
-    this.segmentsQueue.add(nextSegment);
-  }
-
-  setReady(segment){
+  setReady(segment) {
     var loadedSegment = this.segmentLoading;
     this.segmentLoading = null;
     this.readySegments[segment] = segment;
-    loadedSegment.loadedCallback();
+    if (loadedSegment) {
+      loadedSegment.loadedCallback();
+    }
   }
-
+  
   setLoading(segment, callback){
     segment.loadedCallback = callback;
     this.segmentLoading = segment;
@@ -87,10 +77,6 @@ class SegmentManager {
       newSegments.add(noActionSegment2);
     }
     return newSegments;
-  }
-
-  setSegmentsQueue(){
-    this.segmentsQueue = this.getSegmentsToPrepare();
   }
 
   isLoading(){

@@ -13,11 +13,13 @@ class VideoElement extends React.Component {
     this.loading = null;
   }
 
+  //private
   getClassName(){
     var className = 'player';
     className += this.state.isHidden ? ' hidden' : '';
     return className;
   }
+  //private
   getPlayer () {
     return ReactDOM.findDOMNode(this);
   }
@@ -36,6 +38,12 @@ class VideoElement extends React.Component {
   }
   prepare(src, segmentTitle){
     var playerDomElement = this.getPlayer();
+    // if (this.isSrcEqual(src)){
+    //   var timestamp = src.split(/#t=|,/)[1];
+    //   this.seek(timestamp);
+    // } else {
+    //   this.refs.source.setAttribute('src', src);
+    // }
     this.refs.source.setAttribute('src', src);
     playerDomElement.load();
     this.loading = segmentTitle;
@@ -58,6 +66,7 @@ class VideoElement extends React.Component {
       }
     }.bind(this), false);
   }
+
   addTimeUpdateEvent(listener){
     this.getPlayer().addEventListener("timeupdate", listener, false);
   }
@@ -72,6 +81,11 @@ class VideoElement extends React.Component {
     );
   }
 
+  //private
+  isSrcEqual(src) {
+    //todo: change to props.src
+    return this.refs.source.src.split("#")[0] === (src.split("#")[0]);
+  }
 }
 
 export default VideoElement;

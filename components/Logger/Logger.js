@@ -4,6 +4,7 @@
 
 class Logger {
   log(message, params){
+    //todo: add debug mode
     console.log(message);
   }
 }
