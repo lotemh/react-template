@@ -23,7 +23,7 @@ class StateMachine {
     this.logger = logger || new Logger();
     this.activePlayer = null;
   }
-  
+
   createPlayers(players){
     var id = 0;
     return players.map(p => new Player(p, "player" + id++));
@@ -32,7 +32,7 @@ class StateMachine {
   loadSegments(episodeMetadataId){
 
   }
-  
+
   setPlayers(players){
     this.players = this.createPlayers(players);
     this.players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)))
@@ -107,11 +107,10 @@ class StateMachine {
     }
     if (this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
       this.logger.log("continue playing segment " + this.segmentsManager.getActive().title);
-      this.handleAction2(oldPlayer, null, followingSegment, false);
+      this.executeAction(oldPlayer, null, followingSegment, false);
       return;
     }
     var nextPlayer = followingSegment.player;
-    var switchPlayers = true;
     if (nextPlayer){
       followingSegment.player = undefined;
     } else {
@@ -119,20 +118,17 @@ class StateMachine {
       if (!nextPlayer){
         nextPlayer = this.activePlayer;
         oldPlayer = null;
-        // switchPlayers = false;
       }
       return this.prepare(nextPlayer, followingSegment).then(function(){
-        this.handleAction2(oldPlayer, nextPlayer, followingSegment, switchPlayers);
+        this.executeAction(oldPlayer, nextPlayer, followingSegment);
       }.bind(this));
     }
-    this.handleAction2(oldPlayer, nextPlayer, followingSegment, switchPlayers);
+    this.executeAction(oldPlayer, nextPlayer, followingSegment);
   }
 
-  handleAction2(oldPlayer, nextPlayer, followingSegment, switchPlayers) {
+  executeAction(oldPlayer, nextPlayer, followingSegment) {
     this.segmentsManager.setActive(followingSegment);
-    if (switchPlayers) {
-      this.switchPlayers(oldPlayer, nextPlayer);
-    }
+    this.switchPlayers(oldPlayer, nextPlayer);
     this.onSegmentEnd(this.segmentsManager.getActive(), this.noAction.bind(this));
     // this.onTimeUpdated(this.segmentsManager.getActive(), this.noAction.bind(this));
 
@@ -210,7 +206,6 @@ class StateMachine {
         this.prepareSegments(segments);
       }.bind(this), function(){
         this.deactivatePlayer(freePlayer);
-        // this.prepareSegments(this.segmentsManager.getSegmentsToPrepare());
       }.bind(this));
   }
 
