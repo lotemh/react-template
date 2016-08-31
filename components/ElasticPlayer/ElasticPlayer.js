@@ -19,13 +19,8 @@ var ElasticPlayer = React.createClass({
       stateMachine.start();
     });
   },
-
   play(){
     this.stateMachine.play();
-  },
-
-  isPlaying(){
-    return store.getState().isPlaying
   },
   next(){
     this.stateMachine.next();
@@ -35,6 +30,9 @@ var ElasticPlayer = React.createClass({
   },
   previous(){
     this.stateMachine.previous();
+  },
+  extend(){
+    this.stateMachine.onExtendClick();
   },
   render(){
     var players = new Array(this.props.numOfPlayers).fill(0);
@@ -50,23 +48,25 @@ var ElasticPlayer = React.createClass({
           }
         </div>
         <div className="controls">
-                    <span>
-                        <button id="playme" onClick={this.play}>Play</button>
-                    </span>
-                    <span>
-                        <button id="pause" onClick={this.pause}>Pause</button>
-                    </span>
-                    <span>
-                        <button id="next" onClick={this.next}>next</button>
-                    </span>
-                    <span>
-                        <button id="prev" onClick={this.previous}>previous</button>
-                    </span>
+          <span>
+            <button id="play" onClick={this.play}>Play</button>
+          </span>
+          <span>
+            <button id="pause" onClick={this.pause}>Pause</button>
+          </span>
+          <span>
+            <button id="next" onClick={this.next}>next</button>
+          </span>
+          <span>
+            <button id="prev" onClick={this.previous}>previous</button>
+          </span>
+          <span>
+            <button onClick={this.extend}>extend</button>
+          </span>
         </div>
       </div>
     );
   }
-
 });
 
 export default ElasticPlayer;

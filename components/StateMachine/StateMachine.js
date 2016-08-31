@@ -80,9 +80,18 @@ class StateMachine {
     this.actionHandler("previous");
   }
 
+  onExtendClick(){
+    this.cancelOnSegmentEndAction();
+    this.onSegmentEnd(this.segmentsManager.getActive(), this.extendSegment.bind(this));
+  }
+
+  extendSegment(){
+      this.actionHandler("extend");
+  }
+
   actionHandler(action){
     this.logger.log("handle action " + action);
-    this.clearCurrentInterval();
+    this.cancelOnSegmentEndAction();
     var oldPlayer = this.activePlayer;
     var followingSegment = this.getNextSegmentAccordingToAction(action);
     if (followingSegment === undefined){
@@ -263,6 +272,10 @@ class StateMachine {
       }
     });
 
+  }
+
+  cancelOnSegmentEndAction() {
+    this.clearCurrentInterval();
   }
 }
 
