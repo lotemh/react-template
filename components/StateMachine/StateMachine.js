@@ -1,6 +1,7 @@
 import SegmentsQueue from "./SegmentsQueue";
 import Logger from "../Logger/Logger";
 import SegmentManager from "./SegmentManager";
+import Player from "../VideoElement/Player";
 
 /**
  * Created by user on 8/28/2016.
@@ -21,9 +22,15 @@ function getTimeInSeconds(timeInMili){
 class StateMachine {
   constructor(players, logger){
     this.logger = logger || new Logger();
-    this.players = players;
+    
+    this.players = this.createPlayers(players);
     this.activePlayer = null;
     this.players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)))
+  }
+  
+  createPlayers(players){
+    var id = 0;
+    return players.map(p => new Player(p, "player" + id++));
   }
 
   loadSegments(episodeMetadataId){
