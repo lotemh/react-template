@@ -1,4 +1,3 @@
-import SegmentsQueue from "./SegmentsQueue";
 import Logger from "../Logger/Logger";
 import SegmentManager from "./SegmentManager";
 import Player from "../VideoElement/Player";
@@ -20,12 +19,9 @@ function getTimeInSeconds(timeInMili){
 }
 
 class StateMachine {
-  constructor(players, logger){
+  constructor(logger){
     this.logger = logger || new Logger();
-    
-    this.players = this.createPlayers(players);
     this.activePlayer = null;
-    this.players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)))
   }
   
   createPlayers(players){
@@ -35,6 +31,11 @@ class StateMachine {
 
   loadSegments(episodeMetadataId){
 
+  }
+  
+  setPlayers(players){
+    this.players = this.createPlayers(players);
+    this.players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)))
   }
 
   setSegments(segments){

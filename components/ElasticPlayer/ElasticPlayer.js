@@ -2,15 +2,20 @@ import $ from 'jquery';
 import React, { PropTypes } from 'react';
 import StateMachine from "../StateMachine/StateMachine";
 import VideoElement from '../VideoElement/VideoElement'
+import Controls from '../Controls/Controls';
 
 var ElasticPlayer = React.createClass({
+
+  componentWillMount(){
+    this.stateMachine = new StateMachine();
+  },
 
   componentDidMount(){
     var players = [];
     for (var player in this.refs){
       players.push(this.refs[player]);
     }
-    this.stateMachine = new StateMachine(players);
+    this.stateMachine.setPlayers(players);
     var stateMachine = this.stateMachine;
     $.getJSON("metadataExample.json", function(metadata) {
       // stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/mm080616.mp4");
@@ -19,21 +24,7 @@ var ElasticPlayer = React.createClass({
       stateMachine.start();
     });
   },
-  play(){
-    this.stateMachine.play();
-  },
-  next(){
-    this.stateMachine.next();
-  },
-  pause(){
-    this.stateMachine.pause();
-  },
-  previous(){
-    this.stateMachine.previous();
-  },
-  extend(){
-    this.stateMachine.onExtendClick();
-  },
+
   render(){
     var players = new Array(this.props.numOfPlayers).fill(0);
     return (
@@ -47,23 +38,7 @@ var ElasticPlayer = React.createClass({
             })
           }
         </div>
-        <div className="controls">
-          <span>
-            <button id="play" onClick={this.play}>Play</button>
-          </span>
-          <span>
-            <button id="pause" onClick={this.pause}>Pause</button>
-          </span>
-          <span>
-            <button id="next" onClick={this.next}>next</button>
-          </span>
-          <span>
-            <button id="prev" onClick={this.previous}>previous</button>
-          </span>
-          <span>
-            <button onClick={this.extend}>extend</button>
-          </span>
-        </div>
+        <Controls stateMachine={this.stateMachine}/>
       </div>
     );
   }
