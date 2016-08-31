@@ -55,20 +55,20 @@ class StateMachine {
 
     this.prepare(freePlayer, this.segmentsManager.getNext())
       .then(function(){
-        this.next();
+        this.actionHandler("next");
       }.bind(this), function(){
         this.deactivatePlayer(freePlayer);
       }.bind(this));
   }
 
   activatePlayer(player){
+    if (!player) {return;}
     this.activePlayer = player;
     this.activePlayer.show();
     this.activePlayer.play();
     this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + this.activePlayer.getId());
   }
 
-  //private?
   onDataLoaded(segmentTitle) {
     this.logger.log("video for segment " + segmentTitle +" loaded");
     this.segmentsManager.setReady(segmentTitle);
@@ -80,21 +80,19 @@ class StateMachine {
     segment.player = player;
   }
 
-  next(){
-    this.actionHandler("next");
-  }
-
-  previous(){
-    this.actionHandler("previous");
-  }
-
-  onExtendClick(){
+  extend(){
     this.cancelOnSegmentEndAction();
     this.onSegmentEnd(this.segmentsManager.getActive(), this.extendSegment.bind(this));
   }
 
   extendSegment(){
       this.actionHandler("extend");
+  }
+
+  eventHandler(event){
+    if (this[event]){
+      this[event]();
+    } else this.actionHandler(event);
   }
 
   actionHandler(action){
@@ -106,8 +104,9 @@ class StateMachine {
       return;
     }
     if (this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
-      this.logger.log("continue playing segment " + this.segmentsManager.getActive().title);
-      this.executeAction(oldPlayer, null, followingSegment, false);
+      this.logger.log("finished segment " + this.segmentsManager.getActive().title +
+        " continue playing segment " + followingSegment.title);
+      this.executeAction(oldPlayer, null, followingSegment);
       return;
     }
     var nextPlayer = followingSegment.player;
@@ -147,6 +146,7 @@ class StateMachine {
   }
 
   switchPlayers(oldPlayer, nextPlayer) {
+    if (!nextPlayer) return;
     this.activatePlayer(nextPlayer);
     if (oldPlayer !== nextPlayer){
       this.deactivatePlayer(oldPlayer);
