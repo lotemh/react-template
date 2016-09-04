@@ -89,14 +89,19 @@ class StateMachine {
       this.actionHandler("extend");
   }
 
+  previous(){
+    this.activePlayer.pause();
+    this.actionHandler("previous");
+  }
+
   eventHandler(event){
+    this.logger.log("handle action " + event);
     if (this[event]){
       this[event]();
     } else this.actionHandler(event);
   }
 
   actionHandler(action){
-    this.logger.log("handle action " + action);
     this.cancelOnSegmentEndAction();
     var oldPlayer = this.activePlayer;
     var followingSegment = this.getNextSegmentAccordingToAction(action);

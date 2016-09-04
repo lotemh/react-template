@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import Logger from "../Logger/Logger";
 
 class Player {
 
@@ -6,13 +7,15 @@ class Player {
     this.player = videoPlayer;
     this.loading = null;
     this.id = id;
+    this.logger = new Logger();
   }
-  
+
   getPlayer(){
     return this.player;
   }
-  
+
   pause() {
+    this.logger.log("player " + this.id + " paused");
     this.getPlayer().pause();
   }
   play(){
@@ -40,10 +43,11 @@ class Player {
   }
   addLoadedDataEvent(listener){
     function loadedCallback(){
-      if (this.loading) {
+      var loadedSegment = this.loading;
+        if (loadedSegment) {
         this.loading = null;
       }
-      listener(this.loading);
+      listener(loadedSegment);
     }
     this.getPlayer().addLoadedDataEvent(loadedCallback.bind(this));
   }
