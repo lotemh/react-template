@@ -10,7 +10,6 @@ class VideoElement extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      src: props.src || "",
       isHidden: true
     };
   }
@@ -33,7 +32,7 @@ class VideoElement extends React.Component {
   render() {
     return (
       <video className={this.getClassName()} preload="none">
-        <source type="video/mp4" ref="source" src="https://s3.eu-central-1.amazonaws.com/phase1-episodes/mm080616.mp4"/>
+        <source type="video/mp4" ref="source" src={this.props.src}/>
       </video>
     );
   }
