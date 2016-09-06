@@ -1,6 +1,7 @@
 import Logger from "../Logger/Logger";
 import SegmentManager from "./SegmentManager";
 import Player from "../VideoElement/Player";
+import PlaybackController from "../VideoElement/playbackController"
 
 /**
  * Created by user on 8/28/2016.
@@ -21,7 +22,7 @@ function getTimeInSeconds(timeInMili){
 class StateMachine {
   constructor(logger){
     this.logger = logger || new Logger();
-    this.activePlayer = null;
+    this.playbackController = new PlaybackController();
   }
 
   createPlayers(players){
@@ -63,10 +64,11 @@ class StateMachine {
 
   activatePlayer(player){
     if (!player) {return;}
-    this.activePlayer = player;
-    this.activePlayer.show();
-    this.activePlayer.play();
-    this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + this.activePlayer.getId());
+    this.playbackController.setActive(player);
+    var activePlayer = this.playbackController.getActive();
+      activePlayer.show();
+    activePlayer.play();
+    this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + activePlayer.getId());
   }
 
   onDataLoaded(segmentTitle) {
@@ -90,7 +92,7 @@ class StateMachine {
   }
 
   previous(){
-    this.activePlayer.pause();
+    this.playbackController.getActive().pause();
     this.actionHandler("previous");
   }
 
@@ -103,7 +105,7 @@ class StateMachine {
 
   actionHandler(action){
     this.cancelOnSegmentEndAction();
-    var oldPlayer = this.activePlayer;
+    var oldPlayer = this.playbackController.getActive();
     var followingSegment = this.getNextSegmentAccordingToAction(action);
     if (followingSegment === undefined){
       return;
@@ -120,7 +122,7 @@ class StateMachine {
     } else {
       nextPlayer = this.getFreePlayer();
       if (!nextPlayer){
-        nextPlayer = this.activePlayer;
+        nextPlayer = this.playbackController.getActive();
         oldPlayer = null;
       }
       return this.prepare(nextPlayer, followingSegment).then(function(){
@@ -143,7 +145,7 @@ class StateMachine {
 
   unloadSegment(deprecated){
     var deprecatedPlayer = deprecated.player;
-    if (deprecatedPlayer && deprecatedPlayer !== this.activePlayer) {
+    if (deprecatedPlayer && deprecatedPlayer !== this.playbackController.getActive()) {
       this.players.push(deprecatedPlayer);
       this.logger.log("return player " + deprecatedPlayer.getId());
     }
@@ -180,11 +182,11 @@ class StateMachine {
   }
 
   play(){
-    this.activePlayer.play();
+    this.playbackController.getActive().play();
   }
 
   pause(){
-    this.activePlayer.pause();
+    this.playbackController.getActive().pause();
   }
 
   prepareSegments(segments) {
@@ -232,7 +234,7 @@ class StateMachine {
 
   onSegmentEnd(segment, callback) {
     var out = segment.out;
-    var currentTime = this.activePlayer.getCurrentTime();
+    var currentTime = this.playbackController.getActive().getCurrentTime();
     if (currentTime >= out - 0.01){
       callback();
       this.logger.log("current time: " + currentTime);
@@ -255,15 +257,15 @@ class StateMachine {
   onTimeUpdated(segment, callback) {
     var out = segment.out;
     function timeUpdatedListener(){
-      var currentTime = this.activePlayer.getCurrentTime();
+      var currentTime = this.playbackController.getActive().getCurrentTime();
       if (currentTime >= out - 0.01){
-        this.activePlayer.removeTimeUpdateEvent(timeUpdatedListener);
+        this.playbackController.getActive().removeTimeUpdateEvent(timeUpdatedListener);
         callback();
         this.logger.log("current time: ", currentTime);
         this.logger.log("out time: ", out);
       }
     }
-    this.activePlayer.addTimeUpdateEvent(timeUpdatedListener.bind(this));
+    this.playbackController.getActive().addTimeUpdateEvent(timeUpdatedListener.bind(this));
   }
 
   updateSegments(segmentsSet){
