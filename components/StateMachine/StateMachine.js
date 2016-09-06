@@ -108,7 +108,7 @@ class StateMachine {
     if (followingSegment === undefined){
       return;
     }
-    if (this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
+    if (action === "no_action" || action === "extend" && this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
       this.logger.log("finished segment " + this.segmentsManager.getActive().title +
         " continue playing segment " + followingSegment.title);
       this.executeAction(oldPlayer, null, followingSegment);
