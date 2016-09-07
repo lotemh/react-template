@@ -2,6 +2,7 @@ import $ from 'jquery';
 import React, { PropTypes } from 'react';
 import StateMachine from "../StateMachine/StateMachine";
 import VideoElement from '../VideoElement/VideoElement'
+import brightCovePlayer from '../VideoElement/brightCovePlayer'
 import Controls from '../Controls/Controls';
 
 var ElasticPlayer = React.createClass({
