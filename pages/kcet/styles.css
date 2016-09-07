@@ -1,0 +1,66 @@
+
+.player {
+  width: 420px;
+  height: 237px;
+}
+
+.definitionLabel {
+  font-size: 38px;
+  text-align: left;
+  font-family: Dense, Arial;
+  margin-left: calc(10% - 20px);
+}
+
+#defineContainer .definitionButton {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu {
+  background-color: #484444;
+  color: floralwhite;
+  text-align: center;
+  font-family: Dense, Arial;
+}
+
+.menu h1 {
+  font-size: 50px;
+  padding: 8px 0;
+}
+
+button {
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  font-family: Dense;
+  font-size: 30px;
+  text-decoration: none;
+  color: rgb(255, 255, 255);
+  background: #101053;
+  padding: 4px 30px;
+  outline: none;
+  border: none;
+  margin-left: 20px;
+}
+
+.btn:active {
+  background-color: #5a034b;
+}
+
+.hidden {
+  /*display: none;*/
+}
+
+.screen {
+  margin-left: 29px;
+}
+
+.player-container {
+  margin-left: 20%;
+}
+
+.controls {
+  margin-top: 20px;
+}

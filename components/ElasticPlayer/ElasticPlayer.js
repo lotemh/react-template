@@ -2,7 +2,7 @@ import $ from 'jquery';
 import React, { PropTypes } from 'react';
 import StateMachine from "../StateMachine/StateMachine";
 import VideoElement from '../VideoElement/VideoElement'
-import brightCovePlayer from '../VideoElement/brightCovePlayer'
+import BrightCovePlayer from '../VideoElement/brightCovePlayer'
 import Controls from '../Controls/Controls';
 
 var ElasticPlayer = React.createClass({
@@ -34,7 +34,7 @@ var ElasticPlayer = React.createClass({
           {
             players.map(function(elm, i){
               return (
-                <VideoElement key={"player" + i} ref={"player" + i} playerId={"player" + i}/>
+                <BrightCovePlayer key={"player" + i} ref={"player" + i} playerId={"player" + i}/>
               )
             })
           }

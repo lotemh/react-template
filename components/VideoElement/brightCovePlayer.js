@@ -30,39 +30,15 @@ class BrightCovePlayer extends React.Component {
   }
 
   getPlayer () {
-    return ReactDOM.findDOMNode(this);
+    return this.refs.player;
   }
 
   render() {
     return (
-      // <video className={this.getClassName()} preload="none">
-      //   <source type="video/mp4" ref="source" src="https://s3.eu-central-1.amazonaws.com/phase1-episodes/mm080616.mp4"/>
-      // </video>
       <div>
-        <video id="myPlayerID"
-               data-account="3676484087001"
-               data-player="78ef7d78-18d9-4459-a6da-d94e46163076"
-               data-embed="default"
-               class="video-js"
-               controls></video>
-        <script src="//players.brightcove.net/3676484087001/78ef7d78-18d9-4459-a6da-d94e46163076_default/index.min.js"></script>
-        <script src="//players.brightcove.net/videojs-overlay/lib/videojs-overlay.js"></script>
+        <iframe ref="player" src="//players.brightcove.net/5114477724001/ryxQpOD6j_default/index.html" allowfullscreen webkitallowfullscreen mozallowfullscreen width="300" height="150"></iframe>
       </div>
     );
-  }
-
-  componentWillMount() {
-    videojs("myPlayerID").on('loadedmetadata', function () {
-      var myPlayer = this;
-      myPlayer.play();
-      myPlayer.overlay({
-        overlays: [{
-          content: 'This event-triggered overlay message appears when the video is playing',
-          start: 'play',
-          end: 'pause'
-        }]
-      });
-    });
   }
 
   /******************************/

@@ -15,5 +15,9 @@
   {
     "path": "/tasks/:status(pending|completed)?",
     "page": "./pages/home"
+  },
+  {
+    "path": "/kcet",
+    "page": "./pages/kcet"
   }
 ]
