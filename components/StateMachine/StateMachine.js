@@ -1,6 +1,6 @@
 import Logger from "../Logger/Logger";
 import SegmentManager from "./SegmentManager";
-import Player from "../VideoElement/Player";
+import PlaybackController from "../VideoElement/playbackController"
 
 /**
  * Created by user on 8/28/2016.
@@ -21,12 +21,7 @@ function getTimeInSeconds(timeInMili){
 class StateMachine {
   constructor(logger){
     this.logger = logger || new Logger();
-    this.activePlayer = null;
-  }
-
-  createPlayers(players){
-    var id = 0;
-    return players.map(p => new Player(p, "player" + id++));
+    this.playbackController = new PlaybackController();
   }
 
   loadSegments(episodeMetadataId){
@@ -34,8 +29,9 @@ class StateMachine {
   }
 
   setPlayers(players){
-    this.players = this.createPlayers(players);
-    this.players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)))
+    var players = this.playbackController.createPlayers(players);
+    players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)));
+    this.playbackController.setPlayers(players);
   }
 
   setSegments(segments){
@@ -48,7 +44,7 @@ class StateMachine {
 
   start(){
     //todo: reuse code
-    var freePlayer = this.getFreePlayer();
+    var freePlayer = this.playbackController.getFreePlayer();
     if (freePlayer === undefined ){
       return;
     }
@@ -56,17 +52,7 @@ class StateMachine {
     this.prepare(freePlayer, this.segmentsManager.getNext())
       .then(function(){
         this.actionHandler("next");
-      }.bind(this), function(){
-        this.deactivatePlayer(freePlayer);
       }.bind(this));
-  }
-
-  activatePlayer(player){
-    if (!player) {return;}
-    this.activePlayer = player;
-    this.activePlayer.show();
-    this.activePlayer.play();
-    this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + this.activePlayer.getId());
   }
 
   onDataLoaded(segmentTitle) {
@@ -90,7 +76,7 @@ class StateMachine {
   }
 
   previous(){
-    this.activePlayer.pause();
+    this.playbackController.getActive().pause();
     this.actionHandler("previous");
   }
 
@@ -103,12 +89,12 @@ class StateMachine {
 
   actionHandler(action){
     this.cancelOnSegmentEndAction();
-    var oldPlayer = this.activePlayer;
+    var oldPlayer = this.playbackController.getActive();
     var followingSegment = this.getNextSegmentAccordingToAction(action);
     if (followingSegment === undefined){
       return;
     }
-    if (action === "no_action" || action === "extend" && this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
+    if ((action === "no_action" || action === "extend") && this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
       this.logger.log("finished segment " + this.segmentsManager.getActive().title +
         " continue playing segment " + followingSegment.title);
       this.executeAction(oldPlayer, null, followingSegment);
@@ -118,9 +104,9 @@ class StateMachine {
     if (nextPlayer){
       followingSegment.player = undefined;
     } else {
-      nextPlayer = this.getFreePlayer();
+      nextPlayer = this.playbackController.getFreePlayer();
       if (!nextPlayer){
-        nextPlayer = this.activePlayer;
+        nextPlayer = this.playbackController.getActive();
         oldPlayer = null;
       }
       return this.prepare(nextPlayer, followingSegment).then(function(){
@@ -132,7 +118,9 @@ class StateMachine {
 
   executeAction(oldPlayer, nextPlayer, followingSegment) {
     this.segmentsManager.setActive(followingSegment);
-    this.switchPlayers(oldPlayer, nextPlayer);
+    var playerThatWillPlay = nextPlayer || oldPlayer;
+      this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + playerThatWillPlay.getId());
+    this.playbackController.switchPlayers(oldPlayer, nextPlayer);
     this.onSegmentEnd(this.segmentsManager.getActive(), this.noAction.bind(this));
     // this.onTimeUpdated(this.segmentsManager.getActive(), this.noAction.bind(this));
 
@@ -143,19 +131,11 @@ class StateMachine {
 
   unloadSegment(deprecated){
     var deprecatedPlayer = deprecated.player;
-    if (deprecatedPlayer && deprecatedPlayer !== this.activePlayer) {
-      this.players.push(deprecatedPlayer);
+    if (deprecatedPlayer && deprecatedPlayer !== this.playbackController.getActive()) {
+      this.playbackController.returnPlayer(deprecatedPlayer);
       this.logger.log("return player " + deprecatedPlayer.getId());
     }
     deprecated.player = undefined;
-  }
-
-  switchPlayers(oldPlayer, nextPlayer) {
-    if (!nextPlayer) return;
-    this.activatePlayer(nextPlayer);
-    if (oldPlayer !== nextPlayer){
-      this.deactivatePlayer(oldPlayer);
-    }
   }
 
   noAction(){
@@ -167,24 +147,12 @@ class StateMachine {
     return this.segmentsManager.get(segmentName);
   }
 
-  getFreePlayer(){
-    return this.players.pop();
-  }
-
-  deactivatePlayer(player) {
-    if (player) {
-      player.pause();
-      player.hide();
-      this.players.push(player);
-    }
-  }
-
   play(){
-    this.activePlayer.play();
+    this.playbackController.play();
   }
 
   pause(){
-    this.activePlayer.pause();
+    this.playbackController.pause();
   }
 
   prepareSegments(segments) {
@@ -201,7 +169,7 @@ class StateMachine {
       return this.prepareSegments(segments);
     }
 
-    var freePlayer = this.getFreePlayer();
+    var freePlayer = this.playbackController.getFreePlayer();
     if (freePlayer === undefined ){
       return;
     }
@@ -210,7 +178,7 @@ class StateMachine {
       .then(function(){
         this.prepareSegments(segments);
       }.bind(this), function(){
-        this.deactivatePlayer(freePlayer);
+        this.playbackController.deactivatePlayer(freePlayer);
       }.bind(this));
   }
 
@@ -232,7 +200,7 @@ class StateMachine {
 
   onSegmentEnd(segment, callback) {
     var out = segment.out;
-    var currentTime = this.activePlayer.getCurrentTime();
+    var currentTime = this.playbackController.getActive().getCurrentTime();
     if (currentTime >= out - 0.01){
       callback();
       this.logger.log("current time: " + currentTime);
@@ -255,15 +223,15 @@ class StateMachine {
   onTimeUpdated(segment, callback) {
     var out = segment.out;
     function timeUpdatedListener(){
-      var currentTime = this.activePlayer.getCurrentTime();
+      var currentTime = this.playbackController.getActive().getCurrentTime();
       if (currentTime >= out - 0.01){
-        this.activePlayer.removeTimeUpdateEvent(timeUpdatedListener);
+        this.playbackController.getActive().removeTimeUpdateEvent(timeUpdatedListener);
         callback();
         this.logger.log("current time: ", currentTime);
         this.logger.log("out time: ", out);
       }
     }
-    this.activePlayer.addTimeUpdateEvent(timeUpdatedListener.bind(this));
+    this.playbackController.getActive().addTimeUpdateEvent(timeUpdatedListener.bind(this));
   }
 
   updateSegments(segmentsSet){
