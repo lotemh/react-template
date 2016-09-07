@@ -28,8 +28,8 @@ var ElasticPlayer = React.createClass({
   render(){
     var players = new Array(this.props.numOfPlayers).fill(0);
     return (
-      <div className="player-container">
-        <div  className="screen">
+      <div className="player-container" style={{position: 'relative'}}>
+        <div className="screen playerHolder">
           {
             players.map(function(elm, i){
               return (

@@ -1,9 +1,15 @@
 @font-face { font-family: Dense; src: url('Dense-Regular.otf'); }
 @font-face { font-family: hillel;  src: url('hillelclm-medium-webfont.woff') format('woff');}
 
+
+.playerHolder {
+  width: 840px;
+  height: 474px;
+  position: absolute !important;
+}
 .player {
-  width: 420px;
-  height: 237px;
+  width: 840px;
+  height: 474px;
 }
 
 .definitionLabel {
@@ -56,7 +62,7 @@ button:active {
 }
 
 .screen {
-  margin-left: 29px;
+
 }
 
 .player-container {
@@ -64,5 +70,16 @@ button:active {
 }
 
 .controls {
-  margin-top: 20px;
+  padding: 3px;
 }
+
+#extend {
+  position: relative;
+  top: 10px;
+  left: 10px;
+}
+
+.controler {
+   height: 40px;
+   width: 40px;
+ }

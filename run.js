@@ -95,15 +95,25 @@ tasks.set('build', () => {
 //
 // Build and publish the website
 // -----------------------------------------------------------------------------
+
 tasks.set('publish', () => {
-  const firebase = require('firebase-tools');
-  return run('build')
-    .then(() => firebase.login({ nonInteractive: false }))
-    .then(() => firebase.deploy({
-      project: config.project,
-      cwd: __dirname,
-    }))
-    .then(() => { setTimeout(() => process.exit()); });
+  global.DEBUG = process.argv.includes('--debug') || false;
+  const s3 = require('s3');
+  return run('build').then(() => new Promise((resolve, reject) => {
+    const client = s3.createClient({
+      s3Options: {
+        region: 'us-west-1',
+        sslEnabled: true,
+      },
+    });
+    const uploader = client.uploadDir({
+      localDir: 'public',
+      deleteRemoved: true,
+      s3Params: { Bucket: 'banias-js' }, // TODO: Update deployment URL
+    });
+    uploader.on('error', reject);
+    uploader.on('end', resolve);
+  }));
 });
 
 //
