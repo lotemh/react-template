@@ -36,7 +36,13 @@ class BrightCovePlayer extends React.Component {
   render() {
     return (
       <div>
-        <iframe ref="player" src="//players.brightcove.net/5114477724001/ryxQpOD6j_default/index.html" allowfullscreen webkitallowfullscreen mozallowfullscreen width="300" height="150"></iframe>
+        <video className={this.getClassName()} ref="player" data-account="5114477724001"
+               data-player="ryxQpOD6j"
+               data-embed="default"
+               data-application-id>
+          <source type="video/mp4" ref="source" src={this.props.src}/>
+        </video>
+        <script src="//players.brightcove.net/5114477724001/ryxQpOD6j_default/index.min.js"></script>
       </div>
     );
   }
