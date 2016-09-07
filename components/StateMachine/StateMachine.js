@@ -1,6 +1,5 @@
 import Logger from "../Logger/Logger";
 import SegmentManager from "./SegmentManager";
-import Player from "../VideoElement/Player";
 import PlaybackController from "../VideoElement/playbackController"
 
 /**
@@ -25,18 +24,14 @@ class StateMachine {
     this.playbackController = new PlaybackController();
   }
 
-  createPlayers(players){
-    var id = 0;
-    return players.map(p => new Player(p, "player" + id++));
-  }
-
   loadSegments(episodeMetadataId){
 
   }
 
   setPlayers(players){
-    this.players = this.createPlayers(players);
-    this.players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)))
+    var players = this.playbackController.createPlayers(players);
+    players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)));
+    this.playbackController.setPlayers(players);
   }
 
   setSegments(segments){
@@ -49,7 +44,7 @@ class StateMachine {
 
   start(){
     //todo: reuse code
-    var freePlayer = this.getFreePlayer();
+    var freePlayer = this.playbackController.getFreePlayer();
     if (freePlayer === undefined ){
       return;
     }
@@ -57,18 +52,7 @@ class StateMachine {
     this.prepare(freePlayer, this.segmentsManager.getNext())
       .then(function(){
         this.actionHandler("next");
-      }.bind(this), function(){
-        this.deactivatePlayer(freePlayer);
       }.bind(this));
-  }
-
-  activatePlayer(player){
-    if (!player) {return;}
-    this.playbackController.setActive(player);
-    var activePlayer = this.playbackController.getActive();
-      activePlayer.show();
-    activePlayer.play();
-    this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + activePlayer.getId());
   }
 
   onDataLoaded(segmentTitle) {
@@ -120,7 +104,7 @@ class StateMachine {
     if (nextPlayer){
       followingSegment.player = undefined;
     } else {
-      nextPlayer = this.getFreePlayer();
+      nextPlayer = this.playbackController.getFreePlayer();
       if (!nextPlayer){
         nextPlayer = this.playbackController.getActive();
         oldPlayer = null;
@@ -134,7 +118,9 @@ class StateMachine {
 
   executeAction(oldPlayer, nextPlayer, followingSegment) {
     this.segmentsManager.setActive(followingSegment);
-    this.switchPlayers(oldPlayer, nextPlayer);
+    var playerThatWillPlay = nextPlayer || oldPlayer;
+      this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + playerThatWillPlay.getId());
+    this.playbackController.switchPlayers(oldPlayer, nextPlayer);
     this.onSegmentEnd(this.segmentsManager.getActive(), this.noAction.bind(this));
     // this.onTimeUpdated(this.segmentsManager.getActive(), this.noAction.bind(this));
 
@@ -146,18 +132,10 @@ class StateMachine {
   unloadSegment(deprecated){
     var deprecatedPlayer = deprecated.player;
     if (deprecatedPlayer && deprecatedPlayer !== this.playbackController.getActive()) {
-      this.players.push(deprecatedPlayer);
+      this.playbackController.returnPlayer(deprecatedPlayer);
       this.logger.log("return player " + deprecatedPlayer.getId());
     }
     deprecated.player = undefined;
-  }
-
-  switchPlayers(oldPlayer, nextPlayer) {
-    if (!nextPlayer) return;
-    this.activatePlayer(nextPlayer);
-    if (oldPlayer !== nextPlayer){
-      this.deactivatePlayer(oldPlayer);
-    }
   }
 
   noAction(){
@@ -169,24 +147,12 @@ class StateMachine {
     return this.segmentsManager.get(segmentName);
   }
 
-  getFreePlayer(){
-    return this.players.pop();
-  }
-
-  deactivatePlayer(player) {
-    if (player) {
-      player.pause();
-      player.hide();
-      this.players.push(player);
-    }
-  }
-
   play(){
-    this.playbackController.getActive().play();
+    this.playbackController.play();
   }
 
   pause(){
-    this.playbackController.getActive().pause();
+    this.playbackController.pause();
   }
 
   prepareSegments(segments) {
@@ -203,7 +169,7 @@ class StateMachine {
       return this.prepareSegments(segments);
     }
 
-    var freePlayer = this.getFreePlayer();
+    var freePlayer = this.playbackController.getFreePlayer();
     if (freePlayer === undefined ){
       return;
     }
@@ -212,7 +178,7 @@ class StateMachine {
       .then(function(){
         this.prepareSegments(segments);
       }.bind(this), function(){
-        this.deactivatePlayer(freePlayer);
+        this.playbackController.deactivatePlayer(freePlayer);
       }.bind(this));
   }
 
