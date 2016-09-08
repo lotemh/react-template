@@ -38,6 +38,11 @@ class StateMachine {
     this.segmentsManager = new SegmentManager(segments, this.logger);
   }
 
+  setControls(controls){
+    console.log("set controls was set!!!");
+    this.controlsManager = controls;
+  }
+
   setContentUrl(url){
     this.contentUrl = url;
   }
@@ -120,13 +125,19 @@ class StateMachine {
     this.segmentsManager.setActive(followingSegment);
     var playerThatWillPlay = nextPlayer || oldPlayer;
       this.logger.log("play segment " + this.segmentsManager.getActive().title + " on player " + playerThatWillPlay.getId());
-    this.playbackController.switchPlayers(oldPlayer, nextPlayer);
+    this.playNextSegment(oldPlayer, nextPlayer);
+    console.log("starting !!!");
+    this.controlsManager.updateControl({isPlaying: true});
     this.onSegmentEnd(this.segmentsManager.getActive(), this.noAction.bind(this));
     // this.onTimeUpdated(this.segmentsManager.getActive(), this.noAction.bind(this));
 
     //todo: stop current loading if needed
     this.updateSegments(this.segmentsManager.getSegmentsSet());
     this.prepareSegments(this.segmentsManager.getSegmentsToPrepare());
+  }
+
+  playNextSegment(oldPlayer, nextPlayer) {
+    this.playbackController.switchPlayers(oldPlayer, nextPlayer);
   }
 
   unloadSegment(deprecated){
@@ -148,10 +159,12 @@ class StateMachine {
   }
 
   play(){
+    this.controlsManager.updateControl({isPlaying: true});
     this.playbackController.play();
   }
 
   pause(){
+    this.controlsManager.updateControl({isPlaying: false});
     this.playbackController.pause();
   }
 

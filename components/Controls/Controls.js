@@ -3,8 +3,10 @@ import Hammer from '../../utils/hammer.min';
 import ReactDOM from 'react-dom';
 
 var Controls = React.createClass({
+
   componentWillMount(){
-    this.state = {isPlaying: true};
+    this.state = {isPlaying: false};
+    this.props.stateMachine.setControls(this);
   },
   componentDidMount(){
     this.gestureListener = new Hammer(ReactDOM.findDOMNode(this));
@@ -17,6 +19,10 @@ var Controls = React.createClass({
       this.props.stateMachine.eventHandler("previous");
     }
   },
+  updateControl(state) {
+    this.setState(state);
+  },
+
   getClassName(name){
     var className = 'controller';
     if (name === "play") {
@@ -25,8 +31,19 @@ var Controls = React.createClass({
       className += !this.state.isPlaying ? ' hidden' : '';
     }
     return className;
-
   },
+  /*
+  getImgSource(name){
+    console.log("in get img source!!!");
+    if (name === "play") {
+      if (this.state.isPlaying) {
+        return "images/pause.png";
+      } else {
+        return "images/play.png";
+      }
+    }
+  },
+  */
   eventHandler(event){
     if (event.target.id === "play" || event.target.id === "pause") {
       this.setState({isPlaying: !this.state.isPlaying});
