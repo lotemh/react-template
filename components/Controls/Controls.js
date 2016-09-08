@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 var Controls = React.createClass({
 
   componentWillMount(){
-    this.state = {isPlaying: false};
+    this.state = {isPlaying: false, pendingPlay: true};
     this.props.stateMachine.setControls(this);
   },
   componentDidMount(){
@@ -70,6 +70,9 @@ var Controls = React.createClass({
     let dotsStyle = {
       left: ((newStyle.width/2) - 125/2)
     };
+    if (this.state.pendingPlay) {
+      newStyle['pointer-events'] = 'none';
+    }
     return (
       <div className="controls playerHolder2" style={newStyle}>
         <img src="images/logo.png" className="controller" id="extend" onClick={this.eventHandler}/>

@@ -18,8 +18,8 @@ class Player {
     this.logger.log("player " + this.id + " paused");
     this.getPlayer().pause();
   }
-  play(){
-    this.getPlayer().play();
+  play(callbackOnPlay){
+    this.getPlayer().play(callbackOnPlay);
   }
   show(){
     this.getPlayer().show();

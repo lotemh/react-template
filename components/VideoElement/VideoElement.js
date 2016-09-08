@@ -68,8 +68,7 @@ class VideoElement extends React.Component {
              height={this.state.height}
              className={this.getClassName()}
              onLoadedMetadata={this.metaDataLoaded.bind(this)}
-             preload="none"
-             controls>
+             preload="none">
         <source type="video/mp4" ref="source" src={this.props.src}/>
       </video>
     );
@@ -81,7 +80,13 @@ class VideoElement extends React.Component {
     this.getPlayer().pause();
   }
 
-  play(){
+  play(callbackOnPlay){
+    this.getPlayer().onplay = function() {
+      console.log("on play fired!!!");
+      if (callbackOnPlay) {
+        callbackOnPlay(true);
+      }
+    };
     this.getPlayer().play();
   }
 

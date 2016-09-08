@@ -43,20 +43,20 @@ class PlaybackController {
     }
   }
 
-  switchPlayers(oldPlayer, nextPlayer) {
+  switchPlayers(oldPlayer, nextPlayer, callback) {
     if (!nextPlayer) return;
-    this.activatePlayer(nextPlayer);
+    this.activatePlayer(nextPlayer, callback);
     if (oldPlayer !== nextPlayer){
       this.deactivatePlayer(oldPlayer);
     }
   }
 
-  activatePlayer(player){
+  activatePlayer(player, callbackOnPlay){
     if (!player) {return;}
     this.setActive(player);
     var activePlayer = this.getActive();
     activePlayer.show();
-    activePlayer.play();
+    activePlayer.play(callbackOnPlay);
   }
 
   play(){
