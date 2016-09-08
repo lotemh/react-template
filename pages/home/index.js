@@ -10,9 +10,6 @@ class HomePage extends React.Component {
   render() {
     return (
         <div className="App">
-          <div className="menu">
-            <h1>Elastic Media Player Demo</h1>
-          </div>
           <ElasticPlayer numOfPlayers={3}/>
         </div>
     );

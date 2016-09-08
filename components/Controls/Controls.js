@@ -51,12 +51,31 @@ var Controls = React.createClass({
     this.props.stateMachine.eventHandler(event.target.id);
   },
   render(){
+    let newStyle = {
+      width: this.props.style.width,
+      height: this.props.style.height
+    },
+      bestHeight,
+      bestWidth,
+      ratio = 1.77777778;
+    if (newStyle.width < newStyle.height) {
+      bestHeight = newStyle.width * (1 / ratio);
+      newStyle.top = (newStyle.height - bestHeight) / 2;
+      newStyle.height = bestHeight;
+    } else {
+      bestWidth = newStyle.height * ratio;
+      newStyle.left = (newStyle.width - bestWidth) / 2;
+      newStyle.width = bestWidth;
+    }
+    let dotsStyle = {
+      left: ((newStyle.width/2) - 125/2)
+    };
     return (
-      <div className="controls playerHolder">
+      <div className="controls playerHolder2" style={newStyle}>
         <img src="images/logo.png" className="controller" id="extend" onClick={this.eventHandler}/>
         <img src="images/play.png" className={this.getClassName("play")} id="play" onClick={this.eventHandler}/>
         <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.eventHandler}/>
-        <span id="dots">
+        <span id="dots" style={dotsStyle}>
           <img src="images/dot.png" className="dot" id="dot1"/>
           <img src="images/dot.png" className="dot" id="dot2"/>
           <img src="images/dot.png" className="dot" id="dot3"/>

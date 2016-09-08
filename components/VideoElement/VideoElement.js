@@ -10,8 +10,35 @@ class VideoElement extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      width: window.innerWidth,
+      height: window.innerHeight,
       isHidden: true
     };
+
+  };
+
+  handleResize(e) {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight
+    }, () => {
+      this.props.updateStyle({
+        width: this.state.width,
+        height: this.state.height
+      });
+    });
+  };
+
+  componentDidMount() {
+    window.addEventListener('resize', this.handleResize.bind(this));
+    this.props.updateStyle({
+      width: this.state.width,
+      height: this.state.height
+    });
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize.bind(this));
   }
 
   static propTypes = {
@@ -25,13 +52,24 @@ class VideoElement extends React.Component {
     return className;
   }
 
+  metaDataLoaded (m) {
+    //console.log("got meta data!!", m);
+    //console.log("video width: ", ReactDOM.findDOMNode(this.refs.video).videoWidth);
+    //console.log("video height: ", ReactDOM.findDOMNode(this.refs.video).videoHeight);
+  }
   getPlayer () {
     return ReactDOM.findDOMNode(this);
   }
 
   render() {
     return (
-      <video className={this.getClassName()} preload="none">
+      <video ref={"video"}
+             width={this.state.width}
+             height={this.state.height}
+             className={this.getClassName()}
+             onLoadedMetadata={this.metaDataLoaded.bind(this)}
+             preload="none"
+             controls>
         <source type="video/mp4" ref="source" src={this.props.src}/>
       </video>
     );
