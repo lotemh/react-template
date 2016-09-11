@@ -6,7 +6,6 @@ var Controls = React.createClass({
 
   componentWillMount(){
     this.state = {isPlaying: false, pendingPlay: true};
-    this.props.stateMachine.setControls(this);
   },
   componentDidMount(){
     this.gestureListener = new Hammer(ReactDOM.findDOMNode(this));

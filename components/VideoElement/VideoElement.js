@@ -68,6 +68,7 @@ class VideoElement extends React.Component {
              height={this.state.height}
              className={this.getClassName()}
              onLoadedMetadata={this.metaDataLoaded.bind(this)}
+             webkit-playsinline
              preload="none">
         <source type="video/mp4" ref="source" src={this.props.src}/>
       </video>

@@ -23,6 +23,7 @@ var ElasticPlayer = React.createClass({
       // stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/mm080616.mp4");
       stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/debug.mp4");
       stateMachine.setSegments(metadata.segments);
+      stateMachine.setControls(this.refs.controls);
       stateMachine.start();
     });
   },
@@ -46,7 +47,7 @@ var ElasticPlayer = React.createClass({
             })
           }
         </div>
-        <Controls stateMachine={this.stateMachine} style={this.state}/>
+        <Controls stateMachine={this.stateMachine} style={this.state} ref="controls"/>
       </div>
     );
   }
