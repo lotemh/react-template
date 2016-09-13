@@ -44,7 +44,9 @@ class VideoElement extends React.Component {
   }
 
   play(){
-    this.getPlayer().play();
+    this.getPlayer().play().then(null, (error)=> {
+      console.log("can't play video " + error);
+    });
   }
 
   show(){
@@ -73,7 +75,7 @@ class VideoElement extends React.Component {
   }
 
   addLoadedDataEvent(listener){
-    this.getPlayer().addEventListener('loadeddata', listener);
+    this.getPlayer().addEventListener('canplay', listener);
   }
 
   addTimeUpdateEvent(listener){

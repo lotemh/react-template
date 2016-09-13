@@ -47,7 +47,7 @@ class Player {
         if (loadedSegment) {
         this.loading = null;
       }
-      listener(loadedSegment);
+      listener(loadedSegment, this);
     }
     this.getPlayer().addLoadedDataEvent(loadedCallback.bind(this));
   }

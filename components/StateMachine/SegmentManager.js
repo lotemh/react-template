@@ -17,6 +17,10 @@ class SegmentManager {
     this.logger = logger;
   }
 
+  /**
+   * we need to choose the data structure
+   * @returns {*}
+   */
   getSegments(){
     return this.segments;
   }
@@ -52,7 +56,7 @@ class SegmentManager {
       loadedSegment.loadedCallback();
     }
   }
-  
+
   setLoading(segment, callback){
     segment.loadedCallback = callback;
     this.segmentLoading = segment;
@@ -81,6 +85,10 @@ class SegmentManager {
 
   isLoading(){
     return this.segmentLoading !== null;
+  }
+
+  setContentUrl(url){
+    this.getSegmentsSet().forEach(seg=>{seg.src = seg.src || url});
   }
 }
 
