@@ -24,56 +24,7 @@ class PlaybackController {
         this.loadingSegmentsMap = {};
     }
 
-    loadSegment(segment, callback){
-        if (this.isReady(segment.title)){
-            callback();
-        } else if (this.isLoading(segment.title)) {
-            this.logger.log("segment " + segment.title + " is loading");
-        } else {
-            var nextPlayer = this.getFreePlayer();
-            if (!nextPlayer){
-                nextPlayer = this.getActive();
-            }
-            return this.prepare(nextPlayer, segment).then(function(){
-                callback();
-            }.bind(this));
-        }
-    }
-
-    playSegment(segment, shouldContinuePlaying, onSegmentEndAction, callback){
-        if (!this.isReady(segment.title)){
-            this.pause();
-            return this.loadSegment(segment, this.playSegment.bind(this, segment, shouldContinuePlaying, onSegmentEndAction, callback));
-        }
-        this.cancelOnSegmentEndAction();
-        var nextPlayer = this.getPreparedPlayer(segment);
-        this.logger.log("play segment " + segment.title + " on player " + nextPlayer.getId());
-        this.switchPlayers(this.activePlayer, nextPlayer);
-        this.waitForSegmentEnd(segment.out, onSegmentEndAction);
-        callback && callback();
-    }
-
-    cancelOnSegmentEndAction() {
-        this.clearCurrentInterval();
-    }
-
-    clearCurrentInterval() {
-        clearTimeout(this.currentTimeoutId);
-    }
-
-    waitForSegmentEnd(endTimeStamp, callback) {
-        var out = endTimeStamp;
-        var currentTime = this.getActive().getCurrentTime();
-        if (currentTime >= out - 0.01){
-            callback();
-            this.logger.log("current time: " + currentTime);
-            this.logger.log("out time: " + out);
-            return;
-        }
-        var delay = Math.max(out - currentTime , 0.01);
-        this.currentTimeoutId = setTimeout(this.waitForSegmentEnd.bind(this, endTimeStamp, callback), delay);
-    }
-
+    /*********     Public API         ***********/
     createPlayers(players){
         var id = 0;
         players = players.map(p => new Player(p, "player" + id++));
@@ -81,44 +32,46 @@ class PlaybackController {
         this.players = players;
     }
 
-    getActive(){
-        return this.activePlayer;
+    prepare(segment){
+        return new Promise((resolve, reject) => {
+            if (this.isReady(segment.title)){
+                return resolve();
+            }
+            if (this.isLoading(segment.title)){
+                if (!!this.cancelLoading){
+                    this.cancelLoading();
+                    delete this.cancelLoading;
+                }
+                this.loadedCallback = resolve;
+            }
+            else {
+                this.cancelLoading = reject;
+                this.loadedCallback = resolve;
+                var nextPlayer = this.getFreePlayer();
+                if (!nextPlayer){
+                    nextPlayer = this.getActive();
+                }
+                this.loadSegment(nextPlayer, segment);
+            }
+        });
     }
 
-    setActive(player){
-        this.activePlayer = player;
-    }
-
-    returnPlayer(player){
-        this.players.push(player);
-    }
-
-    getFreePlayer(){
-        return this.players.pop();
-    }
-
-    deactivatePlayer(player) {
-        if (player) {
-            player.pause();
-            player.hide();
-            this.returnPlayer(player)
+    playSegment(segment, onSegmentEndAction, callback){
+        this.cancelOnSegmentEndAction();
+        if (this.shouldContinuePlaying(segment.src, segment.in)){
+            this.logger.log("continue playing");
+            this.setSegmentReady(segment.title, this.getActive());
+        } else if (!this.isReady(segment.title)){
+            this.pause();
+            return this.prepare(segment).then(()=>{
+                this.playSegment(segment, onSegmentEndAction, callback);
+            });
         }
-    }
-
-    switchPlayers(oldPlayer, nextPlayer) {
-        if (!nextPlayer) return;
-        this.activatePlayer(nextPlayer);
-        if (oldPlayer !== nextPlayer){
-            this.deactivatePlayer(oldPlayer);
-        }
-    }
-
-    activatePlayer(player){
-        if (!player) {return;}
-        this.setActive(player);
-        var activePlayer = this.getActive();
-        activePlayer.show();
-        activePlayer.play();
+        var nextPlayer = this.getPreparedPlayer(segment);
+        this.logger.log("play segment " + segment.title + " on player " + nextPlayer.getId());
+        this.switchPlayers(this.activePlayer, nextPlayer);
+        this.waitForSegmentEnd(segment.out, onSegmentEndAction);
+        callback && callback();
     }
 
     play(){
@@ -126,30 +79,8 @@ class PlaybackController {
     }
 
     pause(){
-        this.getActive().pause();
-    }
-
-    prepare(player, segment){
-        this.logger.log("prepare player " + player.getId() + " with segment " + segment.title);
-        var src = segment.src;
-        var inTime = segment.in;
-        // var outTime = segment.out;
-        var videoSegment = buildSrc(src, inTime);
-        this.setSegmentLoading(segment.title, player);
-
-        return new Promise((resolve, reject)=>{
-            this.cancelLoading = reject;
-            this.loadedCallback = resolve;
-            player.prepare(videoSegment, segment.title);
-        });
-    }
-
-    onDataLoaded(segmentTitle, player) {
-        this.logger.log("video for segment " + segmentTitle +" loaded");
-        this.setSegmentReady(segmentTitle, player);
-        if (this.loadedCallback) {
-            this.loadedCallback();
-        }
+        var activePlayer = this.getActive();
+        activePlayer && activePlayer.pause();
     }
 
     updateSegments(segmentsToPrepare){
@@ -168,6 +99,50 @@ class PlaybackController {
         });
     }
 
+    prepareSegments(segments) {
+        var nextSegment = segments.next();
+        if (nextSegment === undefined){
+            return;
+        }
+        // if (this.shouldContinuePlaying(this.segmentsManager.getActive(), nextSegment)){
+        //   return this.prepareSegments(segments);
+        // }
+
+        this.prepare(nextSegment).
+        then(()=>{
+            this.prepareSegments(segments);
+        });
+    }
+
+    cancelOnSegmentEndAction() {
+        this.clearCurrentInterval();
+    }
+
+    waitForSegmentEnd(endTimeStamp, callback) {
+        var out = endTimeStamp;
+        var currentTime = this.getActive().getCurrentTime();
+        if (currentTime >= out - 0.01){
+            callback();
+            this.logger.log("current time: " + currentTime);
+            this.logger.log("out time: " + out);
+            return;
+        }
+        var delay = Math.max(out - currentTime , 0.01);
+        this.currentTimeoutId = setTimeout(this.waitForSegmentEnd.bind(this, endTimeStamp, callback), delay);
+    }
+
+    /*********     Private Methods       ***********/
+
+    loadSegment(player, segment){
+        this.logger.log("prepare player " + player.getId() + " with segment " + segment.title);
+        var src = segment.src;
+        var inTime = segment.in;
+        // var outTime = segment.out;
+        var videoSegment = buildSrc(src, inTime);
+        this.setSegmentLoading(segment.title, player);
+        player.prepare(videoSegment, segment.title);
+    }
+
     unloadSegment(segmentId, segmentPool){
         var deprecatedPlayer = segmentPool[segmentId];
         if (deprecatedPlayer){
@@ -179,12 +154,63 @@ class PlaybackController {
         }
     }
 
-    shouldContinuePlaying(currentSegment, nextSegment) {
-        return currentSegment.src === nextSegment.src &&
-            currentSegment.out === nextSegment.in;
+    clearCurrentInterval() {
+        clearTimeout(this.currentTimeoutId);
     }
 
+    getActive(){
+        return this.activePlayer;
+    }
 
+    setActive(player){
+        this.activePlayer = player;
+    }
+
+    returnPlayer(player){
+        this.players.push(player);
+    }
+
+    getFreePlayer(){
+        return this.players.pop();
+    }
+
+    switchPlayers(oldPlayer, nextPlayer) {
+        if (!nextPlayer) return;
+        this.activatePlayer(nextPlayer);
+        if (oldPlayer !== nextPlayer){
+            this.deactivatePlayer(oldPlayer);
+        }
+    }
+
+    deactivatePlayer(player) {
+        if (player) {
+            player.pause();
+            player.hide();
+            this.returnPlayer(player)
+        }
+    }
+
+    activatePlayer(player){
+        if (!player) {return;}
+        this.setActive(player);
+        var activePlayer = this.getActive();
+        activePlayer.show();
+        activePlayer.play();
+    }
+
+    onDataLoaded(segmentTitle, player) {
+        this.logger.log("video for segment " + segmentTitle +" loaded");
+        this.setSegmentReady(segmentTitle, player);
+        if (this.loadedCallback) {
+            this.loadedCallback();
+        }
+    }
+
+    shouldContinuePlaying(src, timeMs) {
+        if (!this.getActive()){return false;}
+        /*check if src is equal this.getActive().getSrc() === src &&*/
+        return Math.abs(this.getActive().getCurrentTime() - timeMs) < 10;
+    }
 
     onTimeUpdated(segment, callback) {
         var out = segment.out;

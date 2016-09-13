@@ -44,9 +44,12 @@ class VideoElement extends React.Component {
   }
 
   play(){
-    this.getPlayer().play().then(null, (error)=> {
-      console.log("can't play video " + error);
-    });
+      return new Promise((resolve, reject)=>{
+          this.getPlayer().play().then(resolve, (error)=> {
+              console.log("can't play video " + error);
+              reject();
+          }); 
+      });
   }
 
   show(){

@@ -1,113 +1,76 @@
 import Logger from "../Logger/Logger";
 import SegmentManager from "./SegmentManager";
-import PlaybackController from "../VideoElement/playbackController"
+import PlaybackController from "../VideoElement/playbackController";
 
 /**
  * Created by user on 8/28/2016.
  */
 
 class StateMachine {
-  constructor(logger){
-    this.logger = logger || new Logger();
-    this.playbackController = new PlaybackController();
-  }
-
-  loadSegments(episodeMetadataId){
-
-  }
-
-  setPlayers(players){
-    this.playbackController.createPlayers(players);
-  }
-
-  setSegments(segments){
-    this.segmentsManager = new SegmentManager(segments, this.logger);
-  }
-
-  setContentUrl(url){
-    this.segmentsManager.setContentUrl(url);
-  }
-
-  start(){
-    this.playbackController.loadSegment(this.segmentsManager.getNext(), ()=>{
-      this.actionHandler("next");
-    });
-  }
-
-  extend(){
-    this.playbackController.cancelOnSegmentEndAction();
-    this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.extendSegment.bind(this));
-  }
-
-  extendSegment(){
-    this.actionHandler("extend");
-  }
-
-  previous(){
-    this.playbackController.getActive().pause();
-    this.actionHandler("previous");
-  }
-
-  eventHandler(event){
-    this.logger.log("handle action " + event);
-    if (this[event]){
-      this[event]();
-    } else this.actionHandler(event);
-  }
-
-  actionHandler(action){
-    var followingSegment = this.getNextSegmentAccordingToAction(action);
-    var shouldContinuePlaying = false;
-    if (followingSegment === undefined){
-      return;
+    constructor(logger){
+        this.logger = logger || new Logger();
+        this.playbackController = new PlaybackController();
     }
-    if ((action === "no_action" || action === "extend") && this.shouldContinuePlaying(this.segmentsManager.getActive(), followingSegment)){
-      shouldContinuePlaying = true;
+
+    loadSegments(episodeMetadataId){
+
     }
-    this.playbackController.playSegment(followingSegment, shouldContinuePlaying, this.noAction.bind(this), () => {
-      this.segmentsManager.setActive(followingSegment);
-      //todo: stop current loading if needed
-      var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
-      this.playbackController.updateSegments(segmentsToPrepare);
-      this.prepareSegments(segmentsToPrepare);
-    });
-  }
 
-  prepareSegments(segments) {
-    var nextSegment = segments.next();
-    if (nextSegment === undefined){
-      return;
+    setPlayers(players){
+        this.playbackController.createPlayers(players);
     }
-    // if (this.shouldContinuePlaying(this.segmentsManager.getActive(), nextSegment)){
-    //   return this.prepareSegments(segments);
-    // }
 
-    this.playbackController.loadSegment(nextSegment, ()=> {
-      this.prepareSegments(segments);
-    });
-  }
+    setSegments(segments){
+        this.segmentsManager = new SegmentManager(segments, this.logger);
+    }
 
-  noAction(){
-    this.actionHandler("no_action");
-  }
+    setContentUrl(url){
+        this.segmentsManager.setContentUrl(url);
+    }
 
-  getNextSegmentAccordingToAction(action) {
-    var segmentName = this.segmentsManager.getActive()[action];
-    return this.segmentsManager.get(segmentName);
-  }
+    start(){
+        this.actionHandler("next");
+    }
 
-  play(){
-    this.playbackController.play();
-  }
+    extend(){
+        this.playbackController.cancelOnSegmentEndAction();
+        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "extend"));
+    }
 
-  pause(){
-    this.playbackController.pause();
-  }
+    previous(){
+        this.playbackController.pause();
+        this.actionHandler("previous");
+    }
 
-  shouldContinuePlaying(currentSegment, nextSegment) {
-    return currentSegment.src === nextSegment.src &&
-      currentSegment.out === nextSegment.in;
-  }
+    eventHandler(event){
+        if (this[event]){
+            this.logger.log("handle event " + event);
+            this[event]();
+        } else this.actionHandler(event);
+    }
+
+    actionHandler(action){
+        this.logger.log("handle action " + action);
+        var followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
+        if (followingSegment === undefined){
+            return;
+        }
+        this.segmentsManager.setActive(followingSegment);
+        this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"), () => {
+            //todo: stop current loading if needed
+            var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+            this.playbackController.updateSegments(segmentsToPrepare);
+            this.playbackController.prepareSegments(segmentsToPrepare);
+        });
+    }
+
+    play(){
+        this.playbackController.play();
+    }
+
+    pause(){
+        this.playbackController.pause();
+    }
 }
 
 export default StateMachine;

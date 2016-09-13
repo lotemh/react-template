@@ -7,7 +7,8 @@ class Player {
     this.player = videoPlayer;
     this.loading = null;
     this.id = id;
-    this.logger = new Logger();
+    this.logger = new Logger()
+      this.src = "";
   }
 
   getPlayer(){
@@ -15,11 +16,10 @@ class Player {
   }
 
   pause() {
-    this.logger.log("player " + this.id + " paused");
     this.getPlayer().pause();
   }
   play(){
-    this.getPlayer().play();
+      return this.getPlayer().play();
   }
   show(){
     this.getPlayer().show();
@@ -29,6 +29,7 @@ class Player {
   }
   prepare(src, segmentTitle){
     this.getPlayer().setSrc(src);
+      this.src = src;
     this.getPlayer().load();
     this.loading = segmentTitle;
   }
@@ -58,6 +59,10 @@ class Player {
   removeTimeUpdateEvent(listener){
     this.getPlayer().removeTimeUpdateEvent(listener);
   }
+    
+    getSrc(){
+        return this.src;
+    }
 }
 
 export default Player;
