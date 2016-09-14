@@ -49,11 +49,11 @@ var Controls = React.createClass({
     }
     this.props.stateMachine.eventHandler(event.target.id);
   },
-  render(){
+  calcStyle() {
     let newStyle = {
-      width: this.props.style.width,
-      height: this.props.style.height
-    },
+        width: this.props.style.width,
+        height: this.props.style.height
+      },
       bestHeight,
       bestWidth,
       ratio = 1.77777778;
@@ -66,6 +66,10 @@ var Controls = React.createClass({
       newStyle.left = (newStyle.width - bestWidth) / 2;
       newStyle.width = bestWidth;
     }
+  },
+  render(){
+    let newStyle = calcStyle();
+
     let dotsStyle = {
       left: ((newStyle.width/2) - 125/2)
     };
