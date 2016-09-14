@@ -121,14 +121,12 @@ class PlaybackController {
     waitForSegmentEnd(endTimeStamp, callback) {
         var out = endTimeStamp;
         var currentTime = this.getActive().getCurrentTime();
-        if (currentTime >= out - 0.01){
-            callback();
-            this.logger.log("current time: " + currentTime);
-            this.logger.log("out time: " + out);
+        if (currentTime >= out - 3){
+            this.getActive().notify(out, callback);
             return;
         }
-        var delay = Math.max(out - currentTime , 0.01);
-        this.currentTimeoutId = setTimeout(this.waitForSegmentEnd.bind(this, endTimeStamp, callback), delay);
+        var delay = Math.max(out - currentTime , 2);
+        this.currentTimeoutId = setTimeout(this.waitForSegmentEnd.bind(this, out, callback), delay);
     }
 
     /*********     Private Methods       ***********/
@@ -210,20 +208,6 @@ class PlaybackController {
         if (!this.getActive()){return false;}
         /*check if src is equal this.getActive().getSrc() === src &&*/
         return Math.abs(this.getActive().getCurrentTime() - timeMs) < 10;
-    }
-
-    onTimeUpdated(segment, callback) {
-        var out = segment.out;
-        function timeUpdatedListener(){
-            var currentTime = this.playbackController.getActive().getCurrentTime();
-            if (currentTime >= out - 0.01){
-                this.playbackController.getActive().removeTimeUpdateEvent(timeUpdatedListener);
-                callback();
-                this.logger.log("current time: ", currentTime);
-                this.logger.log("out time: ", out);
-            }
-        }
-        this.playbackController.getActive().addTimeUpdateEvent(timeUpdatedListener.bind(this));
     }
 
     /**     Loading segments         ***********/
