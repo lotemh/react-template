@@ -49,9 +49,9 @@ class SegmentManager {
     getSegmentsToPrepare() {
         var newSegments = new SegmentsQueue();
         newSegments.add(this.getNext());
-        var noActionSegment = this.get(this.getActive().no_action);
-        newSegments.add(noActionSegment);
+        var noActionSegment = this.get(this.getNextSegmentAccordingToAction("no_action"));
         if (noActionSegment !== undefined) {
+            newSegments.add(noActionSegment);
             var noActionSegment2 = this.get(noActionSegment.no_action);
             newSegments.add(noActionSegment2);
         }
