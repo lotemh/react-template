@@ -12,8 +12,6 @@ class SegmentManager {
         }
         this.segments = segments;
         this.activeSegment = this.segments.root;
-        this.readySegments = {};
-        this.segmentLoading = null;
         this.logger = logger;
     }
 
@@ -46,29 +44,6 @@ class SegmentManager {
 
     setActive(segment){
         this.activeSegment = segment;
-    }
-
-    setReady(segment) {
-        var loadedSegment = this.segmentLoading;
-        this.segmentLoading = null;
-        this.readySegments[segment] = segment;
-        if (loadedSegment) {
-            loadedSegment.loadedCallback();
-        }
-    }
-
-    setLoading(segment, callback){
-        segment.loadedCallback = callback;
-        this.segmentLoading = segment;
-    }
-
-    getDeprecatedSegments(){
-        var segmentsToPrepare = this.getSegmentsToPrepare();
-        var deprecated = Object.keys(this.readySegments)
-            .filter(s => !segmentsToPrepare.get(this.readySegments[s].title))
-            .map(s => this.readySegments[s]);
-        deprecated.forEach(s => delete this.readySegments[s.title]);
-        return deprecated;
     }
 
     getSegmentsToPrepare() {
