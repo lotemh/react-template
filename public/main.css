@@ -9,6 +9,7 @@
 }
 
 .playerHolder2 {
+
     position: absolute;
     z-index: 2147483647;
 }
@@ -103,4 +104,9 @@ button:active {
     position: absolute;
     height: 26px;
     width: 26px;
+}
+
+.IIV::-webkit-media-controls-play-button,
+.IIV::-webkit-media-controls-start-playback-button {
+    display:none;
 }
