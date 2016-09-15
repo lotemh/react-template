@@ -24,6 +24,9 @@ var Controls = React.createClass({
 
     getClassName(name){
         var className = 'controller';
+        if (name === "extend" && this.state.inExtend) {
+            className += ' hidden';
+        }
         if (name === "play") {
             className += this.state.isPlaying ? ' hidden' : '';
         } else if (name === "pause") {
@@ -39,7 +42,6 @@ var Controls = React.createClass({
                     className += ' hidden';
                 }
             }
-
         }
         return className;
     },
@@ -58,36 +60,48 @@ var Controls = React.createClass({
         this.props.stateMachine.eventHandler(event.target.id);
     },
     calcStyle() {
-        let newStyle = {
+        let controlsStyle = {
                 width: this.props.style.width,
                 height: this.props.style.height
             },
             bestHeight,
             bestWidth,
             ratio = 1.77777778;
-        if (newStyle.width < newStyle.height) {
-            bestHeight = newStyle.width * (1 / ratio);
-            newStyle.top = (newStyle.height - bestHeight) / 2;
-            newStyle.height = bestHeight;
+        if (controlsStyle.width < controlsStyle.height) {
+            bestHeight = controlsStyle.width * (1 / ratio);
+            controlsStyle.top = (controlsStyle.height - bestHeight) / 2;
+            controlsStyle.height = bestHeight;
         } else {
-            bestWidth = newStyle.height * ratio;
-            newStyle.left = (newStyle.width - bestWidth) / 2;
-            newStyle.width = bestWidth;
+            bestWidth = controlsStyle.height * ratio;
+            controlsStyle.left = (controlsStyle.width - bestWidth) / 2;
+            controlsStyle.width = bestWidth;
         }
-        return newStyle;
+        return controlsStyle;
+    },
+    calcSeekStyle(controlsStyle) {
+        let seekStyle = {
+            left: 50,
+            width: controlsStyle.width - 100
+        };
+        return seekStyle;
     },
     render(){
-        let newStyle = this.calcStyle();
-
+        let controlsStyle = this.calcStyle();
+        let seekStyle = this.calcSeekStyle(controlsStyle)
         let dotsStyle = {
-            left: ((newStyle.width/2) - 125/2)
+            left: ((controlsStyle.width/2) - 125/2)
         };
+        if (this.state.inExtend) {
+            dotsStyle.display = 'none';
+        } else {
+            seekStyle.display = 'none';
+        }
         if (this.state.pendingPlay) {
-            newStyle['pointerEvents'] = 'none';
+            controlsStyle['pointerEvents'] = 'none';
         }
         return (
-            <div className="controls playerHolder2" style={newStyle}>
-                <img src="images/logo.png" className="controller" id="extend" onClick={this.eventHandler}/>
+            <div className="controls playerHolder2" style={controlsStyle}>
+                <img src="images/logo.png" className={this.getClassName("extend")} id="extend" onClick={this.eventHandler}/>
                 <img src="images/play.png" className={this.getClassName("play")} id="play" onClick={this.eventHandler}/>
                 <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.eventHandler}/>
                 <span id="dots" style={dotsStyle}>
@@ -97,7 +111,13 @@ var Controls = React.createClass({
                     <img src={this.getImgSource(3)} className={this.getClassName("dot3")} id="dot4"/>
                     <img src={this.getImgSource(4)} className={this.getClassName("dot4")} id="dot5"/>
                 </span>
-                <input type="range" id="volumeControl" min="0" max="1" width="30" height="100" step="any" />
+                <input type="range"
+                       style={seekStyle}
+                       min="0"
+                       max="1"
+                       id="seekBar"
+                       className="controller"
+                       step="any" />
             </div>
         );
     }

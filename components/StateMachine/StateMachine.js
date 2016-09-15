@@ -9,17 +9,18 @@ import PlaybackController from "../VideoElement/playbackController";
 class StateMachine {
     constructor(logger){
         this.logger = logger || new Logger();
-        this.itemNum = 0;
-        this.pendingPlay = false;
+        this.state = {
+            itemNum: 0,
+            pendingPlay: false,
+            inExtend: false
+        }
         if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-            console.log("hey its ios!!!");
-            this.pendingPlay = true;
+            this.state.pendingPlay = true;
         }
         this.playbackController = new PlaybackController();
     }
 
     setControls(controls){
-    console.log("set controls was set!!!");
     this.controlsManager = controls;
   }
 
@@ -46,6 +47,8 @@ class StateMachine {
     }
 
     extend(){
+        this.state.inExtend = true;
+        this.controlsManager.updateControl(this.state);
         this.playbackController.cancelOnSegmentEndAction();
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "extend"));
     }
@@ -68,11 +71,15 @@ class StateMachine {
         if (followingSegment === undefined){
             return;
         }
+        if (action !== "extend") {
+            this.state.inExtend = false;
+        }
+        this.state.itemNum = this.getItemNum(followingSegment);
+        this.state.isPlaying = true;
+        this.controlsManager.updateControl(this.state);
         this.segmentsManager.setActive(followingSegment);
         this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"), () => {
             //todo: stop current loading if needed
-            this.itemNum = this.getItemNum(followingSegment);
-            this.controlsManager.updateControl({isPlaying: true, pendingPlay: this.pendingPlay, itemNum: this.itemNum});
             var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
             this.playbackController.updateSegments(segmentsToPrepare);
             this.playbackController.prepareSegments(segmentsToPrepare);
@@ -81,14 +88,15 @@ class StateMachine {
 
     play(){
         this.playbackController.play().then(()=>{
-            console.log("its playing!!");
-            this.pendingPlay = false;
-            this.controlsManager.updateControl({isPlaying: true, pendingPlay: this.pendingPlay, itemNum: this.itemNum});
+            this.state.pendingPlay = false;
+            this.state.isPlaying = true;
+            this.controlsManager.updateControl(this.state);
         });
     }
 
     pause(){
-        this.controlsManager.updateControl({isPlaying: false, pendingPlay: this.pendingPlay, itemNum: this.itemNum});
+        this.state.isPlaying = false;
+        this.controlsManager.updateControl(this.state);
         this.playbackController.pause();
     }
 

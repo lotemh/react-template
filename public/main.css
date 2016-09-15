@@ -82,6 +82,14 @@ button:active {
     left: 10px;
 }
 
+#seekBar{
+    position: absolute;
+    bottom: 14px;
+    left: 140px;
+    width: 500px;
+    height: 10px;
+}
+
 #pause {
     bottom: 10px;
     left: 10px;
@@ -106,7 +114,103 @@ button:active {
     width: 26px;
 }
 
+
+
 .IIV::-webkit-media-controls-play-button,
 .IIV::-webkit-media-controls-start-playback-button {
     display:none;
+}
+
+
+
+
+input[type=range] {
+    /*removes default webkit styles*/
+    -webkit-appearance: none;
+
+    /*fix for FF unable to apply focus style bug */
+    border: none;
+    background: transparent;
+
+    /*required for proper track sizing in FF*/
+    width: 300px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+    width: 300px;
+    height: 2px;
+    background: #DB7093;
+    border: none;
+    border-radius: 1px;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background: #DB7093;
+    margin-top: -5px;
+}
+input[type=range]:focus {
+    outline: none;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #DB7093;
+}
+
+input[type=range]::-moz-range-track {
+    width: 300px;
+    height: 5px;
+    background: #DB7093;
+    border: none;
+    border-radius: 3px;
+}
+input[type=range]::-moz-range-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #DB7093;
+}
+
+/*hide the outline behind the border*/
+input[type=range]:-moz-focusring{
+    outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+input[type=range]::-ms-track {
+    width: 300px;
+    height: 5px;
+
+    /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
+    background: transparent;
+
+    /*leave room for the larger thumb to overflow with a transparent border */
+    border-color: transparent;
+    border-width: 6px 0;
+
+    /*remove default tick marks*/
+    color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+    background: #777;
+    border-radius: 10px;
+}
+input[type=range]::-ms-fill-upper {
+    background: goldenrod;
+    border-radius: 10px;
+}
+input[type=range]::-ms-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+}
+input[type=range]:focus::-ms-fill-lower {
+    background: #DB7093;
+}
+input[type=range]:focus::-ms-fill-upper {
+    background: transparent;
 }
