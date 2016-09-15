@@ -17,8 +17,10 @@ function getTimeInSeconds(timeInMili){
 }
 
 class PlaybackController {
-    constructor(logger){
-        this.logger = logger || new Logger();
+    constructor(onSegmentEndAction){
+        this.onSegmentEndAction = onSegmentEndAction;
+        this.segmentEndTimeMs = false;
+        this.logger = new Logger();
         this.activePlayer = null;
         this.segmentToPlayerMap = {};
         this.loadingSegmentsMap = {};
@@ -27,7 +29,7 @@ class PlaybackController {
     /*********     Public API         ***********/
     createPlayers(players){
         var id = 0;
-        players = players.map(p => new Player(p, "player" + id++));
+        players = players.map(p => new Player(p, "player" + id++, this.currentPlayerUpdate));
         players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)));
         this.players = players;
     }
@@ -56,21 +58,21 @@ class PlaybackController {
         });
     }
 
-    playSegment(segment, onSegmentEndAction, callback){
-        this.cancelOnSegmentEndAction();
+    playSegment(segment, callback){
+        this.segmentEndTimeMs = false;
         if (this.shouldContinuePlaying(segment.src, segment.in)){
             this.logger.log("continue playing");
             this.setSegmentReady(segment.title, this.getActive());
         } else if (!this.isReady(segment.title)){
             this.pause();
             return this.prepare(segment).then(()=>{
-                this.playSegment(segment, onSegmentEndAction, callback);
+                this.playSegment(segment, callback);
             });
         }
         var nextPlayer = this.getPreparedPlayer(segment);
         this.logger.log("play segment " + segment.title + " on player " + nextPlayer.getId());
         this.switchPlayers(this.activePlayer, nextPlayer);
-        this.waitForSegmentEnd(segment.out, onSegmentEndAction);
+        this.segmentEndTimeMs = segment.out;
         callback && callback();
     }
 
@@ -115,18 +117,13 @@ class PlaybackController {
     }
 
     cancelOnSegmentEndAction() {
-        this.clearCurrentInterval();
+        this.segmentEndTimeMs = false;
     }
 
-    waitForSegmentEnd(endTimeStamp, callback) {
-        var out = endTimeStamp;
-        var currentTime = this.getActive().getCurrentTime();
-        if (currentTime >= out - 3){
-            this.getActive().notify(out, callback);
-            return;
+    currentPlayerUpdate (timeMs) {
+        if (this.segmentEndTimeMs && out === timeMs) {
+            //this.onSegmentEndAction();
         }
-        var delay = Math.max(out - currentTime , 2);
-        this.currentTimeoutId = setTimeout(this.waitForSegmentEnd.bind(this, out, callback), delay);
     }
 
     /*********     Private Methods       ***********/
@@ -150,10 +147,6 @@ class PlaybackController {
             this.returnPlayer(deprecatedPlayer);
             this.logger.log("return player " + deprecatedPlayer.getId());
         }
-    }
-
-    clearCurrentInterval() {
-        clearTimeout(this.currentTimeoutId);
     }
 
     getActive(){

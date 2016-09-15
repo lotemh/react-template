@@ -17,7 +17,7 @@ class StateMachine {
         if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
             this.state.pendingPlay = true;
         }
-        this.playbackController = new PlaybackController();
+        this.playbackController = new PlaybackController(this.actionHandler.bind(this, "no_action"));
     }
 
     setControls(controls){
@@ -50,7 +50,7 @@ class StateMachine {
         this.state.inExtend = true;
         this.controlsManager.updateControl(this.state);
         this.playbackController.cancelOnSegmentEndAction();
-        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "extend"));
+        this.playbackController.segmentEndTimeMs = this.segmentsManager.getActive().out;
     }
 
     previous(){
@@ -78,7 +78,7 @@ class StateMachine {
         this.state.isPlaying = true;
         this.controlsManager.updateControl(this.state);
         this.segmentsManager.setActive(followingSegment);
-        this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"), () => {
+        this.playbackController.playSegment(followingSegment, () => {
             //todo: stop current loading if needed
             var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
             this.playbackController.updateSegments(segmentsToPrepare);

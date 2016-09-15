@@ -3,13 +3,14 @@ import Logger from "../Logger/Logger";
 
 class Player {
 
-    constructor(videoPlayer, id){
+    constructor(videoPlayer, id, notifyStatus){
         this.player = videoPlayer;
         this.loading = null;
         this.id = id;
         this.logger = new Logger()
         this.src = "";
         this.notifyTimes = new Map();
+        this.notifyStatus = notifyStatus;
     }
 
     getPlayer(){
@@ -20,6 +21,8 @@ class Player {
         this.getPlayer().pause();
     }
     play(){
+        console.log("play is fired!!");
+        this.addTimeUpdateEvent();
         return this.getPlayer().play();
     }
     show(){
@@ -58,9 +61,7 @@ class Player {
         this.getPlayer().addTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
     removeTimeUpdateEvent(time){
-        var listener = this.notifyTimes.get(time);
         this.getPlayer().removeTimeUpdateEvent(listener);
-        this.notifyTimes.delete(time);
     }
 
     getSrc(){
@@ -69,29 +70,9 @@ class Player {
 
     timeUpdatedListener(event){
         var currentTime = event.target.currentTime * 1000;
-        this.notifyTimes.forEach((callback, time)=>{
-            if (currentTime >= time - 0.1) {
-                this.removeTimeUpdateEvent();
-                callback();
-                //delete time from map?
-            }
-        });
+        console.log("got time update!!", currentTime);
     }
 
-    notify(timeMs, callback) {
-        var removeEvent = this.removeTimeUpdateEvent.bind(this);
-        var listener = function(event){
-            var currentTime = event.target.currentTime * 1000;
-            if (currentTime >= timeMs - 1) {
-                removeEvent(timeMs);
-                console.log("current time: " + currentTime);
-                console.log("out time: " + timeMs);
-                callback();
-            }
-        };
-        this.notifyTimes.set(timeMs, listener);
-        this.getPlayer().addTimeUpdateEvent(this.notifyTimes.get(timeMs));
-    }
 }
 
 export default Player;

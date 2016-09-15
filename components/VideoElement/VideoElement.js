@@ -120,11 +120,11 @@ class VideoElement extends React.Component {
   }
 
   addTimeUpdateEvent(listener){
-    this.getPlayer().addEventListener("timeupdate", listener, false);
+    this.getPlayer().addEventListener("timeupdate", listener);
   }
 
   removeTimeUpdateEvent(listener){
-    this.getPlayer().removeEventListener("timeupdate", listener);
+    this.getPlayer().removeEventListener("timeupdate");
   }
 
 }
