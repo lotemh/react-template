@@ -9,6 +9,7 @@ class Player {
         this.id = id;
         this.logger = new Logger()
         this.src = "";
+        this.notifyTimes = new Map();
     }
 
     getPlayer(){
@@ -53,15 +54,43 @@ class Player {
         this.getPlayer().addLoadedDataEvent(loadedCallback.bind(this));
     }
 
-    addTimeUpdateEvent(listener){
-        this.getPlayer().addTimeUpdateEvent(listener);
+    addTimeUpdateEvent(){
+        this.getPlayer().addTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
-    removeTimeUpdateEvent(listener){
+    removeTimeUpdateEvent(time){
+        var listener = this.notifyTimes.get(time);
         this.getPlayer().removeTimeUpdateEvent(listener);
+        this.notifyTimes.delete(time);
     }
 
     getSrc(){
         return this.src;
+    }
+
+    timeUpdatedListener(event){
+        var currentTime = event.target.currentTime * 1000;
+        this.notifyTimes.forEach((callback, time)=>{
+            if (currentTime >= time - 0.1) {
+                this.removeTimeUpdateEvent();
+                callback();
+                //delete time from map?
+            }
+        });
+    }
+
+    notify(timeMs, callback) {
+        var removeEvent = this.removeTimeUpdateEvent.bind(this);
+        var listener = function(event){
+            var currentTime = event.target.currentTime * 1000;
+            if (currentTime >= timeMs - 1) {
+                removeEvent(timeMs);
+                console.log("current time: " + currentTime);
+                console.log("out time: " + timeMs);
+                callback();
+            }
+        };
+        this.notifyTimes.set(timeMs, listener);
+        this.getPlayer().addTimeUpdateEvent(this.notifyTimes.get(timeMs));
     }
 }
 
