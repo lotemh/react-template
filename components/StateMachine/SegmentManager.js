@@ -65,6 +65,16 @@ class SegmentManager {
     setContentUrl(url){
         this.getSegmentsSet().forEach(seg=>{seg.src = seg.src || url});
     }
+    getNumberOtItems() {
+        let maxNum = 0;
+        Object.keys(this.segments).forEach((key) => {
+            let num = parseInt(key.substring(1, 2), 10);
+            if (num && num > maxNum) {
+                maxNum = num;
+            }
+        })
+        return maxNum;
+    }
 }
 
 export default SegmentManager;

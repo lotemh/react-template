@@ -9,6 +9,12 @@ import PlaybackController from "../VideoElement/playbackController";
 class StateMachine {
     constructor(logger){
         this.logger = logger || new Logger();
+        this.itemNum = 0;
+        this.pendingPlay = false;
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+            console.log("hey its ios!!!");
+            this.pendingPlay = true;
+        }
         this.playbackController = new PlaybackController();
     }
 
@@ -27,6 +33,7 @@ class StateMachine {
 
     setSegments(segments){
         this.segmentsManager = new SegmentManager(segments, this.logger);
+        this.numOfItems = this.segmentsManager.getNumberOtItems();
     }
 
     setContentUrl(url){
@@ -34,6 +41,7 @@ class StateMachine {
     }
 
     start(){
+        this.controlsManager.updateControl({numOfItems: this.numOfItems});
         this.actionHandler("next");
     }
 
@@ -63,6 +71,8 @@ class StateMachine {
         this.segmentsManager.setActive(followingSegment);
         this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"), () => {
             //todo: stop current loading if needed
+            this.itemNum = this.getItemNum(followingSegment);
+            this.controlsManager.updateControl({isPlaying: true, pendingPlay: this.pendingPlay, itemNum: this.itemNum});
             var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
             this.playbackController.updateSegments(segmentsToPrepare);
             this.playbackController.prepareSegments(segmentsToPrepare);
@@ -70,11 +80,20 @@ class StateMachine {
     }
 
     play(){
-        this.playbackController.play();
+        this.playbackController.play().then(()=>{
+            console.log("its playing!!");
+            this.pendingPlay = false;
+            this.controlsManager.updateControl({isPlaying: true, pendingPlay: this.pendingPlay, itemNum: this.itemNum});
+        });
     }
 
     pause(){
+        this.controlsManager.updateControl({isPlaying: false, pendingPlay: this.pendingPlay, itemNum: this.itemNum});
         this.playbackController.pause();
+    }
+
+    getItemNum(followingSegment) {
+        return parseInt(followingSegment.title.substring(1, 2), 10) - 1;
     }
 }
 

@@ -75,7 +75,7 @@ class PlaybackController {
     }
 
     play(){
-        this.getActive().play();
+        return this.getActive().play();
     }
 
     pause(){
