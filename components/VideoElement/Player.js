@@ -22,7 +22,6 @@ class Player {
     }
 
     play(){
-        console.log("play is fired!!");
         this.addTimeUpdateEvent();
         return this.getPlayer().play();
     }
@@ -59,11 +58,9 @@ class Player {
     }
 
     addTimeUpdateEvent(){
-        console.log("adding time update listener to " , this.id);
         this.getPlayer().addTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
     removeTimeUpdateEvent(){
-        console.log("removing time update listener to " , this.id);
         this.getPlayer().removeTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
 
