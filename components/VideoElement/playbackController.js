@@ -60,7 +60,6 @@ class PlaybackController {
 
     playSegment(segment, onSegmentEndAction, callback){
         this.cancelOnSegmentEndAction();
-        this.waitForSegmentEnd(segment.out, onSegmentEndAction);
         if (this.shouldContinuePlaying(segment.src, segment.in)){
             this.logger.log("continue playing");
             this.setSegmentReady(segment.title, this.getActive());
@@ -72,6 +71,7 @@ class PlaybackController {
         }
         var nextPlayer = this.getPreparedPlayer(segment);
         this.logger.log("play segment " + segment.title + " on player " + nextPlayer.getId());
+        this.waitForSegmentEnd(segment.out, onSegmentEndAction);
         this.switchPlayers(this.activePlayer, nextPlayer);
         callback && callback();
     }
@@ -126,9 +126,20 @@ class PlaybackController {
     }
 
     playerUpdate (timeMs, playerId) {
+        clearTimeout(this.playerUpdateTimeout);
+        let didCallOnSegmentEndAction = false;
         if (playerId === this.getActive().id) {
             if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
+                didCallOnSegmentEndAction = true;
                 this.onSegmentEndAction();
+            } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
+                this.playerUpdateTimeout = setTimeout(() => {
+                    if (!didCallOnSegmentEndAction && this.getActive().getCurrentTime() * 1000 >= this.segmentEndTimeMs) {
+                        didCallOnSegmentEndAction = true;
+                        timeMs = this.getActive().getCurrentTime();
+                        this.onSegmentEndAction();
+                    }
+                }, this.segmentEndTimeMs - timeMs)
             }
             this.stateMachineTimeUpdate(timeMs);
         }

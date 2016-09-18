@@ -1,11 +1,10 @@
 import React, { PropTypes } from 'react';
-import Hammer from '../../utils/hammer.min';
+import Hammer from 'hammerjs';
 import ReactDOM from 'react-dom';
 
 var Controls = React.createClass({
-
-    componentWillMount(){
-        this.state = {isPlaying: false, pendingPlay: true, numOfItems: 5};
+    getInitialState(){
+        return {isPlaying: false, pendingPlay: true, numOfItems: 5};
     },
     componentDidMount(){
         this.gestureListener = new Hammer(ReactDOM.findDOMNode(this));
