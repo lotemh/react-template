@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Ktec from '../../components/demoClients/ktecDemo';
+import Kcet from '../../components/demoClients/kcetDemo';
 
 class KtecPage extends React.Component {
 
@@ -13,7 +13,7 @@ class KtecPage extends React.Component {
           <div className="menu">
             <h1>Elastic Media Player Demo</h1>
           </div>
-          <Ktec numOfPlayers={3}/>
+          <Kcet numOfPlayers={3}/>
         </div>
     );
   }

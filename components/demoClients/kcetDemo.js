@@ -1,28 +1,27 @@
 /**
  * Created by user on 9/7/2016.
  */
-import $ from 'jquery';
 import React, { PropTypes } from 'react';
-import StateMachine from "../StateMachine/StateMachine";
 import VideoElement from '../VideoElement/VideoElement'
-import brightCovePlayer from '../VideoElement/brightCovePlayer'
+import BrightCovePlayer from '../VideoElement/brightCovePlayer'
 import Controls from '../Controls/Controls';
+import ElasticMediaSdk from '../ElasticMediaSdk/ElasticMediaSdk'
 
-var Ktec = React.createClass({
+var Kcet = React.createClass({
   render(){
     var players = new Array(this.props.numOfPlayers).fill(0);
     return (
-      <ElasticPlayer numOfPlayers={3}>
+      <ElasticMediaSdk numOfPlayers={3}>
           {
             players.map(function(elm, i){
               return (
-                <VideoElement key={"player" + i} ref={"player" + i} playerId={"player" + i}/>
+                <BrightCovePlayer key={"player" + i} playerId={"player" + i}/>
               )
             })
           }
-      </ElasticPlayer>
+      </ElasticMediaSdk>
     );
   }
 });
 
-export default Ktec;
+export default Kcet;

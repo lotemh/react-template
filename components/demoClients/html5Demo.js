@@ -3,13 +3,13 @@
  */
 import React, { PropTypes } from 'react';
 import VideoElement from '../VideoElement/VideoElement';
-import ElasticPlayer from '../../components/ElasticPlayer';
+import ElasticMediaSdk from '../ElasticMediaSdk/ElasticMediaSdk';
 
 var Html5Demo = React.createClass({
   render(){
     var players = new Array(this.props.numOfPlayers).fill(0);
     return (
-      <ElasticPlayer numOfPlayers={3}>
+      <ElasticMediaSdk numOfPlayers={3}>
           {
             players.map(function(elm, i){
               return (
@@ -17,7 +17,7 @@ var Html5Demo = React.createClass({
               )
             })
           }
-      </ElasticPlayer>
+      </ElasticMediaSdk>
     );
   }
 });
