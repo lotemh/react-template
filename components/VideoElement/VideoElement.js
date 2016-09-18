@@ -52,11 +52,6 @@ class VideoElement extends React.Component {
     return className;
   }
 
-  metaDataLoaded (m) {
-    //console.log("got meta data!!", m);
-    //console.log("video width: ", ReactDOM.findDOMNode(this.refs.video).videoWidth);
-    //console.log("video height: ", ReactDOM.findDOMNode(this.refs.video).videoHeight);
-  }
   getPlayer () {
     return ReactDOM.findDOMNode(this);
   }
@@ -67,7 +62,6 @@ class VideoElement extends React.Component {
              width={this.state.width}
              height={this.state.height}
              className={this.getClassName()}
-             onLoadedMetadata={this.metaDataLoaded.bind(this)}
              webkit-playsinline
              preload="none">
         <source type="video/mp4" ref="source" src={this.props.src}/>
@@ -107,7 +101,6 @@ class VideoElement extends React.Component {
   }
 
   seek(timeInSeconds){
-    //var timeInSeconds = timeInMs/1000;
     this.getPlayer().currentTime = timeInSeconds;
   }
 

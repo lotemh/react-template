@@ -59,7 +59,7 @@ class PlaybackController {
     }
 
     playSegment(segment, onSegmentEndAction, callback){
-        this.segmentEndTimeMs = false;
+        this.cancelOnSegmentEndAction();
         this.waitForSegmentEnd(segment.out, onSegmentEndAction);
         if (this.shouldContinuePlaying(segment.src, segment.in)){
             this.logger.log("continue playing");
