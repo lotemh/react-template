@@ -12,7 +12,6 @@ class VideoElement extends React.Component {
     this.state = {
       isHidden: true
     };
-    this.addLoadedDataEvent = this.addLoadedDataEvent.bind(this);
   }
 
   static propTypes = {

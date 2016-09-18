@@ -2,7 +2,7 @@
  * Created by user on 9/6/2016.
  */
 import Logger from "../Logger/Logger";
-import Player from "./Player";
+import Player from "../VideoElement/Player";
 
 class PlaybackController {
   constructor(logger){

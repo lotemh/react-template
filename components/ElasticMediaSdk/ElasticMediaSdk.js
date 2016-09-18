@@ -1,10 +1,7 @@
 import $ from 'jquery';
 import React, { PropTypes } from 'react';
 import StateMachine from "../StateMachine/StateMachine";
-import VideoElement from '../VideoElement/VideoElement'
-import BrightCovePlayer from '../VideoElement/brightCovePlayer'
 import Controls from '../Controls/Controls';
-import * as ReactDOM from "react/lib/ReactDOM";
 
 var ElasticMediaSdk = React.createClass({
 
@@ -25,7 +22,6 @@ var ElasticMediaSdk = React.createClass({
   },
 
   render(){
-    // var players = new Array(this.props.numOfPlayers).fill(0);
     return (
       <div className="player-container">
         <div className="screen">

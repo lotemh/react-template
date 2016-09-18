@@ -1,6 +1,6 @@
 import Logger from "../Logger/Logger";
 import SegmentManager from "./SegmentManager";
-import PlaybackController from "../VideoElement/playbackController"
+import PlaybackController from "../playbackController/playbackController"
 
 /**
  * Created by user on 8/28/2016.
