@@ -9,7 +9,6 @@ class Player {
         this.id = id;
         this.logger = new Logger()
         this.src = "";
-        this.notifyTimes = new Map();
         this.notifyStatus = notifyStatus;
     }
 
@@ -19,7 +18,9 @@ class Player {
 
     pause() {
         this.getPlayer().pause();
+        this.removeTimeUpdateEvent();
     }
+
     play(){
         console.log("play is fired!!");
         this.addTimeUpdateEvent();
@@ -58,10 +59,12 @@ class Player {
     }
 
     addTimeUpdateEvent(){
+        console.log("adding time update listener to " , this.id);
         this.getPlayer().addTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
-    removeTimeUpdateEvent(time){
-        this.getPlayer().removeTimeUpdateEvent(listener);
+    removeTimeUpdateEvent(){
+        console.log("removing time update listener to " , this.id);
+        this.getPlayer().removeTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
 
     getSrc(){
@@ -70,9 +73,8 @@ class Player {
 
     timeUpdatedListener(event){
         var currentTime = event.target.currentTime * 1000;
-        console.log("got time update!!", currentTime);
+        this.notifyStatus(currentTime, this.id);
     }
-
 }
 
 export default Player;

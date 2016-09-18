@@ -106,8 +106,8 @@ class VideoElement extends React.Component {
     this.getPlayer().load();
   }
 
-  seek(timeInMs){
-    var timeInSeconds = timeInMs/1000;
+  seek(timeInSeconds){
+    //var timeInSeconds = timeInMs/1000;
     this.getPlayer().currentTime = timeInSeconds;
   }
 
@@ -124,7 +124,7 @@ class VideoElement extends React.Component {
   }
 
   removeTimeUpdateEvent(listener){
-    this.getPlayer().removeEventListener("timeupdate");
+    this.getPlayer().removeEventListener("timeupdate", listener);
   }
 
 }

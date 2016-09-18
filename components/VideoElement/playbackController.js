@@ -17,9 +17,9 @@ function getTimeInSeconds(timeInMili){
 }
 
 class PlaybackController {
-    constructor(onSegmentEndAction){
-        this.onSegmentEndAction = onSegmentEndAction;
+    constructor(stateMachineTimeUpdate) {
         this.segmentEndTimeMs = false;
+        this.stateMachineTimeUpdate = stateMachineTimeUpdate;
         this.logger = new Logger();
         this.activePlayer = null;
         this.segmentToPlayerMap = {};
@@ -29,7 +29,7 @@ class PlaybackController {
     /*********     Public API         ***********/
     createPlayers(players){
         var id = 0;
-        players = players.map(p => new Player(p, "player" + id++, this.currentPlayerUpdate));
+        players = players.map(p => new Player(p, "player" + id++, this.playerUpdate.bind(this)));
         players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)));
         this.players = players;
     }
@@ -58,21 +58,21 @@ class PlaybackController {
         });
     }
 
-    playSegment(segment, callback){
+    playSegment(segment, onSegmentEndAction, callback){
         this.segmentEndTimeMs = false;
+        this.waitForSegmentEnd(segment.out, onSegmentEndAction);
         if (this.shouldContinuePlaying(segment.src, segment.in)){
             this.logger.log("continue playing");
             this.setSegmentReady(segment.title, this.getActive());
         } else if (!this.isReady(segment.title)){
             this.pause();
             return this.prepare(segment).then(()=>{
-                this.playSegment(segment, callback);
+                this.playSegment(segment, onSegmentEndAction, callback);
             });
         }
         var nextPlayer = this.getPreparedPlayer(segment);
         this.logger.log("play segment " + segment.title + " on player " + nextPlayer.getId());
         this.switchPlayers(this.activePlayer, nextPlayer);
-        this.segmentEndTimeMs = segment.out;
         callback && callback();
     }
 
@@ -120,9 +120,17 @@ class PlaybackController {
         this.segmentEndTimeMs = false;
     }
 
-    currentPlayerUpdate (timeMs) {
-        if (this.segmentEndTimeMs && out === timeMs) {
-            //this.onSegmentEndAction();
+    waitForSegmentEnd(endTimeStamp, onSegmentEndAction) {
+        this.segmentEndTimeMs = endTimeStamp;
+        this.onSegmentEndAction = onSegmentEndAction;
+    }
+
+    playerUpdate (timeMs, playerId) {
+        if (playerId === this.getActive().id) {
+            if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
+                this.onSegmentEndAction();
+            }
+            this.stateMachineTimeUpdate(timeMs);
         }
     }
 
@@ -189,6 +197,10 @@ class PlaybackController {
         activePlayer.play();
     }
 
+    seek(timestamp){
+        this.getActive().seek(timestamp);
+    }
+
     onDataLoaded(segmentTitle, player) {
         this.logger.log("video for segment " + segmentTitle +" loaded");
         this.setSegmentReady(segmentTitle, player);
@@ -200,7 +212,7 @@ class PlaybackController {
     shouldContinuePlaying(src, timeMs) {
         if (!this.getActive()){return false;}
         /*check if src is equal this.getActive().getSrc() === src &&*/
-        return Math.abs(this.getActive().getCurrentTime() - timeMs) < 10;
+        return Math.abs(this.getActive().getCurrentTime() - timeMs) < 1000;
     }
 
     /**     Loading segments         ***********/

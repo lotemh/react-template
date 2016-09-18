@@ -53,6 +53,9 @@ var Controls = React.createClass({
             return "images/dot.png";
         }
     },
+    seekChange(event) {
+        this.props.stateMachine.seek(Math.floor(parseInt(event.target.value, 10) + this.state.itemStart / 1000));
+    },
     eventHandler(event){
         if (event.target.id === "play" || event.target.id === "pause") {
             this.setState({isPlaying: !this.state.isPlaying});
@@ -78,23 +81,32 @@ var Controls = React.createClass({
         }
         return controlsStyle;
     },
-    calcSeekStyle(controlsStyle) {
-        let seekStyle = {
+    calcSeek(controlsStyle) {
+        let seek = {};
+        seek.style = {
             left: 50,
             width: controlsStyle.width - 100
         };
-        return seekStyle;
+        seek.min = 0;
+        seek.max = 1;
+        seek.value = 0;
+        if (this.state.itemStart !== undefined && this.state.itemLength && this.state.itemTimeMs) {
+            seek.min = 0;
+            seek.max = this.state.itemLength / 1000;
+            seek.value = (this.state.itemTimeMs - this.state.itemStart)/ 1000;
+        }
+        return seek;
     },
     render(){
         let controlsStyle = this.calcStyle();
-        let seekStyle = this.calcSeekStyle(controlsStyle)
+        let seek = this.calcSeek(controlsStyle)
         let dotsStyle = {
             left: ((controlsStyle.width/2) - 125/2)
         };
         if (this.state.inExtend) {
             dotsStyle.display = 'none';
         } else {
-            seekStyle.display = 'none';
+            seek.style.display = 'none';
         }
         if (this.state.pendingPlay) {
             controlsStyle['pointerEvents'] = 'none';
@@ -112,10 +124,12 @@ var Controls = React.createClass({
                     <img src={this.getImgSource(4)} className={this.getClassName("dot4")} id="dot5"/>
                 </span>
                 <input type="range"
-                       style={seekStyle}
-                       min="0"
-                       max="1"
+                       style={seek.style}
+                       min={seek.in}
+                       max={seek.max}
+                       value={seek.value}
                        id="seekBar"
+                       onChange={this.seekChange}
                        className="controller"
                        step="any" />
             </div>

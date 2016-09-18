@@ -17,12 +17,12 @@ class StateMachine {
         if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
             this.state.pendingPlay = true;
         }
-        this.playbackController = new PlaybackController(this.actionHandler.bind(this, "no_action"));
+        this.playbackController = new PlaybackController(this.timeUpdate.bind(this));
     }
 
     setControls(controls){
-    this.controlsManager = controls;
-  }
+        this.controlsManager = controls;
+    }
 
     loadSegments(episodeMetadataId){
 
@@ -48,9 +48,10 @@ class StateMachine {
 
     extend(){
         this.state.inExtend = true;
-        this.controlsManager.updateControl(this.state);
         this.playbackController.cancelOnSegmentEndAction();
-        this.playbackController.segmentEndTimeMs = this.segmentsManager.getActive().out;
+        this.setItemLengthAndStart(this.segmentsManager.getActive());
+        this.controlsManager.updateControl(this.state);
+        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "extend"));
     }
 
     previous(){
@@ -78,7 +79,7 @@ class StateMachine {
         this.state.isPlaying = true;
         this.controlsManager.updateControl(this.state);
         this.segmentsManager.setActive(followingSegment);
-        this.playbackController.playSegment(followingSegment, () => {
+        this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"), () => {
             //todo: stop current loading if needed
             var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
             this.playbackController.updateSegments(segmentsToPrepare);
@@ -100,8 +101,23 @@ class StateMachine {
         this.playbackController.pause();
     }
 
+    seek(timestamp) {
+        this.playbackController.seek(timestamp);
+    }
+
     getItemNum(followingSegment) {
         return parseInt(followingSegment.title.substring(1, 2), 10) - 1;
+    }
+
+    setItemLengthAndStart(activeSegment) {
+        var followingSegment = this.segmentsManager.getNextSegmentAccordingToAction("extend");
+        this.state.itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
+        this.state.itemStart = activeSegment.in;
+    }
+
+    timeUpdate(timeMs) {
+        this.state.itemTimeMs = timeMs;
+        this.controlsManager.updateControl(this.state);
     }
 }
 
