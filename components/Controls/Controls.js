@@ -40,9 +40,8 @@ var Controls = React.createClass({
         return className;
     },
     togglePlay(event){
-        this.setState({isPlaying: !this.state.isPlaying}, () => {
-            this.eventHandler(event);
-        });
+        this.setState({isPlaying: !this.state.isPlaying});
+        this.eventHandler(event);
     },
     eventHandler(event){
         this.props.stateMachine.eventHandler(event.target.id);
