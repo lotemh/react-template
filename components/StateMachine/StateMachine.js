@@ -74,7 +74,7 @@ class StateMachine {
         if (action !== "extend") {
             this.state.inExtend = false;
         }
-        this.state.itemNum = this.segmentsManager.getItemNum(followingSegment.title);
+        this.state.itemNum = SegmentManager.getItemNum(followingSegment.title);
         this.state.isPlaying = true;
         this.controlsManager.updateControl(this.state);
         this.segmentsManager.setActive(followingSegment);
