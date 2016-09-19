@@ -1,10 +1,6 @@
 import React, { PropTypes } from 'react';
 import * as ReactDOM from "react/lib/ReactDOM";
 
-function isSrcEqual(src, otherSrc) {
-  return otherSrc.split("#")[0] === (src.split("#")[0]);
-}
-
 class VideoElement extends React.Component {
 
   constructor(props){
