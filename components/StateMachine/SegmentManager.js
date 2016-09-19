@@ -68,7 +68,7 @@ class SegmentManager {
     getNumberOtItems() {
         let maxNum = 0;
         Object.keys(this.segments).forEach((key) => {
-            let num = getItemNum(key);
+            let num = this.getItemNum(key);
             if (num && num > maxNum) {
                 maxNum = num;
             }
