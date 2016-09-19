@@ -6,11 +6,12 @@ import Controls from '../Controls/Controls';
 
 var ElasticPlayer = React.createClass({
     componentWillMount(){
-        this.state = {
-            width: 480,
-            height: 237
-        };
-        this.stateMachine = new StateMachine();
+        let pendingFirstPlayClick = false;
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+            pendingFirstPlayClick = true;
+        }
+        this.state = this.calcWidthAndHeight();
+        this.stateMachine = new StateMachine(pendingFirstPlayClick);
     },
     componentDidMount(){
         var players = [];
@@ -28,28 +29,50 @@ var ElasticPlayer = React.createClass({
             stateMachine.setControls(this.refs.controls);
             stateMachine.start();
         });
+        window.addEventListener('resize', this.handleResize);
     },
-    updateStyle(style) {
-        this.setState({
-            width: style.width,
-            height: style.height
-        });
+    calcWidthAndHeight() {
+        let result = {
+            width: window.innerWidth,
+            height: window.innerHeight
+        },
+            bestWidth,
+            bestHeight,
+            ratio = 1.77777778;//TODO get this value from source
+        if (result.width < result.height) {
+            bestHeight = width * (1 / ratio);
+            result.top = (result.height - bestHeight) / 2;
+            result.height = bestHeight;
+        } else {
+            bestWidth = result.height * ratio;
+            result.left = (result.width - bestWidth) / 2;
+            result.width = bestWidth;
+        }
+        return result;
+    },
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    },
+    handleResize() {
+        console.log("got resize!!!");
+        this.setState(this.calcWidthAndHeight());
     },
     render(){
         var players = new Array(this.props.numOfPlayers).fill(0);
         var updateStyle = this.updateStyle;
         return (
-            <div className="player-container">
+            <div className="player-container" style={this.state}>
                 <div className="screen playerHolder">
                     {
                         players.map((elm, i) => {
                             return (
-                                <VideoElement updateStyle={updateStyle} key={"player" + i} ref={"player" + i} playerId={"player" + i}/>
+                                <VideoElement
+                                    updateStyle={updateStyle} key={"player" + i} ref={"player" + i} playerId={"player" + i}/>
                             )
                         })
                     }
                 </div>
-                <Controls stateMachine={this.stateMachine} style={this.state} ref="controls"/>
+                <Controls stateMachine={this.stateMachine} ref="controls"/>
             </div>
         );
     }

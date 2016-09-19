@@ -10,36 +10,9 @@ class VideoElement extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      width: window.innerWidth,
-      height: window.innerHeight,
       isHidden: true
     };
-
   };
-
-  handleResize(e) {
-    this.setState({
-      width: window.innerWidth,
-      height: window.innerHeight
-    }, () => {
-      this.props.updateStyle({
-        width: this.state.width,
-        height: this.state.height
-      });
-    });
-  };
-
-  componentDidMount() {
-    window.addEventListener('resize', this.handleResize.bind(this));
-    this.props.updateStyle({
-      width: this.state.width,
-      height: this.state.height
-    });
-  };
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize.bind(this));
-  }
 
   static propTypes = {
     src: PropTypes.string,
@@ -59,8 +32,6 @@ class VideoElement extends React.Component {
   render() {
     return (
       <video ref={"video"}
-             width={this.state.width}
-             height={this.state.height}
              className={this.getClassName()}
              webkit-playsinline
              preload="none">

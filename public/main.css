@@ -2,19 +2,25 @@
 @font-face { font-family: hillel;  src: url('hillelclm-medium-webfont.woff') format('woff');}
 
 .player-container {
-}
-
-.playerHolder {
     position: absolute;
 }
 
-.playerHolder2 {
+.playerHolder {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
 
+.controls {
+    width: 100%;
+    height: 100%;
     position: absolute;
     z-index: 2147483647;
 }
 
 .player {
+    width: 100%;
+    height: 100%;
     top: 0;
     position: absolute;
 }
@@ -82,23 +88,16 @@ button:active {
     left: 10px;
 }
 
-#seekBar{
-    position: absolute;
-    bottom: 14px;
-    left: 140px;
-    width: 500px;
-    height: 10px;
-}
-
 #pause {
     bottom: 10px;
     left: 10px;
 }
 
-#dots {
+.dots {
     position: absolute;
     bottom: 14px;
-    left: 340px;
+    left: 50% !important;
+    margin-left: -50px;
 }
 
 .dot {
@@ -112,6 +111,16 @@ button:active {
     position: absolute;
     height: 26px;
     width: 26px;
+}
+
+.seekBar {
+    pointer-events:auto;
+    position: absolute;
+    margin: auto;
+    left: 10% !important;
+    width: 80%!important;
+    bottom: 14px;
+    height: 10px;
 }
 
 

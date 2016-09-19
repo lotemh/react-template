@@ -7,16 +7,14 @@ import PlaybackController from "../VideoElement/playbackController";
  */
 
 class StateMachine {
-    constructor(logger){
-        this.logger = logger || new Logger();
+    constructor(pendingFirstPlayClick){
+        this.logger = new Logger();
         this.state = {
             itemNum: 0,
-            pendingPlay: false,
+            pendingFirstPlayClick: pendingFirstPlayClick,
             inExtend: false
         }
-        if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-            this.state.pendingPlay = true;
-        }
+
         this.playbackController = new PlaybackController(this.timeUpdate.bind(this));
     }
 
@@ -49,7 +47,7 @@ class StateMachine {
     extend(){
         this.state.inExtend = true;
         this.playbackController.cancelOnSegmentEndAction();
-        this.setItemLengthAndStart(this.segmentsManager.getActive());
+        this.showItemSeekBar(this.segmentsManager.getActive());
         this.controlsManager.updateControl(this.state);
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "extend"));
     }
@@ -89,7 +87,7 @@ class StateMachine {
 
     play(){
         this.playbackController.play().then(()=>{
-            this.state.pendingPlay = false;
+            this.state.pendingFirstPlayClick = false;
             this.state.isPlaying = true;
             this.controlsManager.updateControl(this.state);
         });
@@ -109,7 +107,7 @@ class StateMachine {
         return parseInt(followingSegment.title.substring(1, 2), 10) - 1;
     }
 
-    setItemLengthAndStart(activeSegment) {
+    showItemSeekBar(activeSegment) {
         var followingSegment = this.segmentsManager.getNextSegmentAccordingToAction("extend");
         this.state.itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
         this.state.itemStart = activeSegment.in;
