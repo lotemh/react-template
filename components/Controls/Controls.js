@@ -14,15 +14,16 @@ var Controls = React.createClass({
     },
     componentDidMount(){
         this.gestureListener = new Hammer(ReactDOM.findDOMNode(this));
-        this.gestureListener.on(SWIPES.LEFT + " " + SWIPES.RIGHT, this.swipeEvent);
+        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
+        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
     },
-    swipeEvent(event) {
-        if (event.type === SWIPES.LEFT) {
-            this.props.stateMachine.eventHandler("next");
-        } else if (event.type === SWIPES.RIGHT) {
-            this.props.stateMachine.eventHandler("previous");
-        }
+    swipeLeft(){
+        this.props.stateMachine.eventHandler("next");
     },
+    swipeRight(){
+        this.props.stateMachine.eventHandler("previous");
+    },
+
     updateControl(state) {
         this.setState(state);
     },
