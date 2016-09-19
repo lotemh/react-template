@@ -9,7 +9,7 @@
 .definitionLabel {
   font-size: 38px;
   text-align: left;
-  font-family: Dense, Arial;
+    font-family: Dense, Arial, serif;
   margin-left: calc(10% - 20px);
 }
 
@@ -24,7 +24,7 @@
   background-color: #484444;
   color: floralwhite;
   text-align: center;
-  font-family: Dense, Arial;
+    font-family: Dense, Arial, serif;
 }
 
 .menu h1 {
