@@ -11,6 +11,7 @@
 /* eslint-disable no-console, global-require */
 
 const fs = require('fs');
+const exec = require('child_process').exec;
 const del = require('del');
 const ejs = require('ejs');
 const webpack = require('webpack');
@@ -100,19 +101,15 @@ tasks.set('publish', () => {
   global.DEBUG = process.argv.includes('--debug') || false;
   const s3 = require('s3');
   return run('build').then(() => new Promise((resolve, reject) => {
-    const client = s3.createClient({
-      s3Options: {
-        region: 'us-west-1',
-        sslEnabled: true,
-      },
+	exec("scp -r public/. demo@demo.elasticmedia.io:~/kcet/", {shell: true}, (err, stdout, stderr) => {
+      if (err) {
+        reject(err);
+      } else {
+		console.log(stdout);
+		console.log(stderr);
+        resolve({ stdout, stderr });
+      }
     });
-    const uploader = client.uploadDir({
-      localDir: 'public',
-      deleteRemoved: true,
-      s3Params: { Bucket: 'banias-js' }, // TODO: Update deployment URL
-    });
-    uploader.on('error', reject);
-    uploader.on('end', resolve);
   }));
 });
 
