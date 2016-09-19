@@ -34,13 +34,15 @@ var ElasticPlayer = React.createClass({
     calcWidthAndHeight() {
         let result = {
             width: window.innerWidth,
-            height: window.innerHeight
+            height: window.innerHeight,
+            left: 0,
+            top: 0
         },
             bestWidth,
             bestHeight,
             ratio = 1.77777778;//TODO get this value from source
-        if (result.width < result.height) {
-            bestHeight = width * (1 / ratio);
+        if (result.width < result.height || result.height * ratio > result.width) {
+            bestHeight = result.width * (1 / ratio);
             result.top = (result.height - bestHeight) / 2;
             result.height = bestHeight;
         } else {
@@ -54,7 +56,6 @@ var ElasticPlayer = React.createClass({
         window.removeEventListener('resize', this.handleResize);
     },
     handleResize() {
-        console.log("got resize!!!");
         this.setState(this.calcWidthAndHeight());
     },
     render(){

@@ -1,6 +1,9 @@
 @font-face { font-family: Dense; src: url('Dense-Regular.otf'); }
 @font-face { font-family: hillel;  src: url('hillelclm-medium-webfont.woff') format('woff');}
 
+body {
+    background-color: black;
+}
 .player-container {
     position: absolute;
 }
