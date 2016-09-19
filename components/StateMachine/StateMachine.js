@@ -15,7 +15,8 @@ class StateMachine {
             inExtend: false
         }
 
-        this.playbackController = new PlaybackController(this.timeUpdate.bind(this));
+        this.playbackController = new PlaybackController();
+        this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
     }
 
     setControls(controls){
@@ -47,7 +48,7 @@ class StateMachine {
     extend(){
         this.state.inExtend = true;
         this.playbackController.cancelOnSegmentEndAction();
-        this.showItemSeekBar(this.segmentsManager.getActive());
+        this.extendItem(this.segmentsManager.getActive());
         this.controlsManager.updateControl(this.state);
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "extend"));
     }
@@ -73,7 +74,7 @@ class StateMachine {
         if (action !== "extend") {
             this.state.inExtend = false;
         }
-        this.state.itemNum = this.getItemNum(followingSegment);
+        this.state.itemNum = this.segmentsManager.getItemNum(followingSegment.title);
         this.state.isPlaying = true;
         this.controlsManager.updateControl(this.state);
         this.segmentsManager.setActive(followingSegment);
@@ -103,11 +104,7 @@ class StateMachine {
         this.playbackController.seek(timestamp);
     }
 
-    getItemNum(followingSegment) {
-        return parseInt(followingSegment.title.substring(1, 2), 10) - 1;
-    }
-
-    showItemSeekBar(activeSegment) {
+    extendItem(activeSegment) {
         var followingSegment = this.segmentsManager.getNextSegmentAccordingToAction("extend");
         this.state.itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
         this.state.itemStart = activeSegment.in;

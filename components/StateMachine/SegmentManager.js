@@ -68,12 +68,17 @@ class SegmentManager {
     getNumberOtItems() {
         let maxNum = 0;
         Object.keys(this.segments).forEach((key) => {
-            let num = parseInt(key.substring(1, 2), 10);
+            let num = getItemNum(key);
             if (num && num > maxNum) {
                 maxNum = num;
             }
         })
         return maxNum;
+    }
+
+    getItemNum(title) {
+        if (title && title.match(/[\d\.]+/))
+            return parseInt(title.match(/[\d\.]+/)[0], 10) - 1;
     }
 }
 

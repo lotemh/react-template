@@ -3,13 +3,12 @@ import Logger from "../Logger/Logger";
 
 class Player {
 
-    constructor(videoPlayer, id, notifyStatus){
+    constructor(videoPlayer, id){
         this.player = videoPlayer;
         this.loading = null;
         this.id = id;
         this.logger = new Logger()
         this.src = "";
-        this.notifyStatus = notifyStatus;
     }
 
     getPlayer(){
@@ -70,7 +69,11 @@ class Player {
 
     timeUpdatedListener(event){
         var currentTime = event.target.currentTime * 1000;
-        this.notifyStatus(currentTime, this.id);
+        this.timeUpdateCallback(currentTime, this.id);
+    }
+
+    setTimeUpdateCallback(cb) {
+        this.timeUpdateCallback = cb;
     }
 }
 

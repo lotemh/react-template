@@ -17,9 +17,8 @@ function getTimeInSeconds(timeInMili){
 }
 
 class PlaybackController {
-    constructor(stateMachineTimeUpdate) {
+    constructor() {
         this.segmentEndTimeMs = false;
-        this.stateMachineTimeUpdate = stateMachineTimeUpdate;
         this.logger = new Logger();
         this.activePlayer = null;
         this.segmentToPlayerMap = {};
@@ -29,8 +28,11 @@ class PlaybackController {
     /*********     Public API         ***********/
     createPlayers(players){
         var id = 0;
-        players = players.map(p => new Player(p, "player" + id++, this.playerUpdate.bind(this)));
-        players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)));
+        players = players.map(p => new Player(p, "player" + id++));
+        players.forEach(player => {
+            player.addLoadedDataEvent(this.onDataLoaded.bind(this));
+            player.setTimeUpdateCallback(this.playerUpdate.bind(this));
+        });
         this.players = players;
     }
 
@@ -127,21 +129,17 @@ class PlaybackController {
 
     playerUpdate (timeMs, playerId) {
         clearTimeout(this.playerUpdateTimeout);
-        let didCallOnSegmentEndAction = false;
         if (playerId === this.getActive().id) {
             if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
-                didCallOnSegmentEndAction = true;
                 this.onSegmentEndAction();
             } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
                 this.playerUpdateTimeout = setTimeout(() => {
-                    if (!didCallOnSegmentEndAction && this.getActive().getCurrentTime() * 1000 >= this.segmentEndTimeMs) {
-                        didCallOnSegmentEndAction = true;
-                        timeMs = this.getActive().getCurrentTime();
+                    if (this.getActive().getCurrentTime() >= this.segmentEndTimeMs) {
                         this.onSegmentEndAction();
                     }
                 }, this.segmentEndTimeMs - timeMs)
             }
-            this.stateMachineTimeUpdate(timeMs);
+            this.timeUpdate(timeMs);
         }
     }
 
@@ -255,6 +253,10 @@ class PlaybackController {
         var player = this.segmentToPlayerMap[segment.title];
         delete this.segmentToPlayerMap[segment.title];
         return player;
+    }
+
+    setTimeUpdate(timeUpdate) {
+        this.timeUpdate = timeUpdate;
     }
 }
 
