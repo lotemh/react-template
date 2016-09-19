@@ -50,7 +50,7 @@ class BrightCovePlayer extends React.Component {
   }
 
   play(){
-    this.getPlayer().play();
+    return this.getPlayer().play();
   }
 
   show(){
