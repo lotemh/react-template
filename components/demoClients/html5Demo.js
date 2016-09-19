@@ -9,7 +9,7 @@ var Html5Demo = React.createClass({
   render(){
     var players = new Array(this.props.numOfPlayers).fill(0);
     return (
-      <ElasticMediaSdk numOfPlayers={3}>
+      <ElasticMediaSdk>
           {
             players.map(function(elm, i){
               return (
