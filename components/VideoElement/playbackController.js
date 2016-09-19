@@ -141,7 +141,7 @@ class PlaybackController {
             } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
                 this.playerEndVerifierTimeout = setInterval(this.playerEndVerifier.bind(this), this.segmentEndTimeMs - timeMs);
             }
-            this.timeUpdate(timeMs);
+            this.timeUpdateCallback(timeMs);
         }
     }
 
@@ -257,8 +257,8 @@ class PlaybackController {
         return player;
     }
 
-    setTimeUpdate(timeUpdate) {
-        this.timeUpdate = timeUpdate;
+    setTimeUpdate(timeUpdateCallback) {
+        this.timeUpdateCallback = timeUpdateCallback;
     }
 }
 

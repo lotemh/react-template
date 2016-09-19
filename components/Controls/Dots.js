@@ -17,14 +17,15 @@ var Dots = React.createClass({
         }
     },
     getClassName(name){
+        var className;
         if (name === "dots") {
-            var className = 'dots';
+            className = 'dots';
             if (this.props.inExtend) {
                 className += ' hidden';
             }
         } else {
             className = 'dot';
-            let num = parseInt(name.substring(3, 4), 10);
+            let num = parseInt(name.match(/[\d\.]+/)[0], 10);
             let lastSectionNum = Math.floor(this.props.numOfItems / 5);
             let currentSection = Math.floor(this.props.itemNum / 5);
             if (currentSection === lastSectionNum) {
