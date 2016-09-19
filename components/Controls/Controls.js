@@ -10,7 +10,16 @@ let SWIPES = {
 };
 var Controls = React.createClass({
     getInitialState(){
-        return {isPlaying: false, pendingPlay: true, numOfItems: 5};
+        return {
+            isPlaying: false,
+            pendingPlay: true,
+            numOfItems: 0,
+            itemTimeMs: 0,
+            itemNum: 0,
+            itemStart: 0,
+            itemLength: 0,
+            inExtend: false
+        };
     },
     componentDidMount(){
         this.gestureListener = new Hammer(ReactDOM.findDOMNode(this));

@@ -4,6 +4,11 @@ import ReactDOM from 'react-dom';
 
 
 var Dots = React.createClass({
+    propTypes: {
+        inExtend: PropTypes.bool.isRequired,
+        itemNum: PropTypes.number.isRequired,
+        numOfItems: PropTypes.number.isRequired
+    },
     getImgSource(dotNum){
         if (dotNum === (this.props.itemNum % 5)) {
             return "images/bluedot.png";
