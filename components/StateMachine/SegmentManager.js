@@ -49,7 +49,7 @@ class SegmentManager {
     getSegmentsToPrepare() {
         var newSegments = new SegmentsQueue();
         newSegments.add(this.getNext());
-        var noActionSegment = this.get(this.getNextSegmentAccordingToAction("no_action"));
+        var noActionSegment = this.get(this.getActive().no_action);
         if (noActionSegment !== undefined) {
             newSegments.add(noActionSegment);
             var noActionSegment2 = this.get(noActionSegment.no_action);
@@ -64,6 +64,21 @@ class SegmentManager {
     }
     setContentUrl(url){
         this.getSegmentsSet().forEach(seg=>{seg.src = seg.src || url});
+    }
+    getNumberOtItems() {
+        let maxNum = 0;
+        Object.keys(this.segments).forEach((key) => {
+            let num = SegmentManager.getItemNum(key);
+            if (num && num > maxNum) {
+                maxNum = num;
+            }
+        })
+        return maxNum;
+    }
+
+    static getItemNum(title) {
+        if (title && title.match(/[\d\.]+/))
+            return parseInt(title.match(/[\d\.]+/)[0], 10) - 1;
     }
 }
 

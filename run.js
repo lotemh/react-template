@@ -11,6 +11,7 @@
 /* eslint-disable no-console, global-require */
 
 const fs = require('fs');
+const exec = require('child_process').exec;
 const del = require('del');
 const ejs = require('ejs');
 const webpack = require('webpack');
@@ -95,15 +96,21 @@ tasks.set('build', () => {
 //
 // Build and publish the website
 // -----------------------------------------------------------------------------
+
 tasks.set('publish', () => {
-  const firebase = require('firebase-tools');
-  return run('build')
-    .then(() => firebase.login({ nonInteractive: false }))
-    .then(() => firebase.deploy({
-      project: config.project,
-      cwd: __dirname,
-    }))
-    .then(() => { setTimeout(() => process.exit()); });
+  global.DEBUG = process.argv.includes('--debug') || false;
+  const s3 = require('s3');
+  return run('build').then(() => new Promise((resolve, reject) => {
+	exec("scp -r public/. demo@demo.elasticmedia.io:~/kcet/", {shell: true}, (err, stdout, stderr) => {
+      if (err) {
+        reject(err);
+      } else {
+		console.log(stdout);
+		console.log(stderr);
+        resolve({ stdout, stderr });
+      }
+    });
+  }));
 });
 
 //

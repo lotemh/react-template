@@ -8,7 +8,7 @@ class VideoElement extends React.Component {
     this.state = {
       isHidden: true
     };
-  }
+  };
 
   static propTypes = {
     src: PropTypes.string,
@@ -27,7 +27,10 @@ class VideoElement extends React.Component {
 
   render() {
     return (
-      <video className={this.getClassName()} preload="none">
+      <video ref={"video"}
+             className={this.getClassName()}
+             webkit-playsinline
+             preload="none">
         <source type="video/mp4" ref="source" src={this.props.src}/>
       </video>
     );
@@ -64,8 +67,7 @@ class VideoElement extends React.Component {
     this.getPlayer().load();
   }
 
-  seek(timeInMs){
-    var timeInSeconds = timeInMs/1000;
+  seek(timeInSeconds){
     this.getPlayer().currentTime = timeInSeconds;
   }
 
@@ -78,7 +80,7 @@ class VideoElement extends React.Component {
   }
 
   addTimeUpdateEvent(listener){
-    this.getPlayer().addEventListener("timeupdate", listener, false);
+    this.getPlayer().addEventListener("timeupdate", listener);
   }
 
   removeTimeUpdateEvent(listener){

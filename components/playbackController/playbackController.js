@@ -17,8 +17,9 @@ function getTimeInSeconds(timeInMili){
 }
 
 class PlaybackController {
-    constructor(logger){
-        this.logger = logger || new Logger();
+    constructor() {
+        this.segmentEndTimeMs = false;
+        this.logger = new Logger();
         this.activePlayer = null;
         this.segmentToPlayerMap = {};
         this.loadingSegmentsMap = {};
@@ -28,7 +29,10 @@ class PlaybackController {
     createPlayers(players){
         var id = 0;
         players = players.map(p => new Player(p, "player" + id++));
-        players.forEach(player => player.addLoadedDataEvent(this.onDataLoaded.bind(this)));
+        players.forEach(player => {
+            player.addLoadedDataEvent(this.onDataLoaded.bind(this));
+            player.setTimeUpdateCallback(this.playerUpdate.bind(this));
+        });
         this.players = players;
     }
 
@@ -69,13 +73,13 @@ class PlaybackController {
         }
         var nextPlayer = this.getPreparedPlayer(segment);
         this.logger.log("play segment " + segment.title + " on player " + nextPlayer.getId());
-        this.switchPlayers(this.activePlayer, nextPlayer);
         this.waitForSegmentEnd(segment.out, onSegmentEndAction);
+        this.switchPlayers(this.activePlayer, nextPlayer);
         callback && callback();
     }
 
     play(){
-        this.getActive().play();
+        return this.getActive().play();
     }
 
     pause(){
@@ -115,20 +119,30 @@ class PlaybackController {
     }
 
     cancelOnSegmentEndAction() {
-        this.clearCurrentInterval();
+        clearTimeout(this.playerEndVerifierTimeout);
+        this.segmentEndTimeMs = false;
     }
 
-    waitForSegmentEnd(endTimeStamp, callback) {
-        var out = endTimeStamp;
-        var currentTime = this.getActive().getCurrentTime();
-        if (currentTime >= out - 0.01){
-            callback();
-            this.logger.log("current time: " + currentTime);
-            this.logger.log("out time: " + out);
-            return;
+    waitForSegmentEnd(endTimeStamp, onSegmentEndAction) {
+        this.segmentEndTimeMs = endTimeStamp;
+        this.onSegmentEndAction = onSegmentEndAction;
+    }
+
+    playerEndVerifier () {
+        if (this.getActive().getCurrentTime() >= this.segmentEndTimeMs) {
+            this.onSegmentEndAction();
         }
-        var delay = Math.max(out - currentTime , 0.01);
-        this.currentTimeoutId = setTimeout(this.waitForSegmentEnd.bind(this, endTimeStamp, callback), delay);
+    }
+    playerUpdate (timeMs, playerId) {
+        clearTimeout(this.playerEndVerifierTimeout);
+        if (playerId === this.getActive().id) {
+            if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
+                this.onSegmentEndAction();
+            } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
+                this.playerEndVerifierTimeout = setInterval(this.playerEndVerifier.bind(this), this.segmentEndTimeMs - timeMs);
+            }
+            this.timeUpdateCallback(timeMs);
+        }
     }
 
     /*********     Private Methods       ***********/
@@ -152,10 +166,6 @@ class PlaybackController {
             this.returnPlayer(deprecatedPlayer);
             this.logger.log("return player " + deprecatedPlayer.getId());
         }
-    }
-
-    clearCurrentInterval() {
-        clearTimeout(this.currentTimeoutId);
     }
 
     getActive(){
@@ -198,6 +208,10 @@ class PlaybackController {
         activePlayer.play();
     }
 
+    seek(timestamp){
+        this.getActive().seek(timestamp);
+    }
+
     onDataLoaded(segmentTitle, player) {
         this.logger.log("video for segment " + segmentTitle +" loaded");
         this.setSegmentReady(segmentTitle, player);
@@ -209,21 +223,7 @@ class PlaybackController {
     shouldContinuePlaying(src, timeMs) {
         if (!this.getActive()){return false;}
         /*check if src is equal this.getActive().getSrc() === src &&*/
-        return Math.abs(this.getActive().getCurrentTime() - timeMs) < 10;
-    }
-
-    onTimeUpdated(segment, callback) {
-        var out = segment.out;
-        function timeUpdatedListener(){
-            var currentTime = this.playbackController.getActive().getCurrentTime();
-            if (currentTime >= out - 0.01){
-                this.playbackController.getActive().removeTimeUpdateEvent(timeUpdatedListener);
-                callback();
-                this.logger.log("current time: ", currentTime);
-                this.logger.log("out time: ", out);
-            }
-        }
-        this.playbackController.getActive().addTimeUpdateEvent(timeUpdatedListener.bind(this));
+        return Math.abs(this.getActive().getCurrentTime() - timeMs) < 1000;
     }
 
     /**     Loading segments         ***********/
@@ -257,6 +257,9 @@ class PlaybackController {
         return player;
     }
 
+    setTimeUpdate(timeUpdateCallback) {
+        this.timeUpdateCallback = timeUpdateCallback;
+    }
 }
 
 export default PlaybackController;
