@@ -4,7 +4,7 @@ import Kcet from '../../components/demoClients/kcetDemo';
 class KtecPage extends React.Component {
 
   componentDidMount() {
-    document.title = "Elastic Player";
+    document.title = "Kcet Demo";
   }
 
   render() {
