@@ -10,7 +10,7 @@ class KtecPage extends React.Component {
   render() {
     return (
         <div className="App">
-          <Kcet/>
+          <Kcet numOfPlayers={3}/>
         </div>
     );
   }
