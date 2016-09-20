@@ -22,7 +22,7 @@ var Controls = React.createClass({
         };
     },
     componentDidMount(){
-        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this));
+        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
     },
@@ -57,12 +57,13 @@ var Controls = React.createClass({
         this.props.stateMachine.eventHandler(event.target.id);
     },
     render(){
-        let style = {};
+        let pendingFirstPlayClickStyle = {};
         if (this.state.pendingFirstPlayClick) {
-            style['pointerEvents'] = 'none';
+            pendingFirstPlayClickStyle['pointerEvents'] = 'none';
         }
         return (
-            <div className="controls" style={style}>
+            <div className="controls">
+                <div className="controlsTouchScreen" style={pendingFirstPlayClickStyle} ref="touchScreen"></div>
                 <img src="images/extend.png" className={this.getClassName("extend")} id="extend" onClick={this.eventHandler}/>
                 <img src="images/play.png" className={this.getClassName("play")} id="play" onClick={this.togglePlay}/>
                 <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>

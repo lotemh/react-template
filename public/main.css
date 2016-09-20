@@ -18,7 +18,15 @@ body {
     width: 100%;
     height: 100%;
     position: absolute;
+    pointer-events: none;
+}
+.controlsTouchScreen {
+    width: 100%;
+    height: 80%;
+    top: 0;
+    position: absolute;
     z-index: 2147483647;
+    pointer-events: auto;
 }
 
 .player {
@@ -110,6 +118,7 @@ button:active {
 }
 
 .controller {
+    z-index: 2147483647;
     pointer-events:auto;
     position: absolute;
     height: 26px;
@@ -117,15 +126,34 @@ button:active {
 }
 
 .seekBar {
+    color: white;
     pointer-events:auto;
     position: absolute;
     margin: auto;
     left: 10% !important;
-    width: 80%!important;
+    width: 90%!important;
     bottom: 14px;
     height: 10px;
 }
+#redSeekBar {
+    box-sizing:content-box;
+    position: absolute;
+    right: 60px;
+    left: 40px;
+    width: calc(100% - 100px);
+    top: 6px;
+}
+#rightTime {
+    position: absolute;
+    right: 10px;
+    width: 40px!important;
+}
 
+#leftTime {
+    left: 0px;
+    position: absolute;
+    width: 40px!important;
+}
 
 
 .IIV::-webkit-media-controls-play-button,
@@ -145,10 +173,8 @@ input[type=range] {
     background: transparent;
 
     /*required for proper track sizing in FF*/
-    width: 300px;
 }
 input[type=range]::-webkit-slider-runnable-track {
-    width: 300px;
     height: 2px;
     background: #DB7093;
     border: none;
@@ -171,7 +197,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 input[type=range]::-moz-range-track {
-    width: 300px;
     height: 5px;
     background: #DB7093;
     border: none;
