@@ -44,7 +44,15 @@ class StateMachine {
 
     start(){
         this.controlsManager.updateControl({numOfItems: this.numOfItems});
-        this.actionHandler("next");
+        this.actionHandler("next")
+            .catch((error)=>{
+            if(error.name == "NotAllowedError"){
+                this.controlsManager.updateControl({userActionForPlayNeeded: true});
+            }else{
+                throw error;
+            }
+        });
+
     }
 
     eventHandler(event, params){
@@ -82,7 +90,8 @@ class StateMachine {
         this.state.isPlaying = true;
         this.controlsManager.updateControl(this.state);
         this.segmentsManager.setActive(followingSegment);
-        this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"), () => {
+        return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"))
+            .then(() => {
             //todo: stop current loading if needed
             var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
             this.playbackController.updateSegments(segmentsToPrepare);
