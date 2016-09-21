@@ -1,22 +1,5 @@
 import React, { PropTypes } from 'react';
-import Hammer from 'hammerjs';
-import ReactDOM from 'react-dom';
-
-String.prototype.toHHMMSS = function () {
-    var sec_num = parseInt(this, 10); // don't forget the second param
-    var hours   = Math.floor(sec_num / 3600);
-    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-    var seconds = sec_num - (hours * 3600) - (minutes * 60);
-
-    if (minutes < 10) {minutes = "0"+minutes;}
-    if (seconds < 10) {seconds = "0"+seconds;}
-    if (hours === 0) {
-        return minutes+':'+seconds;
-    } else {
-        if (hours < 10) {hours = "0" + hours;}
-        return hours+':'+minutes+':'+seconds;
-    }
-}
+import {toHHMMSS} from '../utils/timeUtils';
 
 var SeekBar = React.createClass({
     propTypes: {
@@ -34,7 +17,7 @@ var SeekBar = React.createClass({
             inSeekChange: false
         };
     },
-    getClassName(name){
+    getClassName(){
         var className = 'seekBar';
         if (!this.props.inExtend) {
             className += ' hidden';
@@ -44,10 +27,10 @@ var SeekBar = React.createClass({
     seekChange(event) {
         this.setState({value: event.target.value});
     },
-    onMouseDown(event) {
+    onMouseDown() {
         this.setState({inSeekChange: true});
     },
-    onMouseUp(event) {
+    onMouseUp() {
         setTimeout( () => {
             this.setState({inSeekChange: false});
         }, 100);
@@ -57,8 +40,8 @@ var SeekBar = React.createClass({
         if (!this.state.inSeekChange && this.props.itemStart !== undefined && this.props.itemLength && this.props.itemTimeMs) {
             let value = (this.props.itemTimeMs - this.props.itemStart) / 1000,
                 max = this.props.itemLength / 1000,
-                valueInHHMMSS = Math.floor(value).toString().toHHMMSS(),
-                maxInHHMMSS = Math.floor(max).toString().toHHMMSS();
+                valueInHHMMSS = toHHMMSS(value.toString()),
+                maxInHHMMSS = toHHMMSS(max.toString());
             this.setState({
                 min: 0,
                 max: this.props.itemLength / 1000,
@@ -68,7 +51,7 @@ var SeekBar = React.createClass({
             });
         }
     },
-    render(){
+    render() {
         return (
             <div className={this.getClassName()}>
                 <span id="leftTime">{this.state.valueInHHMMSS}</span>

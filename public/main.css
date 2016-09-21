@@ -128,31 +128,34 @@ button:active {
 .seekBar {
     color: white;
     pointer-events:auto;
+    font-family: Arial, serif;
     position: absolute;
     margin: auto;
-    left: 10% !important;
-    width: 90%!important;
-    bottom: 14px;
+    left: 40px;
+    font-size: small;
+    text-shadow: 1px 0px black;
+    width: calc(100% - 40px);
+    bottom: 20px;
     height: 10px;
 }
 #redSeekBar {
     box-sizing:content-box;
     position: absolute;
-    right: 60px;
-    left: 40px;
-    width: calc(100% - 100px);
-    top: 6px;
+    right: 75px;
+    left: 65px;
+    width: calc(100% - 140px);
+    top: 5px;
 }
 #rightTime {
     position: absolute;
-    right: 10px;
-    width: 40px!important;
+    right: 25px;
+    width: 40px;
 }
 
 #leftTime {
-    left: 0px;
+    left: 25px;
     position: absolute;
-    width: 40px!important;
+    width: 40px;
 }
 
 
@@ -183,11 +186,11 @@ input[type=range]::-webkit-slider-runnable-track {
 input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
     border: none;
-    height: 14px;
-    width: 14px;
+    height: 12px;
+    width: 12px;
     border-radius: 50%;
     background: #DB7093;
-    margin-top: -5px;
+    margin-top: -4.5px;
 }
 input[type=range]:focus {
     outline: none;
