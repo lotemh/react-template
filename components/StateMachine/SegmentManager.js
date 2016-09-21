@@ -80,6 +80,14 @@ class SegmentManager {
         if (title && title.match(/[\d\.]+/))
             return parseInt(title.match(/[\d\.]+/)[0], 10) - 1;
     }
+
+    getExtendedSegment(activeSegment) {
+        var followingSegment = this.getNextSegmentAccordingToAction("extend");
+        var inTime = activeSegment.in;
+        var newSegment = new Segment(followingSegment, "extendedItem");
+        newSegment.in = inTime;  
+        return newSegment;
+    }
 }
 
 export default SegmentManager;

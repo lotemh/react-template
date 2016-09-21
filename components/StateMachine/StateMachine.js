@@ -19,6 +19,8 @@ class StateMachine {
         this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
     }
 
+    /****  public APi ****/
+
     setControls(controls){
         this.controlsManager = controls;
     }
@@ -45,24 +47,26 @@ class StateMachine {
         this.actionHandler("next");
     }
 
+    eventHandler(event, params){
+        if (this[event]){
+            this.logger.log("handle event " + event);
+            this[event](params);
+        } else this.actionHandler(event);
+    }
+
+    /************************/
+
     extend(){
         this.state.inExtend = true;
         this.playbackController.cancelOnSegmentEndAction();
         this.extendItem(this.segmentsManager.getActive());
         this.controlsManager.updateControl(this.state);
-        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "extend"));
+        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "no_action"));
     }
 
     previous(){
         this.playbackController.pause();
         this.actionHandler("previous");
-    }
-
-    eventHandler(event){
-        if (this[event]){
-            this.logger.log("handle event " + event);
-            this[event]();
-        } else this.actionHandler(event);
     }
 
     actionHandler(action){
@@ -100,12 +104,14 @@ class StateMachine {
         this.playbackController.pause();
     }
 
-    seek(timestamp) {
-        this.playbackController.seek(timestamp);
+    seek(params) {
+        this.playbackController.seek(params.timestamp);
     }
 
     extendItem(activeSegment) {
         var followingSegment = this.segmentsManager.getNextSegmentAccordingToAction("extend");
+        var extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
+        this.segmentsManager.setActive(extendedSegment);
         this.state.itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
         this.state.itemStart = activeSegment.in;
     }
