@@ -1,6 +1,7 @@
 import Logger from "../Logger/Logger";
 import SegmentManager from "./SegmentManager";
 import PlaybackController from "../playbackController/playbackController"
+import ControlsStartStatus from '../Controls/ControlsStartStatus';
 
 /**
  * Created by user on 8/28/2016.
@@ -45,9 +46,12 @@ class StateMachine {
     start(){
         this.controlsManager.updateControl({numOfItems: this.numOfItems});
         this.actionHandler("next")
+            .then(()=>{
+                this.controlsManager.updateControl({startStatus: ControlsStartStatus.ACTIVE});
+            })
             .catch((error)=>{
             if(error.name == "NotAllowedError"){
-                this.controlsManager.updateControl({userActionForPlayNeeded: true});
+                this.controlsManager.updateControl({startStatus: ControlsStartStatus.PENDING_USER_ACTION});
             }else{
                 throw error;
             }
@@ -87,16 +91,17 @@ class StateMachine {
             this.state.inExtend = false;
         }
         this.state.itemNum = SegmentManager.getItemNum(followingSegment.title);
-        this.state.isPlaying = true;
         this.controlsManager.updateControl(this.state);
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"))
             .then(() => {
-            //todo: stop current loading if needed
-            var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
-            this.playbackController.updateSegments(segmentsToPrepare);
-            this.playbackController.prepareSegments(segmentsToPrepare);
-        });
+                //todo: stop current loading if needed
+                this.state.isPlaying = true;
+                this.controlsManager.updateControl(this.state);
+                var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+                this.playbackController.updateSegments(segmentsToPrepare);
+                this.playbackController.prepareSegments(segmentsToPrepare);
+            });
     }
 
     play(){
