@@ -43,14 +43,19 @@ var Controls = React.createClass({
             className += ' hidden';
         }
         if (name === "play") {
-            className += this.state.isPlaying ? ' hidden' : '';
+            if (this.state.userActionForPlayNeeded){
+                return "controller bigPlay"
+            } else {
+                className += " play";
+                className += this.state.isPlaying ? ' hidden' : '';
+            }
         } else if (name === "pause") {
             className += !this.state.isPlaying ? ' hidden' : '';
         }
         return className;
     },
     togglePlay(event){
-        this.setState({isPlaying: !this.state.isPlaying});
+        this.setState({isPlaying: !this.state.isPlaying, userActionForPlayNeeded: false});
         this.eventHandler(event);
     },
     eventHandler(event){

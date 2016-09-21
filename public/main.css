@@ -86,7 +86,7 @@ button:active {
     left: 10px;
 }
 
-#play {
+.play {
     bottom: 10px;
     left: 10px;
 }
@@ -114,6 +114,14 @@ button:active {
     position: absolute;
     height: 26px;
     width: 26px;
+}
+
+.bigPlay {
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 82px;
+    margin: -41px 0 0 -40px;
 }
 
 .seekBar {
