@@ -25,12 +25,12 @@ var Dots = React.createClass({
             }
         } else {
             className = 'dot';
-            let num = parseInt(name.match(/[\d\.]+/)[0], 10);
-            let lastSectionNum = Math.floor(this.props.numOfItems / 5);
-            let currentSection = Math.floor(this.props.itemNum / 5);
+            let num = parseInt(name.match(/[\d\.]+/)[0], 10),
+                lastSectionNum = Math.floor(this.props.numOfItems / 5),
+                currentSection = Math.floor(this.props.itemNum / 5);
             if (currentSection === lastSectionNum) {
                 let numOfDots = this.props.numOfItems % 5;
-                if (num >= numOfDots) {
+                if (num > numOfDots) {
                     className += ' hidden';
                 }
             }
@@ -39,7 +39,7 @@ var Dots = React.createClass({
     },
     render(){
         var dots = [];
-        for (var i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {
             dots.push(<img src={this.getImgSource(i)} className={this.getClassName("dot" + i.toString())} key={i.toString()}/>);
         }
         return (
