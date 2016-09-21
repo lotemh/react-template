@@ -60,7 +60,7 @@ class PlaybackController {
         });
     }
 
-    playSegment(segment, onSegmentEndAction, callback){
+    playSegment(segment, onSegmentEndAction){
         this.cancelOnSegmentEndAction();
         if (this.shouldContinuePlaying(segment.src, segment.in)){
             this.logger.log("continue playing");
@@ -68,14 +68,13 @@ class PlaybackController {
         } else if (!this.isReady(segment.title)){
             this.pause();
             return this.prepare(segment).then(()=>{
-                this.playSegment(segment, onSegmentEndAction, callback);
+                return this.playSegment(segment, onSegmentEndAction);
             });
         }
         var nextPlayer = this.getPreparedPlayer(segment);
         this.logger.log("play segment " + segment.title + " on player " + nextPlayer.getId());
         this.waitForSegmentEnd(segment.out, onSegmentEndAction);
-        this.switchPlayers(this.activePlayer, nextPlayer);
-        callback && callback();
+        return this.switchPlayers(this.activePlayer, nextPlayer);
     }
 
     play(){
@@ -186,10 +185,11 @@ class PlaybackController {
 
     switchPlayers(oldPlayer, nextPlayer) {
         if (!nextPlayer) return;
-        this.activatePlayer(nextPlayer);
-        if (oldPlayer !== nextPlayer){
-            this.deactivatePlayer(oldPlayer);
-        }
+        return this.activatePlayer(nextPlayer).then(()=>{
+            if (oldPlayer !== nextPlayer){
+                this.deactivatePlayer(oldPlayer);
+            }
+        });
     }
 
     deactivatePlayer(player) {
@@ -205,7 +205,7 @@ class PlaybackController {
         this.setActive(player);
         var activePlayer = this.getActive();
         activePlayer.show();
-        activePlayer.play();
+        return activePlayer.play();
     }
 
     seek(timestamp){

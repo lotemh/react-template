@@ -69,8 +69,7 @@ class BrightCovePlayer extends React.Component {
     this.getPlayer().load();
   }
 
-  seek(timeInMs){
-    var timeInSeconds = timeInMs/1000;
+  seek(timeInSeconds){
     this.getPlayer().currentTime = timeInSeconds;
   }
 

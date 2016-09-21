@@ -30,7 +30,7 @@ var SeekBar = React.createClass({
     onMouseDown() {
         this.setState({inSeekChange: true});
     },
-    onMouseUp(event) {
+    onMouseUp() {
         this.props.stateMachine.eventHandler("seek", {
             timestamp: this.getItemTime()
         });
@@ -39,7 +39,7 @@ var SeekBar = React.createClass({
         }, 100);
     },
     getItemTime(){
-        return Math.floor(parseInt(this.state.value, 10) + this.props.itemStart / 1000)
+        return Math.floor(parseInt(this.state.value, 10) + this.props.itemStart / 1000);
     },
     componentWillReceiveProps() {
         if (!this.state.inSeekChange && this.props.itemStart !== undefined && this.props.itemLength && this.props.itemTimeMs) {
