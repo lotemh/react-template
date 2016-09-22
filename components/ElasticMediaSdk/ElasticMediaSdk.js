@@ -22,7 +22,7 @@ var ElasticMediaSdk = React.createClass({
         $.getJSON("metadataExample.json", function(metadata) {
             stateMachine.setSegments(metadata.segments);
             // stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/mm080616.mp4");
-            stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/debug.mp4");
+            stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/artbound.mp4");
             stateMachine.setControls(controls);
             stateMachine.start();
         });
