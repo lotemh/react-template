@@ -30,6 +30,7 @@ class VideoElement extends React.Component {
       <video ref={"video"}
              className={this.getClassName()}
              webkit-playsinline
+             playsinline
              preload="none">
         <source type="video/mp4" ref="source" src={this.props.src}/>
       </video>

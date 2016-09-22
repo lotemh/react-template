@@ -68,6 +68,8 @@ var SeekBar = React.createClass({
                        onChange={this.seekChange}
                        onMouseDown={this.onMouseDown}
                        onMouseUp={this.onMouseUp}
+                       onTouchStart={this.onMouseDown}
+                       onTouchEnd={this.onMouseUp}
                        step="any" />
                 <span id="rightTime">{this.state.maxInHHMMSS}</span>
             </div>
