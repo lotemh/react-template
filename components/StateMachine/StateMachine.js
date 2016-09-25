@@ -77,7 +77,9 @@ class StateMachine {
     }
 
     previous(){
-        this.playbackController.pause();
+        if (this.segmentsManager.getNextSegmentAccordingToAction("previous")) {
+            this.playbackController.pause();
+        }
         this.actionHandler("previous");
     }
 
