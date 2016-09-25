@@ -7,7 +7,7 @@ import BrightCovePlayer from '../VideoElement/brightCovePlayer'
 import Controls from '../Controls/Controls';
 import ElasticMediaSdk from '../ElasticMediaSdk/ElasticMediaSdk'
 
-const numOfPlayers = 3;
+const numOfPlayers = 2;
 
 var Kcet = React.createClass({
   render(){
