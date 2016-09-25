@@ -52,6 +52,8 @@ class StateMachine {
             .catch((error)=>{
             if(error.name == "NotAllowedError"){
                 this.controlsManager.updateControl({startStatus: ControlsStartStatus.PENDING_USER_ACTION});
+                var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+                this.playbackController.prepareSegments(segmentsToPrepare);
             }else{
                 throw error;
             }
