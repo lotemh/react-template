@@ -31,14 +31,13 @@ class Player {
         this.getPlayer().hide();
     }
     prepare(src, segmentTitle){
+        this.loading = segmentTitle;
         if (!this.src){
             this.getPlayer().setSrc(src);
             this.src = src;
-            this.loading = segmentTitle;
             this.getPlayer().load();
             return;
         }
-        this.loading = segmentTitle;
         var timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
         this.seek(timestamp);
         this.pause();
