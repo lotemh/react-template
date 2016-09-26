@@ -59,8 +59,8 @@ var Controls = React.createClass({
         this.eventHandler(action);
     },
     startPlaying(){
-        this.setState({startStatus: ControlsStartStatus.ACTIVE});
-        this.eventHandler("play");
+        this.setState({startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
+        this.eventHandler("firstPlay");
     },
     eventHandler(action){
         this.props.stateMachine.eventHandler(action);

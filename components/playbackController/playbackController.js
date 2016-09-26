@@ -124,7 +124,7 @@ class PlaybackController {
         this.prepare(nextSegment).
         then(()=>{
             this.prepareSegments(segments);
-        });
+        }, ()=>{});
     }
 
     cancelOnSegmentEndAction() {
@@ -234,6 +234,19 @@ class PlaybackController {
         if (!this.getActive()){return false;}
         /*check if src is equal this.getActive().getSrc() === src &&*/
         return Math.abs(this.getActive().getCurrentTime() - timeMs) < 1000;
+    }
+
+    startPlaying(){
+        var playPromise = this.activePlayer.play();
+        this.players.concat(Object.values(this.loadingSegmentsMap)).concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
+            if (p !== this.activePlayer){
+                p.play().then(()=> {
+                        return p.pause();
+                    }
+                );
+            }
+        });
+        return playPromise;
     }
 
     /**     Loading segments         ***********/
