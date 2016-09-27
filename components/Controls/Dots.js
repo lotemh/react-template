@@ -1,7 +1,4 @@
 import React, { PropTypes } from 'react';
-import Hammer from 'hammerjs';
-import ReactDOM from 'react-dom';
-
 
 var Dots = React.createClass({
     propTypes: {
