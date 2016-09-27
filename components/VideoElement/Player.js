@@ -31,10 +31,17 @@ class Player {
         this.getPlayer().hide();
     }
     prepare(src, segmentTitle){
-        this.getPlayer().setSrc(src);
-        this.src = src;
-        this.getPlayer().load();
         this.loading = segmentTitle;
+        if (!this.src){
+            this.getPlayer().setSrc(src);
+            this.src = src;
+            this.getPlayer().load();
+            return;
+        }
+        var timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
+        this.seek(timestamp);
+        this.pause();
+        this.loadedCallback(segmentTitle);
     }
     seek(timestamp){
         this.getPlayer().seek(timestamp);
@@ -53,6 +60,7 @@ class Player {
             }
             listener(loadedSegment, this);
         }
+        this.loadedCallback = loadedCallback;
         this.getPlayer().addLoadedDataEvent(loadedCallback.bind(this));
     }
 

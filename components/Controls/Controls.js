@@ -55,12 +55,11 @@ var Controls = React.createClass({
     togglePlay(){
         var isPlaying = !this.state.isPlaying;
         var action = isPlaying ? "play" : "pause";
-        this.setState({isPlaying: isPlaying, startedPlaying: true});
+        this.setState({isPlaying: isPlaying});
         this.eventHandler(action);
     },
     startPlaying(){
-        this.setState({startStatus: ControlsStartStatus.ACTIVE});
-        this.eventHandler("play");
+        this.eventHandler("firstPlay");
     },
     eventHandler(action){
         this.props.stateMachine.eventHandler(action);
@@ -70,9 +69,6 @@ var Controls = React.createClass({
     },
     getControlsClassName(){
         return this.state.startStatus === ControlsStartStatus.ACTIVE ? "controls" : "hidden";
-    },
-    componentWillUpdate(){
-
     },
     render(){
         let pendingFirstPlayClickStyle = {};

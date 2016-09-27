@@ -36,7 +36,7 @@ class PlaybackController {
         this.players = players;
     }
 
-    prepare(segment){
+    prepare(segment, isForce){
         return new Promise((resolve, reject) => {
             if (this.isReady(segment.title)){
                 return resolve();
@@ -49,15 +49,25 @@ class PlaybackController {
                 this.loadedCallback = resolve;
             }
             else {
+                var nextPlayer = this.getFreePlayer();
                 this.cancelLoading = reject;
                 this.loadedCallback = resolve;
-                var nextPlayer = this.getFreePlayer();
-                if (!nextPlayer){
+                if (nextPlayer){
+                    this.loadSegment(nextPlayer, segment);
+                } else if (!nextPlayer && isForce){
                     nextPlayer = this.getActive();
+                    this.loadSegment(nextPlayer, segment);
+                } else {
+                    this.cancelLoading();
+                    delete this.cancelLoading;
                 }
-                this.loadSegment(nextPlayer, segment);
             }
         });
+    }
+
+    forcePrepare(segment){
+        var forcePrepare = true;
+        return this.prepare(segment, forcePrepare)
     }
 
     playSegment(segment, onSegmentEndAction){
@@ -67,7 +77,7 @@ class PlaybackController {
             this.setSegmentReady(segment.title, this.getActive());
         } else if (!this.isReady(segment.title)){
             this.pause();
-            return this.prepare(segment).then(()=>{
+            return this.forcePrepare(segment).then(()=>{
                 return this.playSegment(segment, onSegmentEndAction);
             });
         }
@@ -114,7 +124,7 @@ class PlaybackController {
         this.prepare(nextSegment).
         then(()=>{
             this.prepareSegments(segments);
-        });
+        }, ()=>{});
     }
 
     cancelOnSegmentEndAction() {
@@ -224,6 +234,19 @@ class PlaybackController {
         if (!this.getActive()){return false;}
         /*check if src is equal this.getActive().getSrc() === src &&*/
         return Math.abs(this.getActive().getCurrentTime() - timeMs) < 1000;
+    }
+
+    startPlaying(){
+        var playPromise = this.activePlayer.play();
+        this.players.concat(Object.values(this.loadingSegmentsMap)).concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
+            if (p !== this.activePlayer){
+                p.play().then(()=> {
+                        return p.pause();
+                    }
+                );
+            }
+        });
+        return playPromise;
     }
 
     /**     Loading segments         ***********/

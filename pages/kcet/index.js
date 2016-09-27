@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import Kcet from '../../components/demoClients/kcetDemo';
 
-class KtecPage extends React.Component {
+class KcetPage extends React.Component {
 
   componentDidMount() {
     document.title = "Kcet Demo";
@@ -17,4 +17,4 @@ class KtecPage extends React.Component {
 
 }
 
-export default KtecPage;
+export default KcetPage;

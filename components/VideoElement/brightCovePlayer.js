@@ -91,6 +91,9 @@ class BrightCovePlayer extends React.Component {
     this.getPlayer().removeEventListener("timeupdate", listener);
   }
 
+    addEventListener(event, listener){
+        this.getPlayer().addEventListener(event, listener, false);
+    }
 }
 
 export default BrightCovePlayer;

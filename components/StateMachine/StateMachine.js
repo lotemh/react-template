@@ -52,6 +52,8 @@ class StateMachine {
             .catch((error)=>{
             if(error.name == "NotAllowedError"){
                 this.controlsManager.updateControl({startStatus: ControlsStartStatus.PENDING_USER_ACTION});
+                var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+                this.playbackController.prepareSegments(segmentsToPrepare);
             }else{
                 throw error;
             }
@@ -77,7 +79,9 @@ class StateMachine {
     }
 
     previous(){
-        this.playbackController.pause();
+        if (this.segmentsManager.getNextSegmentAccordingToAction("previous")) {
+            this.playbackController.pause();
+        }
         this.actionHandler("previous");
     }
 
@@ -98,10 +102,12 @@ class StateMachine {
                 //todo: stop current loading if needed
                 this.state.isPlaying = true;
                 this.controlsManager.updateControl(this.state);
-                var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
-                this.playbackController.updateSegments(segmentsToPrepare);
-                this.playbackController.prepareSegments(segmentsToPrepare);
-            });
+                setTimeout(()=> {
+                    var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+                    this.playbackController.updateSegments(segmentsToPrepare);
+                    this.playbackController.prepareSegments(segmentsToPrepare);
+                }, 3000);
+            }).catch(e => {throw e});
     }
 
     play(){
@@ -120,6 +126,13 @@ class StateMachine {
 
     seek(params) {
         this.playbackController.seek(params.timestamp);
+    }
+
+    firstPlay(){
+        this.playbackController.startPlaying()
+            .then(()=>{
+                this.controlsManager.updateControl({startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
+            });
     }
 
     extendItem(activeSegment) {
