@@ -3,9 +3,10 @@
  */
 
 function setJsDomMocks() {
-    var jsdom = require('jsdom')
-    global.document = jsdom.jsdom('<!doctype html><html><body></body></html>') //This can be edited further
-    global.window = global.document.defaultView
+    const jsdom = require('jsdom');
+    // This can be edited further
+    global.document = jsdom.jsdom('<!doctype html><html><body></body></html>');
+    global.window = global.document.defaultView;
 }
 
 setJsDomMocks();
