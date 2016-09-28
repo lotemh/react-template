@@ -80,6 +80,17 @@ var Controls = React.createClass({
         if (this.state.pendingFirstPlayClick) {
             pendingFirstPlayClickStyle['pointerEvents'] = 'none';
         }
+        let timeElemet = (this.state.inExtend) ?
+            <SeekBar
+                itemTimeMs={this.state.itemTimeMs}
+                itemStart={this.state.itemStart}
+                itemLength={this.state.itemLength}
+                seekListener={this.seekListener}
+            /> :
+            <Dots
+                itemNum={this.state.itemNum}
+                numOfItems={this.state.numOfItems}
+            />;
         return (
             <div>
                 <div>
@@ -90,18 +101,7 @@ var Controls = React.createClass({
                     <img src="images/extend.png" className={this.getClassName("extend")} id="extend" onClick={this.eventHandler.bind(this, "extend")}/>
                     <img src="images/play.png" className={this.getClassName("play")} onClick={this.togglePlay}/>
                     <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
-                    <Dots
-                        itemNum={this.state.itemNum}
-                        numOfItems={this.state.numOfItems}
-                        inExtend={this.state.inExtend}
-                    />
-                    <SeekBar
-                        inExtend={this.state.inExtend}
-                        itemTimeMs={this.state.itemTimeMs}
-                        itemStart={this.state.itemStart}
-                        itemLength={this.state.itemLength}
-                        seekListener={this.seekListener}
-                    />
+                    {timeElemet}
                 </div>
             </div>
         );
