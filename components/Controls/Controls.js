@@ -5,11 +5,14 @@ import SeekBar from './SeekBar';
 import Dots from './Dots';
 import ControlsStartStatus from './ControlsStartStatus';
 
-let SWIPES = {
+const SWIPES = {
     LEFT: "swipeleft",
     RIGHT: "swiperight"
 };
 var Controls = React.createClass({
+    propTypes: {
+        eventHandler: PropTypes.func.isRequired
+    },
     getInitialState(){
         return {
             startStatus: ControlsStartStatus.PENDING,
@@ -29,10 +32,10 @@ var Controls = React.createClass({
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
     },
     swipeLeft(){
-        this.props.stateMachine.eventHandler("next");
+        this.props.eventHandler("next");
     },
     swipeRight(){
-        this.props.stateMachine.eventHandler("previous");
+        this.props.eventHandler("previous");
     },
 
     updateControl(state) {
@@ -62,7 +65,7 @@ var Controls = React.createClass({
         this.eventHandler("firstPlay");
     },
     eventHandler(action){
-        this.props.stateMachine.eventHandler(action);
+        this.props.eventHandler(action);
     },
     getStartPlayingClass(){
         return this.state.startStatus === ControlsStartStatus.PENDING_USER_ACTION ? "controller bigPlay" : 'hidden';
@@ -71,17 +74,14 @@ var Controls = React.createClass({
         return this.state.startStatus === ControlsStartStatus.ACTIVE ? "controls" : "hidden";
     },
     seekListener(currentTime){
-        this.props.stateMachine.eventHandler("seek", {
+        this.props.eventHandler("seek", {
             timestamp: currentTime
         });
     },
     render(){
-        let pendingFirstPlayClickStyle = {};
-        if (this.state.pendingFirstPlayClick) {
-            pendingFirstPlayClickStyle['pointerEvents'] = 'none';
-        }
-        let timeElemet = (this.state.inExtend) ?
-            <SeekBar
+        let timeElement = (this.state.inExtend) ?
+            <SeekBar 
+                ref="seekBar"
                 itemTimeMs={this.state.itemTimeMs}
                 itemStart={this.state.itemStart}
                 itemLength={this.state.itemLength}
@@ -97,11 +97,13 @@ var Controls = React.createClass({
                     <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying}/>
                 </div>
                 <div className={this.getControlsClassName()}>
-                    <div className="controlsTouchScreen" style={pendingFirstPlayClickStyle} ref="touchScreen"></div>
-                    <img src="images/extend.png" className={this.getClassName("extend")} id="extend" onClick={this.eventHandler.bind(this, "extend")}/>
+                    <div className="controlsTouchScreen" ref="touchScreen"
+                         style={this.state.pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
+                    <img src="images/extend.png" className={this.getClassName("extend")} id="extend"
+                         onClick={this.eventHandler.bind(this, "extend")}/>
                     <img src="images/play.png" className={this.getClassName("play")} onClick={this.togglePlay}/>
                     <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
-                    {timeElemet}
+                    {timeElement}
                 </div>
             </div>
         );
