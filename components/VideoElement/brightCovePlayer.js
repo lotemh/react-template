@@ -34,8 +34,8 @@ class BrightCovePlayer extends React.Component {
       <div>
         <video className={this.getClassName()} ref="player" data-account="5114477724001"
                data-player="ryxQpOD6j"
-               playsinline
-               webkit-playsinline
+               data-playsinline
+               data-webkit-playsinline
                data-embed="default"
                data-application-id>
           <source type="video/mp4" ref="source" src={this.props.src}/>
