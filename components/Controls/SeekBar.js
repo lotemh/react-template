@@ -4,7 +4,7 @@ import {toHHMMSS} from '../utils/timeUtils';
 var SeekBar = React.createClass({
     propTypes: {
         inExtend: PropTypes.bool.isRequired,
-        stateMachine: PropTypes.object.isRequired,
+        seekListener: PropTypes.func.isRequired,
         itemStart: PropTypes.number.isRequired,
         itemLength: PropTypes.number.isRequired,
         itemTimeMs: PropTypes.number.isRequired
@@ -31,9 +31,7 @@ var SeekBar = React.createClass({
         this.setState({inSeekChange: true});
     },
     onMouseUp() {
-        this.props.stateMachine.eventHandler("seek", {
-            timestamp: this.getItemTime()
-        });
+        this.props.seekListener(this.getItemTime());
         setTimeout( () => {//TODO move to seek promise return
             this.setState({inSeekChange: false});
         }, 100);

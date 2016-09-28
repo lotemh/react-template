@@ -70,6 +70,11 @@ var Controls = React.createClass({
     getControlsClassName(){
         return this.state.startStatus === ControlsStartStatus.ACTIVE ? "controls" : "hidden";
     },
+    seekListener(currentTime){
+        this.props.stateMachine.eventHandler("seek", {
+            timestamp: currentTime
+        });
+    },
     render(){
         let pendingFirstPlayClickStyle = {};
         if (this.state.pendingFirstPlayClick) {
@@ -95,7 +100,7 @@ var Controls = React.createClass({
                         itemTimeMs={this.state.itemTimeMs}
                         itemStart={this.state.itemStart}
                         itemLength={this.state.itemLength}
-                        stateMachine={this.props.stateMachine}
+                        seekListener={this.seekListener}
                     />
                 </div>
             </div>
