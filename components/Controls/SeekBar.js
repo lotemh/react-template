@@ -10,7 +10,7 @@ var SeekBar = React.createClass({
     },
     getInitialState(){
         return {
-            value: (this.props.itemTimeMs - this.props.itemStart) / 1000,
+            value: this.calcSeekBarValue(),
             inSeekChange: false
         };
     },
@@ -35,10 +35,13 @@ var SeekBar = React.createClass({
     getTimeInHHMMSS(timeMs){
         return toHHMMSS((timeMs / 1000).toString());
     },
+    calcSeekBarValue: function () {
+        return (this.props.itemTimeMs - this.props.itemStart) / 1000;
+    },
     componentWillReceiveProps() {
         if (!this.state.inSeekChange && this.props.itemStart !== undefined && this.props.itemLength && this.props.itemTimeMs) {
             this.setState({
-                value: (this.props.itemTimeMs - this.props.itemStart) / 1000
+                value: this.calcSeekBarValue()
             });
         }
     },
@@ -46,7 +49,7 @@ var SeekBar = React.createClass({
         return (
             <div className='seekBar'>
                 <span ref="currentTime" id="leftTime">{this.getCurrentTimeInItemHHMMSS()}</span>
-                <input type="range"
+                <input ref="bar" type="range"
                        min={0}
                        max={this.props.itemLength / 1000}
                        value={this.state.value}
@@ -57,7 +60,7 @@ var SeekBar = React.createClass({
                        onTouchStart={this.onMouseDown}
                        onTouchEnd={this.onMouseUp}
                        step="any" />
-                <span id="rightTime">{this.getTimeInHHMMSS(this.props.itemLength)}</span>
+                <span ref="itemLength" id="rightTime">{this.getTimeInHHMMSS(this.props.itemLength)}</span>
             </div>
         );
     }
