@@ -65,7 +65,7 @@ var ElasticMediaSdk = React.createClass({
                         });
                     })}
                 </div>
-                <Controls eventHandler={this.stateMachine.eventHandler} ref="controls"/>
+                <Controls eventHandler={this.stateMachine.eventHandler.bind(this.stateMachine)} ref="controls"/>
             </div>
         );
     }
