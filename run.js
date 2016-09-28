@@ -86,10 +86,10 @@ tasks.set('bundle', () => {
 tasks.set('build', () => {
   global.DEBUG = process.argv.includes('--debug') || false;
   return Promise.resolve()
-    .then(() => run('clean'))
-    .then(() => run('bundle'))
-    .then(() => run('html'))
-    .then(() => run('sitemap'));
+        .then(() => run('clean'))
+        .then(() => run('bundle'))
+        .then(() => run('html'))
+        .then(() => run('sitemap'));
 });
 
 //
@@ -98,17 +98,17 @@ tasks.set('build', () => {
 
 tasks.set('publish', () => {
   global.DEBUG = process.argv.includes('--debug') || false;
-  const s3 = require('s3');
   return run('build').then(() => new Promise((resolve, reject) => {
-	exec("scp -r public/. demo@demo.elasticmedia.io:~/kcet/", {shell: true}, (err, stdout, stderr) => {
-      if (err) {
-        reject(err);
-      } else {
-		console.log(stdout);
-		console.log(stderr);
-        resolve({ stdout, stderr });
-      }
-    });
+    exec('scp -r public/. demo@demo.elasticmedia.io:~/kcet/', { shell: true },
+        (err, stdout, stderr) => {
+          if (err) {
+            reject(err);
+          } else {
+            console.log(stdout);
+            console.log(stderr);
+            resolve({ stdout, stderr });
+          }
+        });
   }));
 });
 
@@ -129,15 +129,15 @@ tasks.set('start', () => {
       stats: webpackConfig.stats,
     });
     compiler.plugin('done', stats => {
-      // Generate index.html page
+            // Generate index.html page
       const bundle = stats.compilation.chunks.find(x => x.name === 'main').files[0];
       const template = fs.readFileSync('./public/index.ejs', 'utf8');
       const render = ejs.compile(template, { filename: './public/index.ejs' });
       const output = render({ debug: true, bundle: `/dist/${bundle}`, config });
       fs.writeFileSync('./public/index.html', output, 'utf8');
 
-      // Launch Browsersync after the initial bundling is complete
-      // For more information visit https://browsersync.io/docs/options
+            // Launch Browsersync after the initial bundling is complete
+            // For more information visit https://browsersync.io/docs/options
       if (++count === 1) {
         bs.init({
           port: process.env.PORT || 3000,
