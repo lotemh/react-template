@@ -10,15 +10,9 @@ var SeekBar = React.createClass({
     },
     getInitialState(){
         return {
-            min: 0,
-            max: 1,
-            value: 0,
+            value: (this.props.itemTimeMs - this.props.itemStart) / 1000,
             inSeekChange: false
         };
-    },
-    getClassName(){
-        var className = 'seekBar';
-        return className;
     },
     seekChange(event) {
         this.setState({value: event.target.value});
@@ -35,28 +29,26 @@ var SeekBar = React.createClass({
     getItemTime(){
         return Math.floor(parseInt(this.state.value, 10) + this.props.itemStart / 1000);
     },
+    getCurrentTimeInItemHHMMSS: function () {
+        return this.getTimeInHHMMSS(this.props.itemTimeMs - this.props.itemStart);
+    },
+    getTimeInHHMMSS(timeMs){
+        return toHHMMSS((timeMs / 1000).toString());
+    },
     componentWillReceiveProps() {
         if (!this.state.inSeekChange && this.props.itemStart !== undefined && this.props.itemLength && this.props.itemTimeMs) {
-            let currentTimeInItemSec = (this.props.itemTimeMs - this.props.itemStart) / 1000,
-                max = this.props.itemLength / 1000,
-                currentTimeInItemHHMMSS = toHHMMSS(currentTimeInItemSec.toString()),
-                maxInHHMMSS = toHHMMSS(max.toString());
             this.setState({
-                min: 0,
-                max: this.props.itemLength / 1000,
-                value: (this.props.itemTimeMs - this.props.itemStart) / 1000,
-                valueInHHMMSS: currentTimeInItemHHMMSS,
-                maxInHHMMSS: maxInHHMMSS
+                value: (this.props.itemTimeMs - this.props.itemStart) / 1000
             });
         }
     },
     render() {
         return (
             <div className='seekBar'>
-                <span id="leftTime">{this.state.valueInHHMMSS}</span>
+                <span ref="currentTime" id="leftTime">{this.getCurrentTimeInItemHHMMSS()}</span>
                 <input type="range"
-                       min={this.state.min}
-                       max={this.state.max}
+                       min={0}
+                       max={this.props.itemLength / 1000}
                        value={this.state.value}
                        id="redSeekBar"
                        onChange={this.seekChange}
@@ -65,7 +57,7 @@ var SeekBar = React.createClass({
                        onTouchStart={this.onMouseDown}
                        onTouchEnd={this.onMouseUp}
                        step="any" />
-                <span id="rightTime">{this.state.maxInHHMMSS}</span>
+                <span id="rightTime">{this.getTimeInHHMMSS(this.props.itemLength)}</span>
             </div>
         );
     }
