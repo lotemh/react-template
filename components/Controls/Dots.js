@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 
 var Dots = React.createClass({
     propTypes: {
-        inExtend: PropTypes.bool.isRequired,
         itemNum: PropTypes.number.isRequired,
         numOfItems: PropTypes.number.isRequired
     },
@@ -17,9 +16,6 @@ var Dots = React.createClass({
         var className;
         if (name === "dots") {
             className = 'dots';
-            if (this.props.inExtend) {
-                className += ' hidden';
-            }
         } else {
             className = 'dot';
             let num = parseInt(name.match(/[\d\.]+/)[0], 10),

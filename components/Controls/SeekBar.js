@@ -3,7 +3,6 @@ import {toHHMMSS} from '../utils/timeUtils';
 
 var SeekBar = React.createClass({
     propTypes: {
-        inExtend: PropTypes.bool.isRequired,
         seekListener: PropTypes.func.isRequired,
         itemStart: PropTypes.number.isRequired,
         itemLength: PropTypes.number.isRequired,
@@ -19,9 +18,6 @@ var SeekBar = React.createClass({
     },
     getClassName(){
         var className = 'seekBar';
-        if (!this.props.inExtend) {
-            className += ' hidden';
-        }
         return className;
     },
     seekChange(event) {
@@ -41,22 +37,22 @@ var SeekBar = React.createClass({
     },
     componentWillReceiveProps() {
         if (!this.state.inSeekChange && this.props.itemStart !== undefined && this.props.itemLength && this.props.itemTimeMs) {
-            let value = (this.props.itemTimeMs - this.props.itemStart) / 1000,
+            let currentTimeInItemSec = (this.props.itemTimeMs - this.props.itemStart) / 1000,
                 max = this.props.itemLength / 1000,
-                valueInHHMMSS = toHHMMSS(value.toString()),
+                currentTimeInItemHHMMSS = toHHMMSS(currentTimeInItemSec.toString()),
                 maxInHHMMSS = toHHMMSS(max.toString());
             this.setState({
                 min: 0,
                 max: this.props.itemLength / 1000,
                 value: (this.props.itemTimeMs - this.props.itemStart) / 1000,
-                valueInHHMMSS: valueInHHMMSS,
+                valueInHHMMSS: currentTimeInItemHHMMSS,
                 maxInHHMMSS: maxInHHMMSS
             });
         }
     },
     render() {
         return (
-            <div className={this.getClassName()}>
+            <div className='seekBar'>
                 <span id="leftTime">{this.state.valueInHHMMSS}</span>
                 <input type="range"
                        min={this.state.min}

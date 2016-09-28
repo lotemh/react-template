@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import * as TestUtils from 'react/lib/ReactTestUtils';
 import Dots from '../components/Controls/Dots';
 import ReactDOM from 'react-dom';
-const React = require('react');
+import React from 'react';
 
 describe('Dots test suite', () => {
 
