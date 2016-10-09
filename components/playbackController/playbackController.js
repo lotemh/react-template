@@ -147,6 +147,7 @@ class PlaybackController {
         if (playerId === this.getActive().id) {
             if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
                 this.onSegmentEndAction();
+                this.cancelOnSegmentEndAction();
             } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
                 this.playerEndVerifierTimeout = setInterval(this.playerEndVerifier.bind(this), this.segmentEndTimeMs - timeMs);
             }
