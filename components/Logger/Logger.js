@@ -3,10 +3,10 @@
  */
 
 class Logger {
-  log(message, params){
-    //todo: add debug mode
-    console.log(message);
-  }
+    log(message) {
+    // todo: add debug mode
+        console.log(message); // eslint-disable-line no-console
+    }
 }
 
 export default Logger;

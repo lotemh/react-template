@@ -5,21 +5,21 @@ import React, { PropTypes } from 'react';
 import VideoElement from '../VideoElement/VideoElement';
 import ElasticMediaSdk from '../ElasticMediaSdk/ElasticMediaSdk';
 
-var Html5Demo = React.createClass({
-  render(){
-    var players = new Array(this.props.numOfPlayers).fill(0);
-    return (
+const Html5Demo = React.createClass({
+    render() {
+        const players = new Array(this.props.numOfPlayers).fill(0);
+        return (
       <ElasticMediaSdk>
           {
-            players.map(function(elm, i){
-              return (
-                <VideoElement key={"player" + i} playerId={"player" + i}/>
-              )
+            players.map((elm, i) => {
+                return (
+                <VideoElement key={`player${i}`} playerId={`player${i}`} />
+              );
             })
           }
       </ElasticMediaSdk>
     );
-  }
+    }
 });
 
 export default Html5Demo;

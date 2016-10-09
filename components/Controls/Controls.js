@@ -5,12 +5,12 @@ import SeekBar from './SeekBar';
 import Dots from './Dots';
 import ControlsStartStatus from './ControlsStartStatus';
 
-let SWIPES = {
-    LEFT: "swipeleft",
-    RIGHT: "swiperight"
+const SWIPES = {
+    LEFT: 'swipeleft',
+    RIGHT: 'swiperight'
 };
-var Controls = React.createClass({
-    getInitialState(){
+const Controls = React.createClass({
+    getInitialState() {
         return {
             startStatus: ControlsStartStatus.PENDING,
             isPlaying: false,
@@ -23,89 +23,89 @@ var Controls = React.createClass({
             inExtend: false
         };
     },
-    componentDidMount(){
+    componentDidMount() {
         this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
     },
-    swipeLeft(){
-        this.props.stateMachine.eventHandler("next");
+    swipeLeft() {
+        this.props.stateMachine.eventHandler('next');
     },
-    swipeRight(){
-        this.props.stateMachine.eventHandler("previous");
+    swipeRight() {
+        this.props.stateMachine.eventHandler('previous');
     },
 
     updateControl(state) {
         this.setState(state);
     },
 
-    getClassName(name){
-        var className = 'controller';
-        if (name === "extend" && this.state.inExtend) {
+    getClassName(name) {
+        let className = 'controller';
+        if (name === 'extend' && this.state.inExtend) {
             className += ' hidden';
         }
-        if (name === "play") {
-            className += " play";
+        if (name === 'play') {
+            className += ' play';
             className += this.state.isPlaying ? ' hidden' : '';
-        } else if (name === "pause") {
+        } else if (name === 'pause') {
             className += !this.state.isPlaying ? ' hidden' : '';
         }
         return className;
     },
-    togglePlay(){
-        var isPlaying = !this.state.isPlaying;
-        var action = isPlaying ? "play" : "pause";
-        this.setState({isPlaying: isPlaying});
+    togglePlay() {
+        const isPlaying = !this.state.isPlaying;
+        const action = isPlaying ? 'play' : 'pause';
+        this.setState({ isPlaying });
         this.eventHandler(action);
     },
-    startPlaying(){
-        this.eventHandler("firstPlay");
+    startPlaying() {
+        this.eventHandler('firstPlay');
     },
-    eventHandler(action){
+    eventHandler(action) {
         this.props.stateMachine.eventHandler(action);
     },
-    getStartPlayingClass(){
-        return this.state.startStatus === ControlsStartStatus.PENDING_USER_ACTION ? "controller bigPlay" : 'hidden';
+    getStartPlayingClass() {
+        return this.state.startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
     },
-    getControlsClassName(){
-        return this.state.startStatus === ControlsStartStatus.ACTIVE ? "controls" : "hidden";
+    getControlsClassName() {
+        return this.state.startStatus === ControlsStartStatus.ACTIVE ? 'controls' : 'hidden';
     },
-    seekListener(currentTime){
-        this.props.stateMachine.eventHandler("seek", {
-            timestamp: currentTime
+    seekListener(currentTime) {
+        this.props.stateMachine.eventHandler('seek', {
+            timestamp: currentTime,
         });
     },
-    render(){
-        let pendingFirstPlayClickStyle = {};
+    render() {
+        const pendingFirstPlayClickStyle = {};
         if (this.state.pendingFirstPlayClick) {
-            pendingFirstPlayClickStyle['pointerEvents'] = 'none';
+            pendingFirstPlayClickStyle.pointerEvents = 'none';
         }
         return (
             <div>
                 <div>
-                    <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying}/>
+                    <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
                 <div className={this.getControlsClassName()}>
                     <div className="controlsTouchScreen" style={pendingFirstPlayClickStyle} ref="touchScreen"></div>
-                    <img src="images/extend.png" className={this.getClassName("extend")} id="extend" onClick={this.eventHandler.bind(this, "extend")}/>
-                    <img src="images/play.png" className={this.getClassName("play")} onClick={this.togglePlay}/>
-                    <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
+                    <img src="images/extend.png" className={this.getClassName('extend')} id="extend" onClick={this.eventHandler.bind(this, 'extend')} />
+                    <img src="images/play.png" className={this.getClassName('play')} onClick={this.togglePlay} />
+                    <img src="images/pause.png" className={this.getClassName('pause')} id="pause" onClick={this.togglePlay} />
                     <Dots
-                        itemNum={this.state.itemNum}
-                        numOfItems={this.state.numOfItems}
-                        inExtend={this.state.inExtend}
+                      itemNum={this.state.itemNum}
+                      numOfItems={this.state.numOfItems}
+                      inExtend={this.state.inExtend}
                     />
                     <SeekBar
-                        inExtend={this.state.inExtend}
-                        itemTimeMs={this.state.itemTimeMs}
-                        itemStart={this.state.itemStart}
-                        itemLength={this.state.itemLength}
-                        seekListener={this.seekListener}
+                      inExtend={this.state.inExtend}
+                      itemTimeMs={this.state.itemTimeMs}
+                      itemStart={this.state.itemStart}
+                      itemLength={this.state.itemLength}
+                      seekListener={this.seekListener}
                     />
                 </div>
             </div>
         );
-    }
+    },
 });
 
 export default Controls;

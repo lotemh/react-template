@@ -1,42 +1,42 @@
 import React, { PropTypes } from 'react';
-import {toHHMMSS} from '../utils/timeUtils';
+import { toHHMMSS } from '../utils/timeUtils';
 
-var SeekBar = React.createClass({
+const SeekBar = React.createClass({
     propTypes: {
         inExtend: PropTypes.bool.isRequired,
         seekListener: PropTypes.func.isRequired,
         itemStart: PropTypes.number.isRequired,
         itemLength: PropTypes.number.isRequired,
-        itemTimeMs: PropTypes.number.isRequired
+        itemTimeMs: PropTypes.number.isRequired,
     },
-    getInitialState(){
+    getInitialState() {
         return {
             min: 0,
             max: 1,
             value: 0,
-            inSeekChange: false
+            inSeekChange: false,
         };
     },
-    getClassName(){
-        var className = 'seekBar';
+    getClassName() {
+        let className = 'seekBar';
         if (!this.props.inExtend) {
             className += ' hidden';
         }
         return className;
     },
     seekChange(event) {
-        this.setState({value: event.target.value});
+        this.setState({ value: event.target.value });
     },
     onMouseDown() {
-        this.setState({inSeekChange: true});
+        this.setState({ inSeekChange: true });
     },
     onMouseUp() {
         this.props.seekListener(this.getItemTime());
-        setTimeout( () => {//TODO move to seek promise return
-            this.setState({inSeekChange: false});
+        setTimeout(() => { // TODO move to seek promise return
+            this.setState({ inSeekChange: false });
         }, 100);
     },
-    getItemTime(){
+    getItemTime() {
         return Math.floor(parseInt(this.state.value, 10) + this.props.itemStart / 1000);
     },
     componentWillReceiveProps() {
@@ -49,8 +49,8 @@ var SeekBar = React.createClass({
                 min: 0,
                 max: this.props.itemLength / 1000,
                 value: (this.props.itemTimeMs - this.props.itemStart) / 1000,
-                valueInHHMMSS: valueInHHMMSS,
-                maxInHHMMSS: maxInHHMMSS
+                valueInHHMMSS,
+                maxInHHMMSS,
             });
         }
     },
@@ -59,20 +59,21 @@ var SeekBar = React.createClass({
             <div className={this.getClassName()}>
                 <span id="leftTime">{this.state.valueInHHMMSS}</span>
                 <input type="range"
-                       min={this.state.min}
-                       max={this.state.max}
-                       value={this.state.value}
-                       id="redSeekBar"
-                       onChange={this.seekChange}
-                       onMouseDown={this.onMouseDown}
-                       onMouseUp={this.onMouseUp}
-                       onTouchStart={this.onMouseDown}
-                       onTouchEnd={this.onMouseUp}
-                       step="any" />
+                  min={this.state.min}
+                  max={this.state.max}
+                  value={this.state.value}
+                  id="redSeekBar"
+                  onChange={this.seekChange}
+                  onMouseDown={this.onMouseDown}
+                  onMouseUp={this.onMouseUp}
+                  onTouchStart={this.onMouseDown}
+                  onTouchEnd={this.onMouseUp}
+                  step="any"
+                />
                 <span id="rightTime">{this.state.maxInHHMMSS}</span>
             </div>
         );
-    }
+    },
 });
 
 export default SeekBar;
