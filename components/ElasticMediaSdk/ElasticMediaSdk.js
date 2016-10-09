@@ -1,11 +1,11 @@
 import $ from 'jquery';
 import React, { PropTypes } from 'react';
-import StateMachine from "../StateMachine/StateMachine";
+import StateMachine from '../StateMachine/StateMachine';
 import Controls from '../Controls/Controls';
 
-var ElasticMediaSdk = React.createClass({
+const ElasticMediaSdk = React.createClass({
 
-    componentWillMount(){
+    componentWillMount() {
         let pendingFirstPlayClick = false;
         if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
             pendingFirstPlayClick = true;
@@ -14,15 +14,15 @@ var ElasticMediaSdk = React.createClass({
         this.stateMachine = new StateMachine(pendingFirstPlayClick);
     },
 
-    componentDidMount(){
-        var players = Object.values(this.refs).filter(ref=> !!ref.props.playerId);
+    componentDidMount() {
+        const players = Object.values(this.refs).filter(ref => !!ref.props.playerId);
         this.stateMachine.setPlayers(players);
-        var stateMachine = this.stateMachine;
-        var controls = this.refs.controls;
-        $.getJSON("metadataExample.json", function(metadata) {
+        const stateMachine = this.stateMachine;
+        const controls = this.refs.controls;
+        $.getJSON('metadataExample.json', (metadata) => {
             stateMachine.setSegments(metadata.segments);
             // stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/mm080616.mp4");
-            stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/artbound.mp4");
+            stateMachine.setContentUrl('https://s3.eu-central-1.amazonaws.com/phase1-episodes/artbound.mp4');
             stateMachine.setControls(controls);
             stateMachine.start();
         });
@@ -37,7 +37,7 @@ var ElasticMediaSdk = React.createClass({
             },
             bestWidth,
             bestHeight,
-            ratio = 1.77777778;//TODO get this value from source
+            ratio = 1.77777778;// TODO get this value from source
         if (result.width < result.height || result.height * ratio > result.width) {
             bestHeight = result.width * (1 / ratio);
             result.top = (result.height - bestHeight) / 2;
@@ -55,10 +55,10 @@ var ElasticMediaSdk = React.createClass({
     handleResize() {
         this.setState(this.calcWidthAndHeight());
     },
-    render(){
+    render() {
         return (
             <div className="player-container" style={this.state}>
-                <div  className="screen playerHolder">
+                <div className="screen playerHolder">
                     {React.Children.map(this.props.children, (child) => {
                         return React.cloneElement(child, {
                             ref: child.props.playerId

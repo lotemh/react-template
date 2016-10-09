@@ -3,33 +3,33 @@
  */
 
 class SegmentsQueue {
-  constructor(){
-    this.queue = [];
-  }
-
-  add(segment){
-    if (segment === undefined){
-      return false;
+    constructor() {
+        this.queue = [];
     }
-    if (this.queue.indexOf(segment) !== -1){
-      return false;
+
+    add(segment) {
+        if (segment === undefined) {
+            return false;
+        }
+        if (this.queue.indexOf(segment) !== -1) {
+            return false;
+        }
+        this.queue.push(segment);
+        return true;
     }
-    this.queue.push(segment);
-    return true;
-  }
 
-  next(){
-    return this.queue.shift();
-  }
+    next() {
+        return this.queue.shift();
+    }
 
-  remove(segment){
-    var segmentIndex = this.queue.indexOf(segment);
-    this.queue.splice(segmentIndex, 1);
-  }
+    remove(segment) {
+        const segmentIndex = this.queue.indexOf(segment);
+        this.queue.splice(segmentIndex, 1);
+    }
 
-  get(title){
-    return this.queue.find(seg => seg.title === title);
-  }
+    get(title) {
+        return this.queue.find(seg => seg.title === title);
+    }
 }
 
 

@@ -98,8 +98,8 @@
         }
     },
     "scripts": {
-        "eslint": "eslint components core pages test utils main.js run.js webpack.config.js",
-        "eslint-partial": "eslint test",
+        "eslint": "eslint .",
+        "eslint-partial": "eslint test pages components",
         "stylelint": "stylelint \"components/**/*.css\" \"pages/**/*.css\"",
         "lint": "npm run eslint && npm run stylelint",
         "test": "mocha --compilers js:babel-register",
@@ -110,6 +110,6 @@
         "publish": "node run publish",
         "publish:debug": "node run publish --debug",
         "start": "node run",
-        "prepush": "npm run test"
+        "prepush": "npm run eslint && npm run test"
     }
 }

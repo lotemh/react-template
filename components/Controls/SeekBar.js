@@ -1,32 +1,32 @@
 import React, { PropTypes } from 'react';
-import {toHHMMSS} from '../utils/timeUtils';
+import { toHHMMSS } from '../utils/timeUtils';
 
-var SeekBar = React.createClass({
+const SeekBar = React.createClass({
     propTypes: {
         seekListener: PropTypes.func.isRequired,
         itemStart: PropTypes.number.isRequired,
         itemLength: PropTypes.number.isRequired,
-        itemTimeMs: PropTypes.number.isRequired
+        itemTimeMs: PropTypes.number.isRequired,
     },
-    getInitialState(){
+    getInitialState() {
         return {
             value: this.calcSeekBarValue(),
             inSeekChange: false
         };
     },
     seekChange(event) {
-        this.setState({value: event.target.value});
+        this.setState({ value: event.target.value });
     },
     onMouseDown() {
-        this.setState({inSeekChange: true});
+        this.setState({ inSeekChange: true });
     },
     onMouseUp() {
         this.props.seekListener(this.getItemTime());
-        setTimeout( () => {//TODO move to seek promise return
-            this.setState({inSeekChange: false});
+        setTimeout(() => { // TODO move to seek promise return
+            this.setState({ inSeekChange: false });
         }, 100);
     },
-    getItemTime(){
+    getItemTime() {
         return Math.floor(parseInt(this.state.value, 10) + this.props.itemStart / 1000);
     },
     getCurrentTimeInItemHHMMSS: function () {

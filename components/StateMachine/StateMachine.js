@@ -1,6 +1,6 @@
-import Logger from "../Logger/Logger";
-import SegmentManager from "./SegmentManager";
-import PlaybackController from "../playbackController/playbackController"
+import Logger from '../Logger/Logger';
+import SegmentManager from './SegmentManager';
+import PlaybackController from '../playbackController/playbackController';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
 
 /**
@@ -8,117 +8,116 @@ import ControlsStartStatus from '../Controls/ControlsStartStatus';
  */
 
 class StateMachine {
-    constructor(pendingFirstPlayClick){
+    constructor(pendingFirstPlayClick) {
         this.logger = new Logger();
         this.state = {
             itemNum: 0,
-            pendingFirstPlayClick: pendingFirstPlayClick,
-            inExtend: false
+            pendingFirstPlayClick,
+            inExtend: false,
         };
 
         this.playbackController = new PlaybackController();
         this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
     }
 
-    /****  public APi ****/
+    /** **  public APi ****/
 
-    setControls(controls){
+    setControls(controls) {
         this.controlsManager = controls;
     }
 
-    loadSegments(episodeMetadataId){
+    loadSegments(episodeMetadataId) {
 
     }
 
-    setPlayers(players){
+    setPlayers(players) {
         this.playbackController.createPlayers(players);
     }
 
-    setSegments(segments){
+    setSegments(segments) {
         this.segmentsManager = new SegmentManager(segments, this.logger);
         this.numOfItems = this.segmentsManager.getNumberOtItems();
     }
 
-    setContentUrl(url){
+    setContentUrl(url) {
         this.segmentsManager.setContentUrl(url);
     }
 
-    start(){
-        this.controlsManager.updateControl({numOfItems: this.numOfItems});
-        this.actionHandler("next")
-            .then(()=>{
-                this.controlsManager.updateControl({startStatus: ControlsStartStatus.ACTIVE});
+    start() {
+        this.controlsManager.updateControl({ numOfItems: this.numOfItems });
+        this.actionHandler('next')
+            .then(() => {
+                this.controlsManager.updateControl({ startStatus: ControlsStartStatus.ACTIVE });
             })
-            .catch((error)=>{
-            if(error.name == "NotAllowedError"){
-                this.controlsManager.updateControl({startStatus: ControlsStartStatus.PENDING_USER_ACTION});
-                var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
-                this.playbackController.prepareSegments(segmentsToPrepare);
-            }else{
-                throw error;
-            }
-        });
-
+            .catch((error) => {
+                if (error.name == 'NotAllowedError') {
+                    this.controlsManager.updateControl({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
+                    const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+                    this.playbackController.prepareSegments(segmentsToPrepare);
+                } else {
+                    throw error;
+                }
+            });
     }
 
-    eventHandler(event, params){
-        if (this[event]){
-            this.logger.log("handle event " + event);
+    eventHandler(event, params) {
+        if (this[event]) {
+            this.logger.log(`handle event ${event}`);
             this[event](params);
         } else this.actionHandler(event);
     }
 
-    /************************/
+    /** **********************/
 
-    extend(){
+    extend() {
         this.state.inExtend = true;
         this.playbackController.cancelOnSegmentEndAction();
         this.extendItem(this.segmentsManager.getActive());
         this.controlsManager.updateControl(this.state);
-        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, "no_action"));
+        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
 
-    previous(){
-        if (this.segmentsManager.getNextSegmentAccordingToAction("previous")) {
+    previous() {
+        if (this.segmentsManager.getNextSegmentAccordingToAction('previous')) {
             this.playbackController.pause();
         }
-        this.actionHandler("previous");
+        this.actionHandler('previous');
     }
 
-    actionHandler(action){
-        this.logger.log("handle action " + action);
-        var followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
-        if (followingSegment === undefined){
+    actionHandler(action) {
+        this.logger.log(`handle action ${action}`);
+        const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
+        if (followingSegment === undefined) {
             return;
         }
-        if (action !== "extend") {
+        if (action !== 'extend') {
             this.state.inExtend = false;
         }
         this.state.itemNum = SegmentManager.getItemNum(followingSegment.title);
         this.controlsManager.updateControl(this.state);
         this.segmentsManager.setActive(followingSegment);
-        return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, "no_action"))
+        return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
             .then(() => {
-                //todo: stop current loading if needed
+                // todo: stop current loading if needed
                 this.state.isPlaying = true;
                 this.controlsManager.updateControl(this.state);
-                setTimeout(()=> {
-                    var segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+                setTimeout(() => {
+                    const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
                     this.playbackController.updateSegments(segmentsToPrepare);
                     this.playbackController.prepareSegments(segmentsToPrepare);
                 }, 3000);
-            }).catch(e => {throw e});
+            }).catch(e => { throw e; });
     }
 
-    play(){
-        this.playbackController.play().then(()=>{
+    play() {
+        this.playbackController.play().then(() => {
             this.state.pendingFirstPlayClick = false;
             this.state.isPlaying = true;
             this.controlsManager.updateControl(this.state);
         });
     }
 
-    pause(){
+    pause() {
         this.state.isPlaying = false;
         this.controlsManager.updateControl(this.state);
         this.playbackController.pause();
@@ -128,16 +127,16 @@ class StateMachine {
         this.playbackController.seek(params.timestamp);
     }
 
-    firstPlay(){
+    firstPlay() {
         this.playbackController.startPlaying()
-            .then(()=>{
-                this.controlsManager.updateControl({startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
+            .then(() => {
+                this.controlsManager.updateControl({ startStatus: ControlsStartStatus.ACTIVE, isPlaying: true });
             });
     }
 
     extendItem(activeSegment) {
-        var followingSegment = this.segmentsManager.getNextSegmentAccordingToAction("extend");
-        var extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
+        const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction('extend');
+        const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
         this.segmentsManager.setActive(extendedSegment);
         this.state.itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
         this.state.itemStart = activeSegment.in;

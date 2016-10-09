@@ -1,19 +1,19 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import Kcet from '../../components/demoClients/kcetDemo';
 
 class KcetPage extends React.Component {
 
-  componentDidMount() {
-    document.title = "Kcet Demo";
-  }
+    componentDidMount() {
+        document.title = 'Kcet Demo';
+    }
 
-  render() {
-    return (
-        <div className="App">
-          <Kcet/>
-        </div>
+    render() {
+        return (
+      <div className="App">
+          <Kcet />
+      </div>
     );
-  }
+    }
 
 }
 

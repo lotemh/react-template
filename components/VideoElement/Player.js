@@ -1,17 +1,17 @@
 import React, { PropTypes } from 'react';
-import Logger from "../Logger/Logger";
+import Logger from '../Logger/Logger';
 
 class Player {
 
-    constructor(videoPlayer, id){
+    constructor(videoPlayer, id) {
         this.player = videoPlayer;
         this.loading = null;
         this.id = id;
-        this.logger = new Logger()
-        this.src = "";
+        this.logger = new Logger();
+        this.src = '';
     }
 
-    getPlayer(){
+    getPlayer() {
         return this.player;
     }
 
@@ -20,41 +20,41 @@ class Player {
         this.removeTimeUpdateEvent();
     }
 
-    play(){
+    play() {
         this.addTimeUpdateEvent();
         return this.getPlayer().play();
     }
-    show(){
+    show() {
         this.getPlayer().show();
     }
-    hide(){
+    hide() {
         this.getPlayer().hide();
     }
-    prepare(src, segmentTitle){
+    prepare(src, segmentTitle) {
         this.loading = segmentTitle;
-        if (!this.src){
+        if (!this.src) {
             this.getPlayer().setSrc(src);
             this.src = src;
             this.getPlayer().load();
             return;
         }
-        var timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
+        const timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
         this.seek(timestamp);
         this.pause();
         this.loadedCallback(segmentTitle);
     }
-    seek(timestamp){
+    seek(timestamp) {
         this.getPlayer().seek(timestamp);
     }
-    getCurrentTime(){
+    getCurrentTime() {
         return this.getPlayer().getCurrentTime();
     }
-    getId(){
+    getId() {
         return this.id;
     }
-    addLoadedDataEvent(listener){
-        function loadedCallback(){
-            var loadedSegment = this.loading;
+    addLoadedDataEvent(listener) {
+        function loadedCallback() {
+            const loadedSegment = this.loading;
             if (loadedSegment) {
                 this.loading = null;
             }
@@ -64,19 +64,19 @@ class Player {
         this.getPlayer().addLoadedDataEvent(loadedCallback.bind(this));
     }
 
-    addTimeUpdateEvent(){
+    addTimeUpdateEvent() {
         this.getPlayer().addTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
-    removeTimeUpdateEvent(){
+    removeTimeUpdateEvent() {
         this.getPlayer().removeTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
 
-    getSrc(){
+    getSrc() {
         return this.src;
     }
 
-    timeUpdatedListener(event){
-        var currentTime = event.target.currentTime * 1000;
+    timeUpdatedListener(event) {
+        const currentTime = event.target.currentTime * 1000;
         this.timeUpdateCallback(currentTime, this.id);
     }
 
