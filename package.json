@@ -110,6 +110,6 @@
         "publish": "node run publish",
         "publish:debug": "node run publish --debug",
         "start": "node run",
-        "prepush": "npm run test"
+        "prepush": "npm run eslint && npm run test"
     }
 }
