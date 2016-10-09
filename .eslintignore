@@ -1,1 +1,4 @@
 utils/
+core/router.js
+core/store.js
+main.js
