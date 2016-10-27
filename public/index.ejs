@@ -1,6 +1,6 @@
 <!doctype html>
 <html class="no-js" lang="">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title><%= config.title %></title>
@@ -8,18 +8,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,500italic,700,700italic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-      <link href="favicon.png" rel="shortcut icon" type="image/png">
-      <link rel="stylesheet" type="text/css" href="main.css">
-  </head>
-  <body>
-    <div id="container"></div>
-    <script src="<%= bundle %>"></script>
-    <%_ if (!debug && config.trackingID) { _%>
-    <script>
-      window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
-      ga('create','<%= config.trackingID %>','auto');ga('send','pageview')
-    </script>
-    <script src="https://www.google-analytics.com/analytics.js" async defer></script>
-    <%_ } _%>
-  </body>
+    <link href="favicon.png" rel="shortcut icon" type="image/png">
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+<div style="display: block; position: relative; max-width: 100%;">
+    <div style="padding-top: 100%;">
+        <div data-elastic-media-account="1234"
+               data-video-id="5185755058001"
+               data-account="5114477724001"
+               data-player="Skx4vXu1lg"
+               data-embed="default"
+               data-application-id
+               class="video-js"
+               style="width: 100%; height: 100%; position: absolute; top: 0px; bottom: 0px; right: 0px; left: 0px;">
+        </div>
+    </div></div>
+
+
+<script src="<%= bundle %>"></script>
+<%_ if (!debug && config.trackingID) { _%>
+<script>
+    window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+    ga('create','<%= config.trackingID %>','auto');ga('send','pageview')
+</script>
+<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+<%_ } _%>
+</body>
 </html>
