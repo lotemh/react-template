@@ -37,7 +37,7 @@ class BrightCovePlayer extends React.Component {
            callback();
        } else {
            //store array of callbacks for ready
-           setTimeout(this.onReady.bind(this, callback), 600);
+           this.state.readyCallback = callback;
        }
     }
 
@@ -46,6 +46,9 @@ class BrightCovePlayer extends React.Component {
         var that = this;
         this.player.ready(function () {
             that.setState({ready: true, src: that.getPlayer().src()});
+            if (that.state.readyCallback){
+                that.state.readyCallback();
+            }
         });
     }
 
