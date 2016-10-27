@@ -8,9 +8,45 @@ class BrightCovePlayer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            src: props.src || '',
+            src: this.props["data-video-id"] || '',
             isHidden: true
         };
+    }
+
+    componentWillMount(){
+        const script = document.createElement("script");
+        //todo: get the script from outside
+        script.src = "//players.brightcove.net/5114477724001/Skx4vXu1lg_default/index.min.js";
+        document.body.appendChild(script);
+    }
+
+    componentDidMount(){
+        this.waitForVideoJs();
+    }
+
+    waitForVideoJs() {
+        if (window.videojs) {
+            this.initPlayer();
+        } else {
+            setTimeout(this.waitForVideoJs.bind(this), 500);
+        }
+    }
+
+    onReady(callback){
+       if (this.state.ready === true){
+           callback();
+       } else {
+           //store array of callbacks for ready
+           setTimeout(this.onReady.bind(this, callback), 600);
+       }
+    }
+
+    initPlayer() {
+        this.player = window.videojs(this.props.playerId + "_html5_api");
+        var that = this;
+        this.player.ready(function () {
+            that.setState({ready: true, src: that.getPlayer().src()});
+        });
     }
 
     getClassName() {
@@ -20,21 +56,31 @@ class BrightCovePlayer extends React.Component {
     }
 
     getPlayer() {
-        return this.refs.player;
+        return this.player;
+    }
+
+    getVideoProps(){
+        var videoProps = Object.assign({}, this.props);
+        delete videoProps.class;
+        delete videoProps.playerId;
+        delete videoProps.contentUrl;
+        delete videoProps.style;
+        return videoProps;
     }
 
     render() {
         return (
-            <div>
-                <video className={this.getClassName()} ref="player" data-account="5114477724001"
+            <div className={this.getClassName()}>
+                <video ref="player"
+                       id={this.props.playerId}
                        data-player="ryxQpOD6j"
                        data-playsinline
                        data-webkit-playsinline
                        data-embed="default"
-                       data-application-id>
-                    <source type="video/mp4" ref="source" src={this.props.src}/>
+                       data-application-id
+                       preload="metadata"
+                    {...this.getVideoProps()}>
                 </video>
-                <script src="//players.brightcove.net/5114477724001/ryxQpOD6j_default/index.min.js"></script>
             </div>
         );
     }
@@ -46,7 +92,8 @@ class BrightCovePlayer extends React.Component {
     }
 
     play() {
-        return this.getPlayer().play();
+        this.getPlayer().play();
+        return Promise.resolve();
     }
 
     show() {
@@ -58,7 +105,11 @@ class BrightCovePlayer extends React.Component {
     }
 
     setSrc(src) {
-        this.refs.source.setAttribute('src', src);
+        //todo - at the moment the src is already set by brightcove
+    }
+
+    getSrc() {
+        return this.getPlayer().src();
     }
 
     load() {
@@ -66,33 +117,34 @@ class BrightCovePlayer extends React.Component {
     }
 
     seek(timeInSeconds) {
-        this.getPlayer().currentTime = timeInSeconds;
+        this.getPlayer().currentTime(timeInSeconds);
     }
 
     getCurrentTime() {
-        return this.getPlayer().currentTime * 1000;
+        return this.getPlayer().currentTime();
     }
 
     addLoadedDataEvent(listener) {
-        this.getPlayer().addEventListener('loadeddata', listener);
+        this.getPlayer().on('loadeddata', listener);
     }
 
     addTimeUpdateEvent(listener) {
-        this.getPlayer().addEventListener('timeupdate', listener, false);
+        this.getPlayer().on('timeupdate', listener, false);
     }
 
     removeTimeUpdateEvent(listener) {
-        this.getPlayer().removeEventListener('timeupdate', listener);
+        this.getPlayer().off('timeupdate', listener);
     }
 
     addEventListener(event, listener) {
-        this.getPlayer().addEventListener(event, listener, false);
+        this.getPlayer().on(event, listener, false);
     }
 }
 
 BrightCovePlayer.propTypes = {
     src: PropTypes.string,
-    className: PropTypes.string
+    className: PropTypes.string,
+    account: PropTypes.string
 };
 
 export default BrightCovePlayer;

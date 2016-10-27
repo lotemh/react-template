@@ -58,6 +58,9 @@ class Player {
     }
     addLoadedDataEvent(listener) {
         function loadedCallback() {
+            if (!this.src){
+                this.src = this.getPlayer().getSrc();
+            }
             const loadedSegment = this.loading;
             if (loadedSegment) {
                 this.loading = null;
@@ -80,7 +83,7 @@ class Player {
     }
 
     timeUpdatedListener(event) {
-        const currentTime = event.target.currentTime * 1000;
+        const currentTime = this.getPlayer().getCurrentTime() * 1000;
         this.timeUpdateCallback(currentTime, this.id);
     }
 
