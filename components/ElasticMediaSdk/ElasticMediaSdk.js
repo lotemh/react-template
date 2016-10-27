@@ -4,6 +4,9 @@ import StateMachine from '../StateMachine/StateMachine';
 import Controls from '../Controls/Controls';
 
 const ElasticMediaSdk = React.createClass({
+    propTypes: {
+        contentUrl: PropTypes.string
+    },
 
     componentWillMount() {
         let pendingFirstPlayClick = false;
@@ -16,15 +19,17 @@ const ElasticMediaSdk = React.createClass({
 
     componentDidMount() {
         const players = Object.values(this.refs).filter(ref => !!ref.props.playerId);
-        this.stateMachine.setPlayers(players);
+        var waitForPlayersReady = this.stateMachine.setPlayers(players);
         const stateMachine = this.stateMachine;
         const controls = this.refs.controls;
         $.getJSON('metadataExample.json', (metadata) => {
             stateMachine.setSegments(metadata.segments);
-            // stateMachine.setContentUrl("https://s3.eu-central-1.amazonaws.com/phase1-episodes/mm080616.mp4");
-            stateMachine.setContentUrl('https://s3.eu-central-1.amazonaws.com/phase1-episodes/artbound.mp4');
+            var contentUrl = this.props.contentUrl;
+            stateMachine.setContentUrl(contentUrl);
             stateMachine.setControls(controls);
-            stateMachine.start();
+            waitForPlayersReady.then(()=> {
+                stateMachine.start();
+            })
         });
         window.addEventListener('resize', this.handleResize);
     },

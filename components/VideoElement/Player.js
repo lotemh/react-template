@@ -15,6 +15,10 @@ class Player {
         return this.player;
     }
 
+    onReady(callback) {
+        this.getPlayer().onReady(callback);
+    }
+
     pause() {
         this.getPlayer().pause();
         this.removeTimeUpdateEvent();

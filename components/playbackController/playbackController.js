@@ -28,12 +28,19 @@ class PlaybackController {
     /*********     Public API         ***********/
     createPlayers(videoElements){
         var id = 0;
+        var promises = [];
         const players = videoElements.map(p => new Player(p, "player" + id++));
         players.forEach(player => {
-            player.addLoadedDataEvent(this.onDataLoaded.bind(this));
-            player.setTimeUpdateCallback(this.playerUpdate.bind(this));
+            promises.push(new Promise((resolve, reject) => {
+                player.onReady(()=> {
+                    player.addLoadedDataEvent(this.onDataLoaded.bind(this));
+                    player.setTimeUpdateCallback(this.playerUpdate.bind(this));
+                    resolve();
+                });
+            }));
         });
         this.players = players;
+        return Promise.all(promises);
     }
 
     prepare(segment, isForce) {
@@ -271,6 +278,7 @@ class PlaybackController {
     }
 
     setSegmentReady(segmentTitle, player) {
+        if (!segmentTitle) return;
         this.segmentToPlayerMap[segmentTitle] = player;
         this.clearSegmentLoading(segmentTitle);
     }

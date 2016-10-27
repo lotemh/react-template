@@ -31,7 +31,7 @@ class StateMachine {
     }
 
     setPlayers(players) {
-        this.playbackController.createPlayers(players);
+        return this.playbackController.createPlayers(players);
     }
 
     setSegments(segments) {
