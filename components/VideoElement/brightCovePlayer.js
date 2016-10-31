@@ -15,8 +15,7 @@ class BrightCovePlayer extends React.Component {
 
     componentWillMount(){
         const script = document.createElement("script");
-        //todo: get the script from outside
-        script.src = "//players.brightcove.net/5114477724001/Skx4vXu1lg_default/index.min.js";
+        script.src = this.props["data-brightcove-script"];
         document.body.appendChild(script);
     }
 
@@ -33,12 +32,12 @@ class BrightCovePlayer extends React.Component {
     }
 
     onReady(callback){
-       if (this.state.ready === true){
-           callback();
-       } else {
-           //store array of callbacks for ready
-           this.state.readyCallback = callback;
-       }
+        if (this.state.ready === true){
+            callback();
+        } else {
+            //store array of callbacks for ready
+            this.state.readyCallback = callback;
+        }
     }
 
     initPlayer() {
@@ -63,11 +62,12 @@ class BrightCovePlayer extends React.Component {
     }
 
     getVideoProps(){
+        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", 
+            "style", "data-brightcove-script", "data-elastic-media-account"];
         var videoProps = Object.assign({}, this.props);
-        delete videoProps.class;
-        delete videoProps.playerId;
-        delete videoProps.contentUrl;
-        delete videoProps.style;
+        INVALID_VIDEO_PROPS.forEach((attr) => {
+            delete videoProps[attr];
+        });
         return videoProps;
     }
 

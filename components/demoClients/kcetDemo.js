@@ -14,7 +14,7 @@ const Kcet = React.createClass({
     render() {
         const players = new Array(numOfPlayers).fill(0);
         return (
-      <ElasticMediaSdk contentUrl={this.props.contentUrl}>
+      <ElasticMediaSdk contentUrl={this.props["data-video-id"]}>
           {
             players.map((elm, i) => {
                 return (

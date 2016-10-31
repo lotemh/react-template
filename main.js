@@ -13,32 +13,27 @@ import Kcet from './components/demoClients/kcetDemo';
 
 import store from './core/store';
 
-const container = document.querySelector('[data-elastic-media-account]');
+const container = document.querySelector('[data-elastic-media-player]');
 
-var clientMap = {
-    '1234': Kcet
+const clientMap = {
+    'brightcove': createKcetElement
 };
 
-function getClientByAccount(account) {
-    return clientMap[account];
-}
-
-function getClient(container) {
-    var account = container.getAttribute('data-elastic-media-account');
+function createKcetElement(){
     var props = {};
-    var playerAttributesList = [];
     for (var i=0; i < container.attributes.length; i++){
         var attr = container.attributes[i];
-        if (attr.nodeName === 'data-video-id'){
-            props.contentUrl = attr.nodeValue;
-        }
         props[attr.nodeName] = attr.nodeValue;
     }
-    var client = getClientByAccount(account);
-    return React.createElement(client, props);
+    return React.createElement(Kcet, props);
 }
 
-var client = getClient(container);
+function getClientByAccount(container) {
+    var account = container.getAttribute('data-elastic-media-player');
+    return clientMap[account](container);
+}
+
+var client = getClientByAccount(container);
 
 function render(client) {
     ReactDOM.render(<Provider store={store}>{client}</Provider>, container);
