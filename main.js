@@ -9,28 +9,28 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import FastClick from 'fastclick';
 import { Provider } from 'react-redux';
-import Kcet from './components/demoClients/kcetDemo';
+import Brightcove from './components/demoClients/kcetDemo';
 
 import store from './core/store';
 
 const container = document.querySelector('[data-elastic-media-player]');
 
 const clientMap = {
-    'brightcove': createKcetElement
+    'brightcove': createSdkWithBrightcovePlayer
 };
 
-function createKcetElement(){
+function createSdkWithBrightcovePlayer(){
     var props = {};
     for (var i=0; i < container.attributes.length; i++){
         var attr = container.attributes[i];
         props[attr.nodeName] = attr.nodeValue;
     }
-    return React.createElement(Kcet, props);
+    return React.createElement(Brightcove, props);
 }
 
 function getClientByAccount(container) {
-    var account = container.getAttribute('data-elastic-media-player');
-    return clientMap[account](container);
+    var player = container.getAttribute('data-elastic-media-player');
+    return clientMap[player](container);
 }
 
 var client = getClientByAccount(container);
@@ -48,6 +48,6 @@ FastClick.attach(document.body);
 
 // Enable Hot Module Replacement (HMR)
 if (module.hot) {
-    render();
+    render(client);
 }
 

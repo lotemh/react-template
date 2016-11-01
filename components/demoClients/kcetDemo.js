@@ -7,14 +7,18 @@ import ElasticMediaSdk from '../ElasticMediaSdk/ElasticMediaSdk';
 
 const numOfPlayers = 2;
 
-const Kcet = React.createClass({
+const Brightcove = React.createClass({
     propTypes: {
-        contentUrl: PropTypes.string
+        contentUrl: PropTypes.string,
+        'data-elastic-media-account': PropTypes.string.isRequired,
+        'data-video-id': PropTypes.string.isRequired
     },
     render() {
         const players = new Array(numOfPlayers).fill(0);
         return (
-      <ElasticMediaSdk contentUrl={this.props["data-video-id"]}>
+      <ElasticMediaSdk contentUrl={this.props["data-video-id"]} 
+                       publisherId={this.props['data-elastic-media-account']}
+                       episodeId={this.props['data-video-id']}>
           {
             players.map((elm, i) => {
                 return (
@@ -27,4 +31,4 @@ const Kcet = React.createClass({
     }
 });
 
-export default Kcet;
+export default Brightcove;

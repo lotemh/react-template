@@ -5,7 +5,9 @@ import Controls from '../Controls/Controls';
 
 const ElasticMediaSdk = React.createClass({
     propTypes: {
-        contentUrl: PropTypes.string
+        contentUrl: PropTypes.string,
+        publisherId: PropTypes.string.isRequired,
+        episodeId: PropTypes.string.isRequired
     },
 
     componentWillMount() {
@@ -31,6 +33,23 @@ const ElasticMediaSdk = React.createClass({
                 stateMachine.start();
             })
         });
+        // todo: get metadata from cms server
+        // $.ajax({
+        //     url: 'http://mini-cms.elasticmedia.io/em/v2/' + this.props.publisherId + '/getMetadata?videoId=' + this.props.episodeId,
+        //     type: 'GET',
+        //     success: (metadata) => {
+        //         stateMachine.setSegments(metadata.segments);
+        //         var contentUrl = this.props.contentUrl;
+        //         stateMachine.setContentUrl(contentUrl);
+        //         stateMachine.setControls(controls);
+        //         waitForPlayersReady.then(()=> {
+        //             stateMachine.start();
+        //         })
+        //     },
+        // error: function(xhr, status, err){
+        //     console.error("Fail to get metadata", status, err.toString());
+        // }.bind(this)
+        // });
         window.addEventListener('resize', this.handleResize);
     },
     calcWidthAndHeight() {
