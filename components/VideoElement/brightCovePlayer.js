@@ -52,7 +52,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getClassName() {
-        let className = 'player';
+        let className = 'player-wrapper';
         className += this.state.isHidden ? ' hidden' : '';
         return className;
     }
@@ -62,7 +62,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getVideoProps(){
-        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", 
+        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl",
             "style", "data-brightcove-script", "data-elastic-media-account"];
         var videoProps = Object.assign({}, this.props);
         INVALID_VIDEO_PROPS.forEach((attr) => {
@@ -75,8 +75,8 @@ class BrightCovePlayer extends React.Component {
         return (
             <div className={this.getClassName()}>
                 <video ref="player"
+                       className="player brightcove-player"
                        id={this.props.playerId}
-                       data-player="ryxQpOD6j"
                        data-playsinline
                        data-webkit-playsinline
                        data-embed="default"
