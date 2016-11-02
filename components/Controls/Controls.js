@@ -3,6 +3,7 @@ import Hammer from 'hammerjs';
 import ReactDOM from 'react-dom';
 import SeekBar from './SeekBar';
 import Dots from './Dots';
+import Extend from './Extend';
 import ControlsStartStatus from './ControlsStartStatus';
 
 const SWIPES = {
@@ -80,7 +81,7 @@ const Controls = React.createClass({
     },
     render(){
         let timeElement = (this.state.inExtend) ?
-            <SeekBar 
+            <SeekBar
                 ref='seekBar'
                 itemTimeMs={this.state.itemTimeMs}
                 itemStart={this.state.itemStart}
@@ -99,8 +100,7 @@ const Controls = React.createClass({
                 <div className={this.getControlsClassName()}>
                     <div className="controlsTouchScreen" ref="touchScreen"
                          style={this.state.pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
-                    <img src="images/extend.png" className={this.getClassName("extend")} id="extend"
-                         onClick={this.eventHandler.bind(this, "extend")}/>
+                    <Extend isVisible={!this.state.inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
                     <img src="images/play.png" className={this.getClassName("play")} onClick={this.togglePlay}/>
                     <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
                     {timeElement}
