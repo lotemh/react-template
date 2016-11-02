@@ -3,9 +3,16 @@
 
 body {
     background-color: black;
+    margin: 0;
 }
 .player-container {
     position: absolute;
+}
+
+.player-wrapper {
+    padding-bottom: 56.25%;
+    height: 0;
+    position: relative;
 }
 
 .playerHolder {
@@ -41,6 +48,22 @@ body {
     text-align: left;
     font-family: Dense, Arial, serif;
     margin-left: calc(10% - 20px);
+}
+
+.brightcove-player .vjs-progress-control{
+     display: none
+ }
+
+.brightcove-player .vjs-duration{
+    display: none
+}
+
+.brightcove-player .vjs-current-time{
+    display: none
+}
+
+.brightcove-player .vjs-time-divider{
+    display: none
 }
 
 #defineContainer .definitionButton {
