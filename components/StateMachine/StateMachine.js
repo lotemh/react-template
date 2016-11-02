@@ -22,8 +22,8 @@ class StateMachine {
 
     /** **  public APi ****/
 
-    setControls(controls) {
-        this.controlsManager = controls;
+    setControls(updateFunc) {
+        this.updateView = updateFunc;
     }
 
     loadSegments(episodeMetadataId) {
@@ -44,14 +44,14 @@ class StateMachine {
     }
 
     start() {
-        this.controlsManager.updateControl({ numOfItems: this.numOfItems });
+        this.updateView({ numOfItems: this.numOfItems });
         this.actionHandler('next')
             .then(() => {
-                this.controlsManager.updateControl({ startStatus: ControlsStartStatus.ACTIVE });
+                this.updateView({ startStatus: ControlsStartStatus.ACTIVE });
             })
             .catch((error) => {
                 if (error.name == 'NotAllowedError') {
-                    this.controlsManager.updateControl({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
+                    this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
                     const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
                     this.playbackController.prepareSegments(segmentsToPrepare);
                 } else {
@@ -73,7 +73,7 @@ class StateMachine {
         this.state.inExtend = true;
         this.playbackController.cancelOnSegmentEndAction();
         this.extendItem(this.segmentsManager.getActive());
-        this.controlsManager.updateControl(this.state);
+        this.updateView(this.state);
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
 
@@ -94,13 +94,13 @@ class StateMachine {
             this.state.inExtend = false;
         }
         this.state.itemNum = SegmentManager.getItemNum(followingSegment.title);
-        this.controlsManager.updateControl(this.state);
+        this.updateView(this.state);
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
             .then(() => {
                 // todo: stop current loading if needed
                 this.state.isPlaying = true;
-                this.controlsManager.updateControl(this.state);
+                this.updateView(this.state);
                 setTimeout(() => {
                     const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
                     this.playbackController.updateSegments(segmentsToPrepare);
@@ -113,13 +113,13 @@ class StateMachine {
         this.playbackController.play().then(() => {
             this.state.pendingFirstPlayClick = false;
             this.state.isPlaying = true;
-            this.controlsManager.updateControl(this.state);
+            this.updateView(this.state);
         });
     }
 
     pause() {
         this.state.isPlaying = false;
-        this.controlsManager.updateControl(this.state);
+        this.updateView(this.state);
         this.playbackController.pause();
     }
 
@@ -130,7 +130,7 @@ class StateMachine {
     firstPlay() {
         this.playbackController.startPlaying()
             .then(() => {
-                this.controlsManager.updateControl({ startStatus: ControlsStartStatus.ACTIVE, isPlaying: true });
+                this.updateView({ startStatus: ControlsStartStatus.ACTIVE, isPlaying: true });
             });
     }
 
@@ -144,7 +144,7 @@ class StateMachine {
 
     timeUpdate(timeMs) {
         this.state.itemTimeMs = timeMs;
-        this.controlsManager.updateControl(this.state);
+        this.updateView(this.state);
     }
 }
 
