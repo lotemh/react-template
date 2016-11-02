@@ -2,6 +2,8 @@
  * Created by user on 9/5/2016.
  */
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
+import Extend from '../Controls/Extend';
 
 class BrightCovePlayer extends React.Component {
 
@@ -45,6 +47,7 @@ class BrightCovePlayer extends React.Component {
         var that = this;
         this.player.ready(function () {
             that.setState({ready: true, src: that.getPlayer().src()});
+            that.addControls();
             if (that.state.readyCallback){
                 that.state.readyCallback();
             }
@@ -69,6 +72,24 @@ class BrightCovePlayer extends React.Component {
             delete videoProps[attr];
         });
         return videoProps;
+    }
+
+    onExtendClick(){
+        this.setState({inExtend: !this.state.inExtend});
+        console.log("extend");
+    }
+
+    addControls(){
+        const element = document.createElement('img');
+        element.setAttribute('src', "images/extend.png");
+        element.className  = 'vjs-control';
+        element.id = 'extend1';
+        element.addEventListener('click', this.onExtendClick.bind(this));
+        this.getControlBar().appendChild(element);
+    }
+
+    getControlBar(){
+        return document.querySelector('#'+this.props.playerId + ' .vjs-control-bar');
     }
 
     render() {
