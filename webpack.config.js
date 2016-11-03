@@ -13,6 +13,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const pkg = require('./package.json');
 
 const isDebug = global.DEBUG === false ? false : !process.argv.includes('--release');
@@ -38,8 +39,8 @@ const config = {
 
     // Options affecting the output of the compilation
     output: {
-        path: path.resolve(__dirname, './public/dist'),
-        publicPath: '/dist/',
+        path: path.resolve(__dirname, './dist'),
+        publicPath: '',
         filename: isDebug ? '[name].js?[hash]' : '[name].[hash].js',
         chunkFilename: isDebug ? '[id].js?[chunkhash]' : '[id].[chunkhash].js',
         sourcePrefix: '  ',
@@ -75,10 +76,13 @@ const config = {
         // Emit a JSON file with assets paths
         // https://github.com/sporto/assets-webpack-plugin#options
         new AssetsPlugin({
-            path: path.resolve(__dirname, './public/dist'),
+            path: path.resolve(__dirname, './dist'),
             filename: 'assets.json',
             prettyPrint: true,
         }),
+        new CopyWebpackPlugin([{ 
+            from: 'public'
+        }])
     ],
 
     // Options affecting the normal modules

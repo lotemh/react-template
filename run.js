@@ -15,6 +15,7 @@ const exec = require('child_process').exec;
 const del = require('del');
 const ejs = require('ejs');
 const webpack = require('webpack');
+const distDir = './dist/';
 
 const config = {
     title: 'Elastic Media',        // Your website title
@@ -36,18 +37,18 @@ function run(task) {
 //
 // Clean up the output directory
 // -----------------------------------------------------------------------------
-tasks.set('clean', () => del(['public/dist/*', '!public/dist/.git'], { dot: true }));
+tasks.set('clean', () => del([`${distDir}*`], { dot: true }));
 
 //
 // Copy ./index.html into the /public folder
 // -----------------------------------------------------------------------------
 tasks.set('html', () => {
     const webpackConfig = require('./webpack.config');
-    const assets = JSON.parse(fs.readFileSync('./public/dist/assets.json', 'utf8'));
-    const template = fs.readFileSync('./public/index.ejs', 'utf8');
-    const render = ejs.compile(template, { filename: './public/index.ejs' });
+    const assets = JSON.parse(fs.readFileSync(`${distDir}assets.json`, 'utf8'));
+    const template = fs.readFileSync('public/index.ejs', 'utf8');
+    const render = ejs.compile(template, { filename: 'public/index.ejs' });
     const output = render({ debug: webpackConfig.debug, bundle: assets.main.js, config });
-    fs.writeFileSync('./public/index.html', output, 'utf8');
+    fs.writeFileSync(`${distDir}index.html`, output, 'utf8');
 });
 
 //
@@ -57,10 +58,10 @@ tasks.set('sitemap', () => {
     const urls = require('./routes.json')
         .filter(x => !x.path.includes(':'))
         .map(x => ({ loc: x.path }));
-    const template = fs.readFileSync('./public/sitemap.ejs', 'utf8');
-    const render = ejs.compile(template, { filename: './public/sitemap.ejs' });
+    const template = fs.readFileSync('public/sitemap.ejs', 'utf8');
+    const render = ejs.compile(template, { filename: 'public/sitemap.ejs' });
     const output = render({ config, urls });
-    fs.writeFileSync('public/sitemap.xml', output, 'utf8');
+    fs.writeFileSync(`${distDir}sitemap.xml`, output, 'utf8');
 });
 
 //
@@ -99,7 +100,7 @@ tasks.set('build', () => {
 tasks.set('publish', () => {
     global.DEBUG = process.argv.includes('--debug') || false;
     return run('build').then(() => new Promise((resolve, reject) => {
-        exec('scp -r public/. demo@demo.elasticmedia.io:~/kcet/', { shell: true },
+        exec(`scp -r ${distDir}. demo@demo.elasticmedia.io:~/kcet/`, { shell: true },
             (err, stdout, stderr) => {
                 if (err) {
                     reject(err);
@@ -131,10 +132,10 @@ tasks.set('start', () => {
         compiler.plugin('done', stats => {
             // Generate index.html page
             const bundle = stats.compilation.chunks.find(x => x.name === 'main').files[0];
-            const template = fs.readFileSync('./public/index.ejs', 'utf8');
-            const render = ejs.compile(template, { filename: './public/index.ejs' });
-            const output = render({ debug: true, bundle: `/dist/${bundle}`, config });
-            fs.writeFileSync('./public/index.html', output, 'utf8');
+            const template = fs.readFileSync(`public/index.ejs`, 'utf8');
+            const render = ejs.compile(template, { filename: 'public/index.ejs' });
+            const output = render({ debug: true, bundle: `${bundle}`, config });
+            fs.writeFileSync(`${distDir}index.html`, output, 'utf8');
 
             // Launch Browsersync after the initial bundling is complete
             // For more information visit https://browsersync.io/docs/options
@@ -143,7 +144,7 @@ tasks.set('start', () => {
                     port: process.env.PORT || 3000,
                     ui: { port: Number(process.env.PORT || 3000) + 1 },
                     server: {
-                        baseDir: 'public',
+                        baseDir: distDir,
                         middleware: [
                             webpackDevMiddleware,
                             require('webpack-hot-middleware')(compiler),
