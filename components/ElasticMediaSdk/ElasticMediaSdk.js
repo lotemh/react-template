@@ -48,9 +48,8 @@ const ElasticMediaSdk = React.createClass({
         //     console.error("Fail to get metadata", status, err.toString());
         // }.bind(this)
         // });
-
-        ////// window.addEventListener('resize', this.handleResize);
     },
+
     eventHandler(event){
         this.stateMachine.eventHandler(event);
     },
