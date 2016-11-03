@@ -8,14 +8,9 @@ import ControlsStartStatus from '../Controls/ControlsStartStatus';
  */
 
 class StateMachine {
-    constructor(pendingFirstPlayClick) {
+    constructor(store) {
         this.logger = new Logger();
-        this.state = {
-            itemNum: 0,
-            pendingFirstPlayClick,
-            inExtend: false,
-        };
-
+        this.store = store;
         this.playbackController = new PlaybackController();
         this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
     }
@@ -36,7 +31,7 @@ class StateMachine {
 
     setSegments(segments) {
         this.segmentsManager = new SegmentManager(segments, this.logger);
-        this.numOfItems = this.segmentsManager.getNumberOtItems();
+        this.updateView({numOfItems: this.segmentsManager.getNumberOtItems()});
     }
 
     setContentUrl(url) {
@@ -44,7 +39,6 @@ class StateMachine {
     }
 
     start() {
-        this.updateView({ numOfItems: this.numOfItems });
         this.actionHandler('next')
             .then(() => {
                 this.updateView({ startStatus: ControlsStartStatus.ACTIVE });
@@ -70,10 +64,8 @@ class StateMachine {
     /** **********************/
 
     extend() {
-        this.state.inExtend = true;
         this.playbackController.cancelOnSegmentEndAction();
         this.extendItem(this.segmentsManager.getActive());
-        this.updateView(this.state);
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
 
@@ -90,17 +82,12 @@ class StateMachine {
         if (followingSegment === undefined) {
             return;
         }
-        if (action !== 'extend') {
-            this.state.inExtend = false;
-        }
-        this.state.itemNum = SegmentManager.getItemNum(followingSegment.title);
-        this.updateView(this.state);
+        this.updateView({itemNum: SegmentManager.getItemNum(followingSegment.title)});
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
             .then(() => {
                 // todo: stop current loading if needed
-                this.state.isPlaying = true;
-                this.updateView(this.state);
+                this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'play'});
                 setTimeout(() => {
                     const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
                     this.playbackController.updateSegments(segmentsToPrepare);
@@ -111,15 +98,10 @@ class StateMachine {
 
     play() {
         this.playbackController.play().then(() => {
-            this.state.pendingFirstPlayClick = false;
-            this.state.isPlaying = true;
-            this.updateView(this.state);
         });
     }
 
     pause() {
-        this.state.isPlaying = false;
-        this.updateView(this.state);
         this.playbackController.pause();
     }
 
@@ -127,10 +109,10 @@ class StateMachine {
         this.playbackController.seek(params.timestamp);
     }
 
-    firstPlay() {
+    firstPlay(callback) {
         this.playbackController.startPlaying()
             .then(() => {
-                this.updateView({ startStatus: ControlsStartStatus.ACTIVE, isPlaying: true });
+                callback();
             });
     }
 
@@ -138,13 +120,12 @@ class StateMachine {
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction('extend');
         const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
         this.segmentsManager.setActive(extendedSegment);
-        this.state.itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
-        this.state.itemStart = activeSegment.in;
+        const itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
+        this.updateView({itemLength: itemLength, itemStart: activeSegment.in});
     }
 
     timeUpdate(timeMs) {
-        this.state.itemTimeMs = timeMs;
-        this.updateView(this.state);
+        this.updateView({itemTimeMs: timeMs});
     }
 }
 

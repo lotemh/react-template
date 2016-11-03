@@ -9,13 +9,17 @@ const ElasticMediaSdk = React.createClass({
         episodeId: PropTypes.string.isRequired,
         updateView: PropTypes.func.isRequired
     },
-
+    contextTypes: {
+        store: React.PropTypes.object
+    },
     componentWillMount() {
+        const {store} = this.context;
         let pendingFirstPlayClick = false;
         if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
             pendingFirstPlayClick = true;
         }
-        this.stateMachine = new StateMachine(pendingFirstPlayClick);
+        store.dispatch({type: "SET_PENDING_FIRST_PLAY", pendingFirstPlayClick: pendingFirstPlayClick});
+        this.stateMachine = new StateMachine(store);
     },
 
     componentDidMount() {
@@ -23,10 +27,10 @@ const ElasticMediaSdk = React.createClass({
         var waitForPlayersReady = this.stateMachine.setPlayers(players);
         const stateMachine = this.stateMachine;
         $.getJSON('metadataExample.json', (metadata) => {
+            stateMachine.addUpdateViewListener(this.props.updateView);
             stateMachine.setSegments(metadata.segments);
             var contentUrl = this.props.contentUrl;
             stateMachine.setContentUrl(contentUrl);
-            stateMachine.addUpdateViewListener(this.props.updateView);
             waitForPlayersReady.then(()=> {
                 stateMachine.start();
             })
@@ -50,8 +54,8 @@ const ElasticMediaSdk = React.createClass({
         // });
     },
 
-    eventHandler(event){
-        this.stateMachine.eventHandler(event);
+    eventHandler(event, params){
+        this.stateMachine.eventHandler(event, params);
     },
     render() {
         return (

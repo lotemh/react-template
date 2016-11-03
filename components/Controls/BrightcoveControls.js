@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import SeekBar from './SeekBar';
 import Dots from './Dots';
 import ControlsStartStatus from './ControlsStartStatus';
+import Extend from './Extend';
 
 const SWIPES = {
     LEFT: 'swipeleft',
@@ -13,18 +14,8 @@ const Controls = React.createClass({
     propTypes: {
         eventHandler: PropTypes.func.isRequired
     },
-    getInitialState() {
-        return {
-            startStatus: ControlsStartStatus.PENDING,
-            isPlaying: false,
-            pendingPlay: true,
-            numOfItems: 0,
-            itemTimeMs: 0,
-            itemNum: 0,
-            itemStart: 0,
-            itemLength: 0,
-            inExtend: false
-        };
+    contextTypes: {
+        store: React.PropTypes.object
     },
     componentDidMount() {
         this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
@@ -32,46 +23,50 @@ const Controls = React.createClass({
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
     },
     swipeLeft() {
+        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'next'});
         this.props.eventHandler('next');
     },
     swipeRight(){
+        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'previous'});
         this.props.eventHandler('previous');
     },
 
-    updateControl(state) {
-        this.setState(state);
+    updateControl() {
+        this.forceUpdate();
     },
 
     getClassName(name) {
         let className = 'controller';
-        if (name === 'extend' && this.state.inExtend) {
+        if (name === 'extend' && this.context.store.getState().inExtend) {
             className += ' hidden';
         }
         if (name === 'play') {
             className += ' play';
-            className += this.state.isPlaying ? ' hidden' : '';
+            className += this.context.store.getState() ? ' hidden' : '';
         } else if (name === 'pause') {
-            className += !this.state.isPlaying ? ' hidden' : '';
+            className += !this.context.store.getState() ? ' hidden' : '';
         }
         return className;
     },
     togglePlay() {
-        const isPlaying = !this.state.isPlaying;
-        const action = isPlaying ? 'play' : 'pause';
-        this.setState({ isPlaying });
+        this.context.store.dispatch({type: "TOGGLE_PLAY"});
+        const action = this.context.store.getState().isPlaying ? 'play' : 'pause';
         this.eventHandler(action);
     },
     startPlaying() {
-        this.eventHandler('firstPlay');
+        this.props.eventHandler(action, ()=>{
+            this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'firstPlay'});
+        });
     },
     eventHandler(action) {
+        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: action});
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
-        return this.state.startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
+        return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
     },
     getControlsClassName() {
-        return this.state.startStatus === ControlsStartStatus.ACTIVE ? 'controls' : 'hidden';
+        return this.context.store.getState().startStatus === ControlsStartStatus.ACTIVE ? 'controls' : 'hidden';
     },
     seekListener(currentTime){
         this.props.eventHandler('seek', {
@@ -79,17 +74,18 @@ const Controls = React.createClass({
         });
     },
     render(){
-        let timeElement = (this.state.inExtend) ?
+        const { store } = this.context;
+        let timeElement = (store.getState().inExtend) ?
             <SeekBar
                 ref='seekBar'
-                itemTimeMs={this.state.itemTimeMs}
-                itemStart={this.state.itemStart}
-                itemLength={this.state.itemLength}
+                itemTimeMs={store.getState().itemTimeMs}
+                itemStart={store.getState().itemStart}
+                itemLength={store.getState().itemLength}
                 seekListener={this.seekListener}
             /> :
             <Dots
-                itemNum={this.state.itemNum}
-                numOfItems={this.state.numOfItems}
+                itemNum={store.getState().itemNum}
+                numOfItems={store.getState().numOfItems}
             />;
         return (
             <div>
@@ -98,9 +94,11 @@ const Controls = React.createClass({
                 </div>
                 <div className={this.getControlsClassName()}>
                     <div className="controlsTouchScreen" ref="touchScreen"
-                         style={this.state.pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
-                    <img src="images/extend.png" className={this.getClassName("extend")} id="extend"
-                         onClick={this.eventHandler.bind(this, "extend")}/>
+                         style={store.getState().pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
+                    <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
+                    <img src="images/play.png" className={this.getClassName("play")} onClick={this.togglePlay}/>
+                    <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
+                    {timeElement}
                 </div>
             </div>
         );

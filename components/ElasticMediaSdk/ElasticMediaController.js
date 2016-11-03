@@ -8,7 +8,9 @@ const ElasticMediaController = React.createClass({
         publisherId: PropTypes.string.isRequired,
         episodeId: PropTypes.string.isRequired
     },
-
+    contextTypes: {
+        store: React.PropTypes.object
+    },
     componentWillMount() {
         this.state = this.calcWidthAndHeight();
     },
@@ -44,10 +46,13 @@ const ElasticMediaController = React.createClass({
         this.setState(this.calcWidthAndHeight());
     },
     updateView(data){
-      this.refs.controls.updateControl(data);
+        data.type = "SET_DATA";
+        this.context.store.dispatch(data);
+        //todo: why isn't it rendering by redux
+        this.refs.controls.updateControl();
     },
-    eventHandler(event){
-       this.refs.sdk.eventHandler(event);
+    eventHandler(event, props){
+       this.refs.sdk.eventHandler(event, props);
     },
     render() {
         return (

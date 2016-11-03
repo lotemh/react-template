@@ -7,19 +7,54 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE.txt file in the root directory of this source tree.
  */
-
+import ControlsStartStatus from '../components/Controls/ControlsStartStatus';
 import { createStore } from 'redux';
 
-// Centralized application state
-// For more information visit http://redux.js.org/
-const store = createStore((state, action) => {
+const defaultState = {
+    inExtend: false,
+    numOfItems: 0,
+    itemNum: 0,
+    isPlaying: false,
+    startStatus: ControlsStartStatus.PENDING
+};
+
+function reducer(state, action){
     // TODO: Add action handlers (aka "reduces")
-    switch (action) {
-        case 'COUNT':
-            return state;
+    switch (action.type) {
+        case 'EVENT_HANDLER':
+            const inExtend = action.actionName === 'extend';
+            switch (action.actionName) {
+                case 'extend':
+                    return Object.assign({}, state, {inExtend: inExtend});
+                case 'next':
+                    return Object.assign({}, state, {inExtend: inExtend});
+                case 'pause':
+                    return Object.assign({}, state, {isPlaying: false});
+                case 'play':
+                    return Object.assign({}, state, {isPlaying: true});
+                default:
+                    return state;
+            }
+            break;
+        case 'SET_PENDING_FIRST_PLAY':
+            return Object.assign({}, state, {pendingFirstPlayClick: action.pendingFirstPlayClick, isPlaying: !action.pendingFirstPlayClick});
+        case 'FIRST_PLAY':
+            return Object.assign({}, state, {startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
+        case 'PLAY':
+            return Object.assign({}, state, {isPlaying: true, pendingFirstPlayClick: false});
+        case 'TOGGLE_PLAY':
+            return Object.assign({}, state, {isPlaying: !state.isPlaying});
+        case  'SET_DATA':
+            var data = Object.assign({}, action);
+            delete data.type;
+            return Object.assign({}, state, data);
         default:
             return state;
     }
-});
+}
+
+// Centralized application state
+// For more information visit http://redux.js.org/
+const store = createStore(reducer, defaultState);
 
 export default store;
