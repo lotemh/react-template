@@ -26,7 +26,7 @@ const ElasticMediaSdk = React.createClass({
             stateMachine.setSegments(metadata.segments);
             var contentUrl = this.props.contentUrl;
             stateMachine.setContentUrl(contentUrl);
-            stateMachine.setControls(this.props.updateView);
+            stateMachine.addUpdateViewListener(this.props.updateView);
             waitForPlayersReady.then(()=> {
                 stateMachine.start();
             })
@@ -39,7 +39,7 @@ const ElasticMediaSdk = React.createClass({
         //         stateMachine.setSegments(metadata.segments);
         //         var contentUrl = this.props.contentUrl;
         //         stateMachine.setContentUrl(contentUrl);
-        //         stateMachine.setControls(controls);
+        //         stateMachine.addUpdateViewListener(controls);
         //         waitForPlayersReady.then(()=> {
         //             stateMachine.start();
         //         })

@@ -22,7 +22,7 @@ class StateMachine {
 
     /** **  public APi ****/
 
-    setControls(updateFunc) {
+    addUpdateViewListener(updateFunc) {
         this.updateView = updateFunc;
     }
 
