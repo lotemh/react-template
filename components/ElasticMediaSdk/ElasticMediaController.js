@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react';
-import ElasticMediaSdk from './ElasticMediaSdk';
-import Controls from '../Controls/BrightcoveControls';
+import React, {PropTypes} from "react";
+import ElasticMediaSdk from "./ElasticMediaSdk";
+import Controls from "../Controls/BrightcoveControls";
 
 const ElasticMediaController = React.createClass({
     propTypes: {
@@ -52,7 +52,7 @@ const ElasticMediaController = React.createClass({
         this.refs.controls.updateControl();
     },
     eventHandler(event, props){
-       this.refs.sdk.eventHandler(event, props);
+        this.refs.sdk.eventHandler(event, props);
     },
     render() {
         return (
