@@ -6,8 +6,7 @@ const ElasticMediaSdk = React.createClass({
     propTypes: {
         contentUrl: PropTypes.string,
         publisherId: PropTypes.string.isRequired,
-        episodeId: PropTypes.string.isRequired,
-        updateView: PropTypes.func.isRequired
+        episodeId: PropTypes.string.isRequired
     },
     contextTypes: {
         store: React.PropTypes.object
@@ -27,7 +26,6 @@ const ElasticMediaSdk = React.createClass({
         var waitForPlayersReady = this.stateMachine.setPlayers(players);
         const stateMachine = this.stateMachine;
         $.getJSON('metadataExample.json', (metadata) => {
-            stateMachine.addUpdateViewListener(this.props.updateView);
             stateMachine.setSegments(metadata.segments);
             var contentUrl = this.props.contentUrl;
             stateMachine.setContentUrl(contentUrl);

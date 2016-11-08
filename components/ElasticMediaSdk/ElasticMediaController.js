@@ -16,6 +16,7 @@ const ElasticMediaController = React.createClass({
     },
 
     componentDidMount() {
+        this.context.store.subscribe(this.refs.controls.updateControl);
         window.addEventListener('resize', this.handleResize);
     },
     calcWidthAndHeight() {
@@ -45,12 +46,6 @@ const ElasticMediaController = React.createClass({
     handleResize() {
         this.setState(this.calcWidthAndHeight());
     },
-    updateView(data){
-        data.type = "SET_DATA";
-        this.context.store.dispatch(data);
-        //todo: why isn't it rendering by redux
-        this.refs.controls.updateControl();
-    },
     eventHandler(event, props){
         this.refs.sdk.eventHandler(event, props);
     },
@@ -60,8 +55,7 @@ const ElasticMediaController = React.createClass({
                 <ElasticMediaSdk ref="sdk"
                                  contentUrl={this.props.contentUrl}
                                  publisherId={this.props.publisherId}
-                                 episodeId={this.props.episodeId}
-                                 updateView={this.updateView}>
+                                 episodeId={this.props.episodeId}>
                     {this.props.children}
                 </ElasticMediaSdk>
                 <Controls eventHandler={this.eventHandler} ref="controls"/>

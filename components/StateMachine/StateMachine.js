@@ -17,9 +17,10 @@ class StateMachine {
 
     /** **  public APi ****/
 
-    addUpdateViewListener(updateFunc) {
-        this.updateView = updateFunc;
-    }
+    updateView (data){
+        data.type = "SET_DATA";
+        this.store.dispatch(data);
+    };
 
     loadSegments(episodeMetadataId) {
 
