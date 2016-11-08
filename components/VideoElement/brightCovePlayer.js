@@ -145,7 +145,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getCurrentTime() {
-        return this.getPlayer().currentTime();
+        return this.getPlayer().currentTime() * 1000;
     }
 
     addLoadedDataEvent(listener) {

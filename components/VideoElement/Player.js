@@ -83,7 +83,7 @@ class Player {
     }
 
     timeUpdatedListener(event) {
-        const currentTime = this.getPlayer().getCurrentTime() * 1000;
+        const currentTime = this.getPlayer().getCurrentTime();
         this.timeUpdateCallback(currentTime, this.id);
     }
 
