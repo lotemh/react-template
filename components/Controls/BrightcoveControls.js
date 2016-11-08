@@ -48,11 +48,6 @@ const Controls = React.createClass({
         }
         return className;
     },
-    togglePlay() {
-        this.context.store.dispatch({type: "TOGGLE_PLAY"});
-        const action = this.context.store.getState().isPlaying ? 'play' : 'pause';
-        this.eventHandler(action);
-    },
     startPlaying() {
         this.props.eventHandler(action, ()=>{
             this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'firstPlay'});
@@ -96,8 +91,6 @@ const Controls = React.createClass({
                     <div className="controlsTouchScreen" ref="touchScreen"
                          style={store.getState().pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
-                    <img src="images/play.png" className={this.getClassName("play")} onClick={this.togglePlay}/>
-                    <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
                     {timeElement}
                 </div>
             </div>
