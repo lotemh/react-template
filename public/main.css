@@ -50,19 +50,19 @@ body {
     margin-left: calc(10% - 20px);
 }
 
-.brightcove-player .vjs-progress-control{
+.vjs-control-bar > .vjs-progress-control{
      display: none
  }
 
-.brightcove-player .vjs-duration{
+.vjs-control-bar > .vjs-duration{
     display: none
 }
 
-.brightcove-player .vjs-current-time{
+.vjs-control-bar > .vjs-current-time{
     display: none
 }
 
-.brightcove-player .vjs-time-divider{
+.vjs-control-bar > .vjs-time-divider{
     display: none
 }
 
@@ -127,11 +127,22 @@ button:active {
     left: 10px;
 }
 
+#progress-container {
+    flex-grow: 1;
+    order: 5;
+}
+
 .dots {
     position: absolute;
     bottom: 14px;
     left: 50% !important;
     margin-left: -50px;
+}
+
+.brightcove-dots {
+    position: absolute;
+    transform: translate(-48%, 0%);
+    left: 48%;
 }
 
 .dot {
@@ -169,6 +180,15 @@ button:active {
     bottom: 20px;
     height: 10px;
 }
+
+.brightcoveSeekBar {
+    display: flex;
+}
+
+.brightcoveTimeLine {
+    width: 100%;
+}
+
 #redSeekBar {
     box-sizing:content-box;
     position: absolute;

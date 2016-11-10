@@ -3,7 +3,8 @@
  */
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import Extend from '../Controls/Extend';
+import Dots from '../Controls/Dots';
+import BrightcoveSeekBar from '../Controls/BrightcoveSeekBar';
 
 class BrightCovePlayer extends React.Component {
 
@@ -48,15 +49,21 @@ class BrightCovePlayer extends React.Component {
         this.player.ready(function () {
             that.setState({ready: true, src: that.getPlayer().src()});
             that.addControls();
+            that.setItemTime();
             if (that.state.readyCallback){
                 that.state.readyCallback();
             }
         });
     }
 
+    setItemTime(){
+        this.getTotalTime().innerHTML = this.context.store.getState().itemLength;
+    }
+
     getClassName() {
         let className = 'player-wrapper';
         className += this.state.isHidden ? ' hidden' : '';
+        className += this.context.store.getState().inExtend ? ' show-progress-bar' : ' show-item-dots';
         return className;
     }
 
@@ -80,16 +87,47 @@ class BrightCovePlayer extends React.Component {
     }
 
     addControls(){
-        const element = document.createElement('img');
-        element.setAttribute('src', "images/extend.png");
-        element.className  = 'vjs-control';
-        element.id = 'extend1';
-        element.addEventListener('click', this.onExtendClick.bind(this));
-        this.getControlBar().appendChild(element);
+        const container = document.createElement('div');
+        container.id = 'progress-container';
+        container.className = 'vjs-control';
+        
+        var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
+        this.getControlBar().insertBefore(container, shareControl);
+
+
+        var timeContainer = document.querySelector('#' + this.props.playerId + ' #progress-container');
+        const { store } = this.context;
+        const seekListener = this.seek.bind(this);
+
+        function render(){
+            ReactDOM.render(
+                <div>
+                    <Dots
+                        isVisible={!store.getState().inExtend}
+                        itemNum={store.getState().itemNum}
+                        numOfItems={store.getState().numOfItems}
+                        dotsClassName="brightcove-dots"
+                    />
+                    <BrightcoveSeekBar
+                        isVisible={store.getState().inExtend}
+                        itemTimeMs={store.getState().itemTimeMs}
+                        itemStart={store.getState().itemStart}
+                        itemLength={store.getState().itemLength}
+                        seekListener={seekListener}
+                    />
+                </div>, timeContainer);
+
+        }
+        store.subscribe(render);
+        render();
     }
 
     getControlBar(){
         return document.querySelector('#'+this.props.playerId + ' .vjs-control-bar');
+    }
+
+    getTotalTime(){
+        return document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-duration-display');
     }
 
     render() {
@@ -169,6 +207,10 @@ BrightCovePlayer.propTypes = {
     src: PropTypes.string,
     className: PropTypes.string,
     account: PropTypes.string
+};
+
+BrightCovePlayer.contextTypes = {
+    store: React.PropTypes.object
 };
 
 export default BrightCovePlayer;
