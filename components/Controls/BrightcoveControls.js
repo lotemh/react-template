@@ -21,6 +21,10 @@ const Controls = React.createClass({
         this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
+        // todo: try to subscribe to the store
+        // this.store.subscribe(()=>{
+        //     this.forceUpdate();
+        // })
     },
     swipeLeft() {
         this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'next'});
@@ -91,7 +95,6 @@ const Controls = React.createClass({
                     <div className="controlsTouchScreen" ref="touchScreen"
                          style={store.getState().pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
-                    {timeElement}
                 </div>
             </div>
         );
