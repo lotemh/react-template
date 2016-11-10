@@ -3,7 +3,9 @@ import React, { PropTypes } from 'react';
 const Dots = React.createClass({
     propTypes: {
         itemNum: PropTypes.number.isRequired,
-        numOfItems: PropTypes.number.isRequired
+        numOfItems: PropTypes.number.isRequired,
+        isVisible: PropTypes.bool,
+        dotsClassName: PropTypes.string
     },
     getImgSource(dotNum) {
         if (dotNum === (this.props.itemNum % 5)) {
@@ -15,7 +17,7 @@ const Dots = React.createClass({
     getClassName(name) {
         let className;
         if (name === 'dots') {
-            className = 'dots';
+            className = this.props.isVisible? this.props.dotsClassName || 'dots' : 'hidden';
         } else {
             className = 'dot';
             let num = parseInt(name.match(/[\d\.]+/)[0], 10),
@@ -40,7 +42,7 @@ const Dots = React.createClass({
                 {dots}
             </span>
         );
-    },
+    }
 });
 
 export default Dots;
