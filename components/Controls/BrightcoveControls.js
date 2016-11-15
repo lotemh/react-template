@@ -1,15 +1,8 @@
 import React, { PropTypes } from 'react';
-import Hammer from 'hammerjs';
-import ReactDOM from 'react-dom';
-import SeekBar from './SeekBar';
-import Dots from './Dots';
+import TouchScreen from './TouchScreen';
 import ControlsStartStatus from './ControlsStartStatus';
 import Extend from './Extend';
 
-const SWIPES = {
-    LEFT: 'swipeleft',
-    RIGHT: 'swiperight'
-};
 const Controls = React.createClass({
     propTypes: {
         eventHandler: PropTypes.func.isRequired
@@ -18,21 +11,10 @@ const Controls = React.createClass({
         store: React.PropTypes.object
     },
     componentDidMount() {
-        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
-        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
-        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
         // todo: try to subscribe to the store
         // this.store.subscribe(()=>{
         //     this.forceUpdate();
         // })
-    },
-    swipeLeft() {
-        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'next'});
-        this.props.eventHandler('next');
-    },
-    swipeRight(){
-        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'previous'});
-        this.props.eventHandler('previous');
     },
 
     updateControl() {
@@ -80,8 +62,7 @@ const Controls = React.createClass({
                     <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
                 <div className={this.getControlsClassName()}>
-                    <div className="controlsTouchScreen" ref="touchScreen"
-                         style={store.getState().pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
+                    <TouchScreen eventHandler={this.eventHandler}/>
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>
