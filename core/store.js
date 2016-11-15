@@ -16,7 +16,8 @@ const defaultState = {
     itemNum: 0,
     isPlaying: false,
     startStatus: ControlsStartStatus.PENDING,
-    itemLength: "00:00"
+    itemLength: "00:00",
+    activeSegment: null
 };
 
 function reducer(state, action){
@@ -45,10 +46,12 @@ function reducer(state, action){
             return Object.assign({}, state, {isPlaying: true, pendingFirstPlayClick: false});
         case 'TOGGLE_PLAY':
             return Object.assign({}, state, {isPlaying: !state.isPlaying});
-        case  'SET_DATA':
+        case 'SET_DATA':
             var data = Object.assign({}, action);
             delete data.type;
             return Object.assign({}, state, data);
+        case 'SET_ACTIVE_SEGMENT':
+            return Object.assign({}, state, {activeSegment: action.activeSegment});
         default:
             return state;
     }
