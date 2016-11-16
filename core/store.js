@@ -25,16 +25,12 @@ function reducer(state, action){
         case 'EVENT_HANDLER':
             const inExtend = action.actionName === 'extend';
             switch (action.actionName) {
-                case 'extend':
-                    return Object.assign({}, state, {inExtend: inExtend});
-                case 'next':
-                    return Object.assign({}, state, {inExtend: inExtend});
                 case 'pause':
-                    return Object.assign({}, state, {isPlaying: false});
+                    return Object.assign({}, state, {isPlaying: false, inExtend: inExtend});
                 case 'play':
-                    return Object.assign({}, state, {isPlaying: true});
+                    return Object.assign({}, state, {isPlaying: true, inExtend: inExtend});
                 default:
-                    return state;
+                    return Object.assign({}, state, {inExtend: inExtend});
             }
             break;
         case 'SET_PENDING_FIRST_PLAY':
