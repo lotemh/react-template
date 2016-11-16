@@ -11,7 +11,7 @@ class StateMachine {
     constructor(store) {
         this.logger = new Logger();
         this.store = store;
-        this.playbackController = new PlaybackController();
+        this.playbackController = new PlaybackController(store);
         this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
     }
 

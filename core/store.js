@@ -52,6 +52,14 @@ function reducer(state, action){
             return Object.assign({}, state, data);
         case 'SET_ACTIVE_SEGMENT':
             return Object.assign({}, state, {activeSegment: action.activeSegment});
+        case 'SWITCH_PLAYERS':
+            //check if we need transition effect and which one we need
+            return Object.assign({}, state, {
+                // activePlayer: action.activePlayer,
+                transitionEffect: 'WHOOSH'
+            });
+        case 'TRANSITION_EFFECT_END':
+            return Object.assign({}, state, {transitionEffect: null});
         default:
             return state;
     }

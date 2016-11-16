@@ -17,12 +17,13 @@ function buildSrc(src, inTime, outTime) {
 }
 
 class PlaybackController {
-    constructor() {
+    constructor(store) {
         this.segmentEndTimeMs = false;
         this.logger = new Logger();
         this.activePlayer = null;
         this.segmentToPlayerMap = {};
         this.loadingSegmentsMap = {};
+        this.store = store;
     }
 
     /*********     Public API         ***********/
@@ -204,6 +205,8 @@ class PlaybackController {
     switchPlayers(oldPlayer, nextPlayer) {
         if (!nextPlayer) return;
         return this.activatePlayer(nextPlayer).then(() => {
+            //dispatch transition effect
+            this.store.dispatch({type: 'SWITCH_PLAYERS', activePlayer: nextPlayer});
             if (oldPlayer !== nextPlayer) {
                 this.deactivatePlayer(oldPlayer);
             }
@@ -220,9 +223,9 @@ class PlaybackController {
 
     activatePlayer(player) {
         if (!player) { return; }
-        this.setActive(player);
-        const activePlayer = this.getActive();
+        const activePlayer = player;
         activePlayer.show();
+        this.setActive(player);
         return activePlayer.play();
     }
 
