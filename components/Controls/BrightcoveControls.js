@@ -73,7 +73,6 @@ const Controls = React.createClass({
         var isAnimationRunning = false,
             isPlayersSwapped = false,
             animationStartTime,
-            animationDuration,
             swapTime;
 
         const that = this;
@@ -94,12 +93,6 @@ const Controls = React.createClass({
 
         function onStart()
         {
-            // var animationDurationRaw = window.getComputedStyle(that.refs.controls).getPropertyValue('animation-duration');
-            // animationDuration = parseFloat(animationDurationRaw);
-            // if (/[^m]s$/.test(animationDurationRaw))
-            //     animationDuration *= 1000; // convert to ms
-            // swapTime = animationDuration / 2;
-            //todo: yossi - why do we need to calculate animationDuration? seems lise it is not used
             window.requestAnimationFrame(step);
         }
 
