@@ -70,41 +70,16 @@ const Controls = React.createClass({
     },
 
     performTransitionEffect(){
-        var isAnimationRunning = false,
-            isPlayersSwapped = false,
-            animationStartTime,
-            swapTime;
-
         const that = this;
         const container = this.refs.controls;
-
-        function step(timestamp) {
-            if (!animationStartTime) animationStartTime = timestamp;
-            var progress = timestamp - animationStartTime;
-
-            if (progress > swapTime && !isPlayersSwapped) {
-                isPlayersSwapped = true;
-            }
-
-            if (isAnimationRunning) {
-                window.requestAnimationFrame(step);
-            }
-        }
-
-        function onStart()
-        {
-            window.requestAnimationFrame(step);
-        }
 
         function onEnd() {
             that.setState({teClass: ''});
             that.isAnimationRunning = false;
-            container.removeEventListener("animationstart", onStart);
             container.removeEventListener("animationend", onEnd);
             that.context.store.dispatch({type: 'TRANSITION_EFFECT_END'});
         }
 
-        container.addEventListener("animationstart", onStart);
         container.addEventListener("animationend", onEnd);
         const transitionEffectClass = TransitionEffect[this.context.store.getState().transitionEffect];
         this.setState({teClass: transitionEffectClass});
