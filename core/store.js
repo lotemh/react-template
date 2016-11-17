@@ -51,7 +51,7 @@ function reducer(state, action){
             delete data.type;
             return Object.assign({}, state, data);
         case 'SET_ACTIVE_SEGMENT':
-            return Object.assign({}, state, {activeSegment: action.activeSegment});
+            return Object.assign({}, state, {activeSegment: action.activeSegment, itemNum: action.itemNum});
         case 'SWITCH_PLAYERS':
             //check if we need transition effect and which one we need
             return Object.assign({}, state, {

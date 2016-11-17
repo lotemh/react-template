@@ -205,8 +205,7 @@ class PlaybackController {
     switchPlayers(oldPlayer, nextPlayer) {
         if (!nextPlayer) return;
         return this.activatePlayer(nextPlayer).then(() => {
-            //dispatch transition effect
-            this.store.dispatch({type: 'SWITCH_PLAYERS', activePlayer: nextPlayer});
+            this.store.dispatch({type: 'SWITCH_PLAYERS'});
             if (oldPlayer !== nextPlayer) {
                 this.deactivatePlayer(oldPlayer);
             }

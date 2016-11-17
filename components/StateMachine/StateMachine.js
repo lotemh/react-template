@@ -85,8 +85,8 @@ class StateMachine {
         if (activeSegment === undefined) {
             return;
         }
-        this.store.dispatch({type: 'SET_ACTIVE_SEGMENT', activeSegment: activeSegment});
-        this.updateView({itemNum: SegmentManager.getItemNum(activeSegment.title)});
+        this.store.dispatch({type: 'SET_ACTIVE_SEGMENT', activeSegment: activeSegment, 
+            itemNum: SegmentManager.getItemNum(activeSegment.title)});
         return this.playbackController.playSegment(activeSegment, this.actionHandler.bind(this, 'no_action'))
             .then(() => {
                 // todo: stop current loading if needed
