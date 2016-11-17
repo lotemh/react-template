@@ -13,11 +13,6 @@ const ElasticMediaSdk = React.createClass({
     },
     componentWillMount() {
         const {store} = this.context;
-        let pendingFirstPlayClick = false;
-        //if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-        //    pendingFirstPlayClick = true;
-        //    this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
-        //}
         this.stateMachine = new StateMachine(store);
     },
 
