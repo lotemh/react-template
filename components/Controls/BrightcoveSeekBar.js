@@ -21,25 +21,25 @@ const BrightcoveSeekBar = React.createClass({
         this.setState({ value: event.target.value });
     },
     seekByMouse(event) {
-        const position = event.target.getBoundingClientRect()
+        const position = event.target.getBoundingClientRect();
         const seekPosition = event.clientX - position.left;
         const progress = seekPosition / position.width;
-        const seekTime = progress * this.props.itemLength / 1000.0;
+        const seekTime = (progress * this.props.itemLength + this.props.itemStart)/ 1000.0;
 
         this.props.seekListener(seekTime);
     },
     onMouseDown(event) {
         event.preventDefault();
-        
+
         document.body.focus();
         this.onselectstart = document.onselectstart;
 
         this.setState({ inSeekChange: true });
-        
+
         document.addEventListener("mousemove", this.onMouseMove);
         document.addEventListener("mouseup", this.onMouseUp);
         document.onselectstart = () => {return false};
-  
+
         this.seekByMouse(event);
     },
     onMouseMove(event) {
@@ -47,7 +47,7 @@ const BrightcoveSeekBar = React.createClass({
     },
     onMouseUp(event) {
         this.seekByMouse(event);
-        
+
         document.removeEventListener("mousemove", this.onMouseMove);
         document.removeEventListener("mouseup", this.onMouseUp);
         document.onselectstart = this.onselectstart;
@@ -77,7 +77,10 @@ const BrightcoveSeekBar = React.createClass({
     },
     progress() {
         if (this.props.itemTimeMs && this.props.itemLength)
-            return Math.min(this.props.itemTimeMs / this.props.itemLength, 1);
+            {
+                var itemCurrentTime = this.props.itemTimeMs - this.props.itemStart;
+                return Math.min(itemCurrentTime / this.props.itemLength, 1);
+            }
         return 0;
     },
     render() {
