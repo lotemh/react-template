@@ -12,11 +12,13 @@ import { createStore } from 'redux';
 
 const defaultState = {
     inExtend: false,
+    itemStart: 0,
     numOfItems: 0,
     itemNum: 0,
     isPlaying: false,
-    startStatus: ControlsStartStatus.PENDING,
-    itemLength: 0
+    startStatus: ControlsStartStatus.PENDING_USER_ACTION,
+    itemLength: 0,
+    itemTimeMs: 0
 };
 
 function reducer(state, action){

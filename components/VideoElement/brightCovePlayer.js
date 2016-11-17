@@ -136,8 +136,7 @@ class BrightCovePlayer extends React.Component {
                 <video ref="player"
                        className="player brightcove-player"
                        id={this.props.playerId}
-                       data-playsinline
-                       data-webkit-playsinline
+                       playsInline
                        data-embed="default"
                        data-application-id
                        preload="metadata"

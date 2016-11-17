@@ -49,7 +49,7 @@ const Controls = React.createClass({
         return className;
     },
     startPlaying() {
-        this.props.eventHandler(action, ()=>{
+        this.props.eventHandler("play", ()=>{
             this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'firstPlay'});
         });
     },
@@ -58,7 +58,13 @@ const Controls = React.createClass({
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
-        return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
+        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION  &&
+           /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+            !window.MSStream) {
+            return 'controller bigPlay';
+        } else {
+            return 'hidden';
+        }
     },
     getControlsClassName() {
         return this.context.store.getState().startStatus === ControlsStartStatus.ACTIVE ? 'controls' : 'hidden';
@@ -77,7 +83,7 @@ const Controls = React.createClass({
                 </div>
                 <div className={this.getControlsClassName()}>
                     <div className="controlsTouchScreen" ref="touchScreen"
-                         style={store.getState().pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
+                         style={store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ? {pointerEvents: 'none'} : {}}></div>
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>

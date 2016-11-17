@@ -40,19 +40,15 @@ class StateMachine {
     }
 
     start() {
-        this.actionHandler('next')
-            .then(() => {
-                this.updateView({ startStatus: ControlsStartStatus.ACTIVE });
-            })
-            .catch((error) => {
-                if (error.name == 'NotAllowedError') {
-                    this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
-                    const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
-                    this.playbackController.prepareSegments(segmentsToPrepare);
-                } else {
-                    throw error;
-                }
-            });
+        this.actionHandler('next').catch((error) => {
+            if (error.name == 'NotAllowedError') {
+                this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
+                const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+                this.playbackController.prepareSegments(segmentsToPrepare);
+            } else {
+                throw error;
+            }
+        });
     }
 
     eventHandler(event, params) {
@@ -127,7 +123,7 @@ class StateMachine {
     }
 
     timeUpdate(timeMs) {
-        this.updateView({itemTimeMs: timeMs});
+        this.updateView({itemTimeMs: timeMs, startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
     }
 }
 

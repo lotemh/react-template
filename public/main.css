@@ -152,6 +152,7 @@ button:active {
 }
 
 .controller {
+    cursor: pointer;
     z-index: 2147483647;
     pointer-events:auto;
     position: absolute;
