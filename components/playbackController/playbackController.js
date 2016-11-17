@@ -29,7 +29,7 @@ class PlaybackController {
     createPlayers(videoElements){
         var id = 0;
         var promises = [];
-        const players = videoElements.map(p => new Player(p, "player" + id++));
+        const players = videoElements.map(p => new Player(p, "player" + id++, this.store));
         players.forEach(player => {
             promises.push(new Promise((resolve, reject) => {
                 player.onReady(()=> {

@@ -123,7 +123,7 @@ class StateMachine {
     }
 
     timeUpdate(timeMs) {
-        this.updateView({itemTimeMs: timeMs, startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
+        this.updateView({itemTimeMs: timeMs});
     }
 }
 

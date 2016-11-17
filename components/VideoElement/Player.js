@@ -1,10 +1,12 @@
 import React, { PropTypes } from 'react';
 import Logger from '../Logger/Logger';
+import ControlsStartStatus from '../Controls/ControlsStartStatus';
 
 class Player {
 
-    constructor(videoPlayer, id) {
+    constructor(videoPlayer, id, store) {
         this.player = videoPlayer;
+        this.store = store;
         this.loading = null;
         this.id = id;
         this.logger = new Logger();
@@ -26,6 +28,7 @@ class Player {
 
     play() {
         this.addTimeUpdateEvent();
+        this.addPlayingEvent();
         return this.getPlayer().play();
     }
     show() {
@@ -73,6 +76,12 @@ class Player {
 
     addTimeUpdateEvent() {
         this.getPlayer().addTimeUpdateEvent(this.timeUpdatedListener.bind(this));
+    }
+    addPlayingEvent() {
+        this.getPlayer().addEventListener("play", function playerIsPlaying(event) {
+            console.log("got playing event!!!");
+            this.store.dispatch({type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
+        }.bind(this));
     }
     removeTimeUpdateEvent() {
         this.getPlayer().removeTimeUpdateEvent(this.timeUpdatedListener.bind(this));
