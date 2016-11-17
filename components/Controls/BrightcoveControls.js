@@ -74,18 +74,6 @@ const Controls = React.createClass({
     },
     render(){
         const { store } = this.context;
-        let timeElement = (store.getState().inExtend) ?
-            <SeekBar
-                ref='seekBar'
-                itemTimeMs={store.getState().itemTimeMs}
-                itemStart={store.getState().itemStart}
-                itemLength={store.getState().itemLength}
-                seekListener={this.seekListener}
-            /> :
-            <Dots
-                itemNum={store.getState().itemNum}
-                numOfItems={store.getState().numOfItems}
-            />;
         return (
             <div>
                 <div>
