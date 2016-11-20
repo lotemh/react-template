@@ -60,7 +60,8 @@ const BrightcoveSeekBar = React.createClass({
         return Math.floor(parseInt(this.state.value, 10) + this.props.itemStart / 1000.0);
     },
     getCurrentTimeInItemHHMMSS: function () {
-        return this.getTimeInHHMMSS(this.props.itemTimeMs - this.props.itemStart);
+        var currentTime = Math.max(0, this.props.itemTimeMs - this.props.itemStart);
+        return this.getTimeInHHMMSS(currentTime);
     },
     getTimeInHHMMSS(timeMs){
         return toHHMMSS((timeMs / 1000).toString());
