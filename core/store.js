@@ -16,8 +16,7 @@ const defaultState = {
     itemNum: 0,
     isPlaying: false,
     startStatus: ControlsStartStatus.PENDING,
-    itemLength: "00:00",
-    activeSegment: null
+    itemLength: "00:00"
 };
 
 function reducer(state, action){
@@ -26,12 +25,16 @@ function reducer(state, action){
         case 'EVENT_HANDLER':
             const inExtend = action.actionName === 'extend';
             switch (action.actionName) {
-                case 'pause':
-                    return Object.assign({}, state, {isPlaying: false, inExtend: inExtend});
-                case 'play':
-                    return Object.assign({}, state, {isPlaying: true, inExtend: inExtend});
-                default:
+                case 'extend':
                     return Object.assign({}, state, {inExtend: inExtend});
+                case 'next':
+                    return Object.assign({}, state, {inExtend: inExtend});
+                case 'pause':
+                    return Object.assign({}, state, {isPlaying: false});
+                case 'play':
+                    return Object.assign({}, state, {isPlaying: true});
+                default:
+                    return state;
             }
             break;
         case 'SET_PENDING_FIRST_PLAY':
@@ -42,20 +45,10 @@ function reducer(state, action){
             return Object.assign({}, state, {isPlaying: true, pendingFirstPlayClick: false});
         case 'TOGGLE_PLAY':
             return Object.assign({}, state, {isPlaying: !state.isPlaying});
-        case 'SET_DATA':
+        case  'SET_DATA':
             var data = Object.assign({}, action);
             delete data.type;
             return Object.assign({}, state, data);
-        case 'SET_ACTIVE_SEGMENT':
-            return Object.assign({}, state, {activeSegment: action.activeSegment, itemNum: action.itemNum});
-        case 'SWITCH_PLAYERS':
-            //check if we need transition effect and which one we need
-            return Object.assign({}, state, {
-                // activePlayer: action.activePlayer,
-                transitionEffect: 'WHOOSH'
-            });
-        case 'TRANSITION_EFFECT_END':
-            return Object.assign({}, state, {transitionEffect: null});
         default:
             return state;
     }

@@ -9,6 +9,7 @@ const numOfPlayers = 2;
 
 const Brightcove = React.createClass({
     propTypes: {
+        contentUrl: PropTypes.string,
         'data-elastic-media-account': PropTypes.string.isRequired,
         'data-video-id': PropTypes.string.isRequired
     },
