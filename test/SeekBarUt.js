@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import * as TestUtils from 'react/lib/ReactTestUtils';
+import ReactTestUtils from 'react-addons-test-utils'
 import SeekBar from '../components/Controls/SeekBar';
 import React from 'react';
 
 describe('Seek bar test suite', () => {
 
     it('should display the current time in the item', () => {
-        const component = TestUtils.renderIntoDocument(
+        const component = ReactTestUtils.renderIntoDocument(
         <SeekBar seekListener={function(){}} itemStart={10000} itemLength={30000} itemTimeMs={19000} />
         );
         const currentTimeNode = component.refs.currentTime;
@@ -15,7 +15,7 @@ describe('Seek bar test suite', () => {
     });
 
     it('should display item length', () => {
-        const component = TestUtils.renderIntoDocument(
+        const component = ReactTestUtils.renderIntoDocument(
             <SeekBar seekListener={function(){}} itemStart={10000} itemLength={33000} itemTimeMs={19000} />
         );
         const currentTimeNode = component.refs.itemLength;
@@ -24,7 +24,7 @@ describe('Seek bar test suite', () => {
     });
 
     it('should display the seek bar value', () => {
-        const component = TestUtils.renderIntoDocument(
+        const component = ReactTestUtils.renderIntoDocument(
             <SeekBar seekListener={function(){}} itemStart={10000} itemLength={33000} itemTimeMs={19000} />
         );
         const bar = component.refs.bar;
