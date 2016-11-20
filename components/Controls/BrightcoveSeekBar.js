@@ -77,10 +77,10 @@ const BrightcoveSeekBar = React.createClass({
     },
     progress() {
         if (this.props.itemTimeMs && this.props.itemLength)
-            {
-                var itemCurrentTime = this.props.itemTimeMs - this.props.itemStart;
-                return Math.min(itemCurrentTime / this.props.itemLength, 1);
-            }
+        {
+            var itemCurrentTime = this.props.itemTimeMs - this.props.itemStart;
+            return Math.min(itemCurrentTime / this.props.itemLength, 1);
+        }
         return 0;
     },
     render() {
