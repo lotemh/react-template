@@ -308,14 +308,14 @@ input[type=range]:focus::-ms-fill-upper {
 
 @keyframes te-whoosh {
     from  {background-position: 0}
-    to    {background-position: -1900%}
+    to    {background-position: -1200%}
 }
 
 .te {
-    animation-duration: 0.79s;
+    animation-duration: 0.5s;
     animation-name: te-whoosh;
     -webkit-animation-name: te-whoosh;
-    animation-timing-function: steps(19);
-    background-image: url(StudioA.png);
+    animation-timing-function: steps(12);
+    background-image: url(whoosh.png);
     background-size: cover;
 }
