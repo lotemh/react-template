@@ -16,7 +16,7 @@ const defaultState = {
     itemNum: 0,
     isPlaying: false,
     startStatus: ControlsStartStatus.PENDING,
-    itemLength: "00:00"
+    itemLength: 0
 };
 
 function reducer(state, action){
