@@ -3,6 +3,8 @@ import { toHHMMSS } from '../utils/timeUtils';
 
 const BrightcoveSeekBar = React.createClass({
     propTypes: {
+        pauseListener: PropTypes.func.isRequired,
+        playListener: PropTypes.func.isRequired,
         seekListener: PropTypes.func.isRequired,
         itemStart: PropTypes.number.isRequired,
         itemLength: PropTypes.number.isRequired,
@@ -18,17 +20,44 @@ const BrightcoveSeekBar = React.createClass({
     seekChange(event) {
         this.setState({ value: event.target.value });
     },
-    onMouseDown() {
-        this.setState({ inSeekChange: true });
+    seekByMouse(event) {
+        const position = event.target.getBoundingClientRect();
+        const seekPosition = event.clientX - position.left;
+        const progress = seekPosition / position.width;
+        const seekTime = (progress * this.props.itemLength + this.props.itemStart)/ 1000.0;
+
+        this.props.seekListener(seekTime);
     },
-    onMouseUp() {
-        this.props.seekListener(this.getItemTime());
+    onMouseDown(event) {
+        event.preventDefault();
+
+        document.body.focus();
+        this.onselectstart = document.onselectstart;
+
+        this.setState({ inSeekChange: true });
+
+        document.addEventListener("mousemove", this.onMouseMove);
+        document.addEventListener("mouseup", this.onMouseUp);
+        document.onselectstart = () => {return false};
+
+        this.seekByMouse(event);
+    },
+    onMouseMove(event) {
+        this.seekByMouse(event);
+    },
+    onMouseUp(event) {
+        this.seekByMouse(event);
+
+        document.removeEventListener("mousemove", this.onMouseMove);
+        document.removeEventListener("mouseup", this.onMouseUp);
+        document.onselectstart = this.onselectstart;
+
         setTimeout(() => { // TODO move to seek promise return
             this.setState({ inSeekChange: false });
         }, 100);
     },
     getItemTime() {
-        return Math.floor(parseInt(this.state.value, 10) + this.props.itemStart / 1000);
+        return Math.floor(parseInt(this.state.value, 10) + this.props.itemStart / 1000.0);
     },
     getCurrentTimeInItemHHMMSS: function () {
         return this.getTimeInHHMMSS(this.props.itemTimeMs - this.props.itemStart);
@@ -46,7 +75,18 @@ const BrightcoveSeekBar = React.createClass({
             });
         }
     },
+    progress() {
+        if (this.props.itemTimeMs && this.props.itemLength)
+        {
+            var itemCurrentTime = this.props.itemTimeMs - this.props.itemStart;
+            return Math.min(itemCurrentTime / this.props.itemLength, 1);
+        }
+        return 0;
+    },
     render() {
+        const progressStyle = {
+            width: `${this.progress() * 100}%`
+        }
         return (
             <div className={this.props.isVisible? 'brightcoveSeekBar' : 'hidden'}>
                 <div className="vjs-current-time vjs-time-control vjs-control vjs-time-controls">
@@ -67,28 +107,16 @@ const BrightcoveSeekBar = React.createClass({
                 <div className="vjs-progress-control vjs-control"
                      onChange={this.seekChange}
                      onMouseDown={this.onMouseDown}
-                     onMouseUp={this.onMouseUp}
                      onTouchStart={this.onMouseDown}
                      onTouchEnd={this.onMouseUp}>
                     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
-                        <div className="vjs-load-progress">
+                        <div className="vjs-load-progress" style={progressStyle}>
                             <span className="vjs-control-text">
                                 <span>Loaded</span>
                                 : 0%
                             </span>
                             <div></div>
                         </div>
-                        <input ref="bar" type="range"
-                               min={0}
-                               max={this.props.itemLength / 1000}
-                               value={this.state.value}
-                               className="brightcoveTimeLine"
-                               onChange={this.seekChange}
-                               onMouseDown={this.onMouseDown}
-                               onMouseUp={this.onMouseUp}
-                               onTouchStart={this.onMouseDown}
-                               onTouchEnd={this.onMouseUp}
-                               step="any" />
                     </div>
                 </div>
 
