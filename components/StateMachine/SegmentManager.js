@@ -11,6 +11,7 @@ class SegmentManager {
             segments[segment] = new Segment(segments[segment], segment);
         }
         this.segments = segments;
+        this.activeSegment = this.segments.root;
         this.logger = logger;
     }
 
@@ -33,14 +34,22 @@ class SegmentManager {
         return this.getSegments()[key];
     }
 
-    getNext(activeSegment) {
-        return this.getNextSegmentAccordingToAction('next', activeSegment);
+    getNext() {
+        return this.get(this.getActive().next);
     }
 
-    getSegmentsToPrepare(activeSegment) {
+    getActive() {
+        return this.activeSegment;
+    }
+
+    setActive(segment) {
+        this.activeSegment = segment;
+    }
+
+    getSegmentsToPrepare() {
         const newSegments = new SegmentsQueue();
-        newSegments.add(this.getNext(activeSegment));
-        const noActionSegment = this.get(activeSegment.no_action);
+        newSegments.add(this.getNext());
+        const noActionSegment = this.get(this.getActive().no_action);
         if (noActionSegment !== undefined) {
             newSegments.add(noActionSegment);
             const noActionSegment2 = this.get(noActionSegment.no_action);
@@ -49,8 +58,8 @@ class SegmentManager {
         return newSegments;
     }
 
-    getNextSegmentAccordingToAction(action, activeSegment) {
-        const segmentName = activeSegment[action];
+    getNextSegmentAccordingToAction(action) {
+        const segmentName = this.getActive()[action];
         return this.get(segmentName);
     }
     setContentUrl(url) {
@@ -73,7 +82,7 @@ class SegmentManager {
     }
 
     getExtendedSegment(activeSegment) {
-        const followingSegment = this.getNextSegmentAccordingToAction('extend', activeSegment);
+        const followingSegment = this.getNextSegmentAccordingToAction('extend');
         const inTime = activeSegment.in;
         const newSegment = new Segment(followingSegment, 'extendedItem');
         newSegment.in = inTime;

@@ -32,7 +32,6 @@ class StateMachine {
 
     setSegments(segments) {
         this.segmentsManager = new SegmentManager(segments, this.logger);
-        this.store.dispatch({type: 'SET_ACTIVE_SEGMENT', activeSegment: segments.root});
         this.updateView({numOfItems: this.segmentsManager.getNumberOtItems()});
     }
 
@@ -48,7 +47,7 @@ class StateMachine {
             .catch((error) => {
                 if (error.name == 'NotAllowedError') {
                     this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
-                    const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare(this.store.getState().activeSegment);
+                    const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
                     this.playbackController.prepareSegments(segmentsToPrepare);
                 } else {
                     throw error;
@@ -67,13 +66,12 @@ class StateMachine {
 
     extend() {
         this.playbackController.cancelOnSegmentEndAction();
-        var activeSegment = this.store.getState().activeSegment;
-        this.extendItem(activeSegment);
-        this.playbackController.waitForSegmentEnd(activeSegment.out, this.actionHandler.bind(this, 'no_action'));
+        this.extendItem(this.segmentsManager.getActive());
+        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
 
     previous() {
-        if (this.segmentsManager.getNextSegmentAccordingToAction('previous', this.store.getState().activeSegment)) {
+        if (this.segmentsManager.getNextSegmentAccordingToAction('previous')) {
             this.playbackController.pause();
         }
         this.actionHandler('previous');
@@ -81,18 +79,18 @@ class StateMachine {
 
     actionHandler(action) {
         this.logger.log(`handle action ${action}`);
-        const activeSegment = this.segmentsManager.getNextSegmentAccordingToAction(action, this.store.getState().activeSegment);
-        if (activeSegment === undefined) {
+        const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
+        if (followingSegment === undefined) {
             return;
         }
-        this.store.dispatch({type: 'SET_ACTIVE_SEGMENT', activeSegment: activeSegment});
-        this.updateView({itemNum: SegmentManager.getItemNum(activeSegment.title)});
-        return this.playbackController.playSegment(activeSegment, this.actionHandler.bind(this, 'no_action'))
+        this.updateView({itemNum: SegmentManager.getItemNum(followingSegment.title)});
+        this.segmentsManager.setActive(followingSegment);
+        return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
             .then(() => {
                 // todo: stop current loading if needed
                 this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'play'});
                 setTimeout(() => {
-                    const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare(activeSegment);
+                    const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
                     this.playbackController.updateSegments(segmentsToPrepare);
                     this.playbackController.prepareSegments(segmentsToPrepare);
                 }, 3000);
@@ -120,9 +118,9 @@ class StateMachine {
     }
 
     extendItem(activeSegment) {
-        const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction('extend', activeSegment);
+        const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction('extend');
         const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
-        this.store.dispatch({type: 'SET_ACTIVE_SEGMENT', activeSegment: extendedSegment});
+        this.segmentsManager.setActive(extendedSegment);
         const itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
         this.updateView({itemLength: itemLength, itemStart: activeSegment.in});
     }
