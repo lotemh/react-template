@@ -84,6 +84,7 @@ class StateMachine {
             return;
         }
         this.updateView({itemNum: SegmentManager.getItemNum(followingSegment.title)});
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
             .then(() => {

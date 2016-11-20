@@ -25,11 +25,9 @@ const Controls = React.createClass({
         // })
     },
     swipeLeft() {
-        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'next'});
         this.props.eventHandler('next');
     },
     swipeRight(){
-        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'previous'});
         this.props.eventHandler('previous');
     },
 
