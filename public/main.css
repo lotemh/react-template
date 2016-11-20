@@ -312,7 +312,7 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 .te {
-    animation-duration: 0.85s;
+    animation-duration: 0.79s;
     animation-name: te-whoosh;
     -webkit-animation-name: te-whoosh;
     animation-timing-function: steps(19);
