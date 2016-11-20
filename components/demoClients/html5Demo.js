@@ -9,16 +9,16 @@ const Html5Demo = React.createClass({
     render() {
         const players = new Array(this.props.numOfPlayers).fill(0);
         return (
-      <ElasticMediaSdk>
-          {
-            players.map((elm, i) => {
-                return (
-                <VideoElement key={`player${i}`} playerId={`player${i}`} />
-              );
-            })
-          }
-      </ElasticMediaSdk>
-    );
+            <ElasticMediaSdk>
+                {
+                    players.map((elm, i) => {
+                        return (
+                            <VideoElement key={`player${i}`} playerId={`player${i}`} />
+                        );
+                    })
+                }
+            </ElasticMediaSdk>
+        );
     }
 });
 

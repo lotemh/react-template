@@ -9,10 +9,10 @@ class KcetPage extends React.Component {
 
     render() {
         return (
-      <div className="App">
-          <Kcet />
-      </div>
-    );
+            <div className="App">
+                <Kcet />
+            </div>
+        );
     }
 
 }

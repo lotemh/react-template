@@ -100,7 +100,6 @@
   },
   "scripts": {
     "eslint": "eslint .",
-    "eslint-partial": "eslint test pages components",
     "stylelint": "stylelint \"components/**/*.css\" \"pages/**/*.css\"",
     "lint": "npm run eslint && npm run stylelint",
     "test": "mocha --compilers js:babel-register",
