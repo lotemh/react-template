@@ -1,9 +1,13 @@
 import React, { PropTypes } from 'react';
-import TouchScreen from './TouchScreen';
+import Hammer from 'hammerjs';
+import ReactDOM from 'react-dom';
 import ControlsStartStatus from './ControlsStartStatus';
 import Extend from './Extend';
-import TransitionEffect from '../transitionEffects/TransitionEffect';
 
+const SWIPES = {
+    LEFT: 'swipeleft',
+    RIGHT: 'swiperight'
+};
 const Controls = React.createClass({
     propTypes: {
         eventHandler: PropTypes.func.isRequired
@@ -12,16 +16,21 @@ const Controls = React.createClass({
         store: React.PropTypes.object
     },
     componentDidMount() {
+        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
+        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
+        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
         // todo: try to subscribe to the store
         // this.store.subscribe(()=>{
         //     this.forceUpdate();
         // })
     },
-
-    getInitialState(){
-        return {
-            isAnimationRunning: false
-        }
+    swipeLeft() {
+        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'next'});
+        this.props.eventHandler('next');
+    },
+    swipeRight(){
+        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'previous'});
+        this.props.eventHandler('previous');
     },
 
     updateControl() {
@@ -54,44 +63,13 @@ const Controls = React.createClass({
         return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
     },
     getControlsClassName() {
-        if (this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE){
-            return 'hidden';
-        }
-        let className =  'controls';
-        if (this.state && this.state.teClass){
-            className += ' te ' + this.state.teClass;
-        }
-        return className;
+        return this.context.store.getState().startStatus === ControlsStartStatus.ACTIVE ? 'controls' : 'hidden';
     },
     seekListener(currentTime){
         this.props.eventHandler('seek', {
             timestamp: currentTime
         });
     },
-
-    performTransitionEffect(){
-        const that = this;
-        const container = this.refs.controls;
-
-        function onEnd() {
-            that.setState({teClass: ''});
-            that.isAnimationRunning = false;
-            container.removeEventListener("animationend", onEnd);
-            that.context.store.dispatch({type: 'TRANSITION_EFFECT_END'});
-        }
-
-        container.addEventListener("animationend", onEnd);
-        const transitionEffectClass = TransitionEffect[this.context.store.getState().transitionEffect];
-        this.setState({teClass: transitionEffectClass});
-    },
-
-    componentWillUpdate(){
-        if (this.context.store.getState().transitionEffect && !this.isAnimationRunning){
-            this.isAnimationRunning = true;
-            this.performTransitionEffect();
-        }
-    },
-
     render(){
         const { store } = this.context;
         return (
@@ -99,8 +77,9 @@ const Controls = React.createClass({
                 <div>
                     <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
-                <div className={this.getControlsClassName()} ref="controls">
-                    <TouchScreen eventHandler={this.eventHandler}/>
+                <div className={this.getControlsClassName()}>
+                    <div className="controlsTouchScreen" ref="touchScreen"
+                         style={store.getState().pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>

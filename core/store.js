@@ -23,12 +23,15 @@ function reducer(state, action){
     // TODO: Add action handlers (aka "reduces")
     switch (action.type) {
         case 'EVENT_HANDLER':
-            const inExtend = action.actionName === 'extend';
             switch (action.actionName) {
                 case 'extend':
-                    return Object.assign({}, state, {inExtend: inExtend});
+                    return Object.assign({}, state, {inExtend: true});
                 case 'next':
-                    return Object.assign({}, state, {inExtend: inExtend});
+                    return Object.assign({}, state, {inExtend: false});
+                case 'previous':
+                    return Object.assign({}, state, {inExtend: false});
+                case 'no_action':
+                    return Object.assign({}, state, {inExtend: false});
                 case 'pause':
                     return Object.assign({}, state, {isPlaying: false});
                 case 'play':
