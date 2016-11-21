@@ -17,7 +17,8 @@ function buildSrc(src, inTime, outTime) {
 }
 
 class PlaybackController {
-    constructor() {
+    constructor(store) {
+        this.store = store;
         this.segmentEndTimeMs = false;
         this.logger = new Logger();
         this.activePlayer = null;
@@ -245,16 +246,25 @@ class PlaybackController {
     }
 
     startPlaying() {
-        const playPromise = this.activePlayer.play();
-        this.players.concat(Object.values(this.loadingSegmentsMap)).concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
-            if (p !== this.activePlayer) {
-                p.play().then(() => {
-                    return p.pause();
+        //alert("in start playing with player " + this.activePlayer.id);
+        this.activePlayer.play().then(() => {
+            this.players.concat(Object.values(this.loadingSegmentsMap)).concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
+                console.log("running fast play on " + p.id);
+                if (p !== this.activePlayer) {
+                    /*
+                    alert("running fast play p " + p.src);
+                    alert("this.activePlayer.src " + this.activePlayer.src);
+                    if (!p.src) {
+                        p.src = this.activePlayer.src;
+                        alert("set source to", p.src);
+                    } 
+                    */
+                    p.play().then(() => {
+                        return p.pause();
+                    });
                 }
-                );
-            }
+            });
         });
-        return playPromise;
     }
 
     /**     Loading segments         ***********/

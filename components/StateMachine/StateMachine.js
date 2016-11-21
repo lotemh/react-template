@@ -11,7 +11,7 @@ class StateMachine {
     constructor(store) {
         this.logger = new Logger();
         this.store = store;
-        this.playbackController = new PlaybackController();
+        this.playbackController = new PlaybackController(this.store);
         this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
     }
 
@@ -107,11 +107,8 @@ class StateMachine {
         this.playbackController.seek(params.timestamp);
     }
 
-    firstPlay(callback) {
-        this.playbackController.startPlaying()
-            .then(() => {
-                callback();
-            });
+    firstPlay() {
+        this.playbackController.startPlaying();
     }
 
     extendItem(activeSegment) {

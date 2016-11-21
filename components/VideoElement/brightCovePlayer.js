@@ -83,7 +83,6 @@ class BrightCovePlayer extends React.Component {
 
     onExtendClick(){
         this.setState({inExtend: !this.state.inExtend});
-        console.log("extend");
     }
 
     addControls(){
@@ -153,8 +152,24 @@ class BrightCovePlayer extends React.Component {
     }
 
     play() {
-        this.getPlayer().play();
-        return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            let returned = false;
+            function gotPlayingEvent(event) {
+                if (!returned) {
+                    returned = true;
+                    this.getPlayer().off("play", gotPlayingEvent.bind(this));
+                    return resolve();
+                }
+            }
+            setTimeout(() => {
+                if (!returned) {
+                    returned = true;
+                    return reject("Play failed...");
+                }
+            }, 1000);
+            this.getPlayer().on('play', gotPlayingEvent.bind(this));
+            this.getPlayer().play();
+        });
     }
 
     show() {

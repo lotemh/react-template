@@ -49,9 +49,7 @@ const Controls = React.createClass({
         return className;
     },
     startPlaying() {
-        this.props.eventHandler("play", ()=>{
-            this.context.store.dispatch({type: "EVENT_HANDLER", actionName: 'firstPlay'});
-        });
+        this.props.eventHandler("firstPlay");
     },
     eventHandler(action) {
         this.context.store.dispatch({type: "EVENT_HANDLER", actionName: action});

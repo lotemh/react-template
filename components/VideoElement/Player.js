@@ -27,8 +27,12 @@ class Player {
     }
 
     play() {
+        function playListener(event) {
+            this.store.dispatch({type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
+            this.getPlayer().off("play", playListener.bind(this));
+        }
+        this.getPlayer().addEventListener("play", playListener.bind(this));
         this.addTimeUpdateEvent();
-        this.addPlayingEvent();
         return this.getPlayer().play();
     }
     show() {
@@ -41,8 +45,13 @@ class Player {
         this.loading = segmentTitle;
         if (!this.src) {
             this.getPlayer().setSrc(src);
-            this.src = src;
+            this.src = this.getPlayer().getSrc();
             this.getPlayer().load();
+            setTimeout(() => {
+                if (this.loading) {
+                    this.getPlayer().load();
+                }
+            }, 2000);
             return;
         }
         const timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
@@ -60,15 +69,15 @@ class Player {
         return this.id;
     }
     addLoadedDataEvent(listener) {
-        function loadedCallback() {
+        function loadedCallback(e) {
             if (!this.src){
                 this.src = this.getPlayer().getSrc();
             }
             const loadedSegment = this.loading;
             if (loadedSegment) {
                 this.loading = null;
+                listener(loadedSegment, this);
             }
-            listener(loadedSegment, this);
         }
         this.loadedCallback = loadedCallback;
         this.getPlayer().addLoadedDataEvent(loadedCallback.bind(this));
@@ -76,12 +85,6 @@ class Player {
 
     addTimeUpdateEvent() {
         this.getPlayer().addTimeUpdateEvent(this.timeUpdatedListener.bind(this));
-    }
-    addPlayingEvent() {
-        this.getPlayer().addEventListener("play", function playerIsPlaying(event) {
-            console.log("got playing event!!!");
-            this.store.dispatch({type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
-        }.bind(this));
     }
     removeTimeUpdateEvent() {
         this.getPlayer().removeTimeUpdateEvent(this.timeUpdatedListener.bind(this));
