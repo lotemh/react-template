@@ -45,13 +45,13 @@ class Player {
         this.loading = segmentTitle;
         if (!this.src) {
             this.getPlayer().setSrc(src);
-            this.src = this.getPlayer().getSrc();
+            this.src = src;
             this.getPlayer().load();
             setTimeout(() => {
                 if (this.loading) {
                     this.getPlayer().load();
                 }
-            }, 2000);
+            }, 1000);
             return;
         }
         const timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
@@ -69,7 +69,7 @@ class Player {
         return this.id;
     }
     addLoadedDataEvent(listener) {
-        function loadedCallback(e) {
+        function loadedCallback() {
             if (!this.src){
                 this.src = this.getPlayer().getSrc();
             }

@@ -245,12 +245,15 @@ class PlaybackController {
         return Math.abs(this.getActive().getCurrentTime() - timeMs) < 1000;
     }
 
+    //Thank you Aaron Atar for finding the solution!!!
     startPlaying() {
         this.players.concat(Object.values(this.loadingSegmentsMap)).concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
             p.play();
             p.pause();
         });
-        this.activePlayer.play();
+        if (this.activePlayer) {
+            this.activePlayer.play();
+        }
     }
 
     /**     Loading segments         ***********/
