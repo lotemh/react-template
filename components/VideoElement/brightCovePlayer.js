@@ -5,6 +5,7 @@ import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Dots from '../Controls/Dots';
 import BrightcoveSeekBar from '../Controls/BrightcoveSeekBar';
+import ControlsStartStatus from '../Controls/ControlsStartStatus';
 
 class BrightCovePlayer extends React.Component {
 
@@ -62,7 +63,8 @@ class BrightCovePlayer extends React.Component {
 
     getClassName() {
         let className = 'player-wrapper';
-        className += this.state.isHidden ? ' hidden' : '';
+        className += (this.state.isHidden || this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION) ? 
+            ' hidden' : '';
         className += this.context.store.getState().inExtend ? ' show-progress-bar' : ' show-item-dots';
         return className;
     }

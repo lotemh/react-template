@@ -1,5 +1,6 @@
 import React, {PropTypes} from "react";
 import ElasticMediaSdk from "./ElasticMediaSdk";
+import { connect } from 'react-redux';
 import Controls from "../Controls/BrightcoveControls";
 
 const ElasticMediaController = React.createClass({
@@ -64,4 +65,8 @@ const ElasticMediaController = React.createClass({
     }
 });
 
-export default ElasticMediaController;
+function mapStateToProps(state) {
+    return { startStatus: state.startStatus };
+}
+
+export default connect(mapStateToProps)(ElasticMediaController);
