@@ -16,7 +16,7 @@ const defaultState = {
     numOfItems: 0,
     itemNum: 0,
     isPlaying: false,
-    startStatus: ControlsStartStatus.PENDING_USER_ACTION,
+    startStatus: ControlsStartStatus.PENDING,
     itemLength: 0,
     itemTimeMs: 0,
     activeSegment: null
