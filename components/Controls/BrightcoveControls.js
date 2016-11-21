@@ -56,9 +56,7 @@ const Controls = React.createClass({
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
-        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION  &&
-           /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-            !window.MSStream) {
+        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION) {
             return 'controller bigPlay';
         } else {
             return 'hidden';

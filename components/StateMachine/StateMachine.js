@@ -41,7 +41,7 @@ class StateMachine {
 
     start() {
         this.actionHandler('next').catch((error) => {
-            if (error.name == 'NotAllowedError') {
+            if (error === "NotAllowedError" || error.name === 'NotAllowedError') {
                 this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
                 const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
                 this.playbackController.prepareSegments(segmentsToPrepare);

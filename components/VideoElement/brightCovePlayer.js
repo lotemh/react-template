@@ -164,7 +164,7 @@ class BrightCovePlayer extends React.Component {
             setTimeout(() => {
                 if (!returned) {
                     returned = true;
-                    return reject("Play failed...");
+                    return reject("NotAllowedError");
                 }
             }, 1000);
             this.getPlayer().on('play', gotPlayingEvent.bind(this));
@@ -214,6 +214,10 @@ class BrightCovePlayer extends React.Component {
 
     addEventListener(event, listener) {
         this.getPlayer().on(event, listener, false);
+    }
+
+    removeEventListener(event, listener) {
+        this.getPlayer().off(event, listener);
     }
 }
 

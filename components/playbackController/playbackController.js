@@ -246,25 +246,11 @@ class PlaybackController {
     }
 
     startPlaying() {
-        //alert("in start playing with player " + this.activePlayer.id);
-        this.activePlayer.play().then(() => {
-            this.players.concat(Object.values(this.loadingSegmentsMap)).concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
-                console.log("running fast play on " + p.id);
-                if (p !== this.activePlayer) {
-                    /*
-                    alert("running fast play p " + p.src);
-                    alert("this.activePlayer.src " + this.activePlayer.src);
-                    if (!p.src) {
-                        p.src = this.activePlayer.src;
-                        alert("set source to", p.src);
-                    } 
-                    */
-                    p.play().then(() => {
-                        return p.pause();
-                    });
-                }
-            });
+        this.players.concat(Object.values(this.loadingSegmentsMap)).concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
+            p.play();
+            p.pause();
         });
+        this.activePlayer.play();
     }
 
     /**     Loading segments         ***********/
