@@ -3,8 +3,6 @@ import { toHHMMSS } from '../utils/timeUtils';
 
 const BrightcoveSeekBar = React.createClass({
     propTypes: {
-        pauseListener: PropTypes.func.isRequired,
-        playListener: PropTypes.func.isRequired,
         seekListener: PropTypes.func.isRequired,
         itemStart: PropTypes.number.isRequired,
         itemLength: PropTypes.number.isRequired,
