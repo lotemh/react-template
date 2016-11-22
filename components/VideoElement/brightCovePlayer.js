@@ -34,11 +34,9 @@ class BrightCovePlayer extends React.Component {
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
     }
     swipeLeft() {
-        //alert("got a swipeleft");
         this.props.eventHandler('next');
     }
     swipeRight(){
-        //alert("got a swiperight");
         this.props.eventHandler('previous');
     }
     waitForVideoJs() {
@@ -105,7 +103,7 @@ class BrightCovePlayer extends React.Component {
         const container = document.createElement('div');
         container.id = 'progress-container';
         container.className = 'vjs-control';
-        
+
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
 
