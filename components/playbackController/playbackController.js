@@ -37,7 +37,6 @@ class PlaybackController {
                 player.onReady(()=> {
                     player.setTimeUpdateCallback(this.playerUpdate.bind(this));
                     player.load().then(() => {
-                        console.log("calling load players");
                         player.addLoadedDataEvent(this.onDataLoaded.bind(this));
                         resolve();
                     });

@@ -132,7 +132,6 @@ class BrightCovePlayer extends React.Component {
     }
 
     render() {
-        console.log("in render with props", this.props);
         return (
             <div className={this.getClassName()}>
                 <video ref="player"
