@@ -181,7 +181,7 @@ class BrightCovePlayer extends React.Component {
                     returned = true;
                     return reject("NotAllowedError");
                 }
-            }, 1000);
+            }, 100);
             this.getPlayer().on('play', gotPlayingEvent.bind(this));
             this.getPlayer().play();
         });
