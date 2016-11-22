@@ -63,7 +63,7 @@ class BrightCovePlayer extends React.Component {
 
     getClassName() {
         let className = 'player-wrapper';
-        className += (this.state.isHidden || this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION) ? 
+        className += (this.state.isHidden || this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE) ? 
             ' hidden' : '';
         className += this.context.store.getState().inExtend ? ' show-progress-bar' : ' show-item-dots';
         return className;
@@ -132,6 +132,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     render() {
+        console.log("in render with props", this.props);
         return (
             <div className={this.getClassName()}>
                 <video ref="player"

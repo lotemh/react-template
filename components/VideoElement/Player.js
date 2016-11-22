@@ -41,19 +41,35 @@ class Player {
     hide() {
         this.getPlayer().hide();
     }
+    load() {
+        return new Promise((resolve, reject) => {
+            let returned = false;
+            function gotLoadingEvent(event) {
+                if (!returned) {
+                    returned = true;
+                    this.getPlayer().removeEventListener("loadeddata", gotLoadingEvent.bind(this));
+                    return resolve();
+                }
+            }
+            setTimeout(() => {
+                if (!returned) {
+                    this.getPlayer().load();
+                }
+            }, 2000);
+            this.getPlayer().addEventListener("loadeddata", gotLoadingEvent.bind(this));
+            this.getPlayer().load();
+        });
+    }
     prepare(src, segmentTitle) {
         this.loading = segmentTitle;
+        /*
         if (!this.src) {
             this.getPlayer().setSrc(src);
             this.src = src;
             this.getPlayer().load();
-            setTimeout(() => {
-                if (this.loading) {
-                    this.getPlayer().load();
-                }
-            }, 1000);
             return;
         }
+        */
         const timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
         this.seek(timestamp);
         this.pause();

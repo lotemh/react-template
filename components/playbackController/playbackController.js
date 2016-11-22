@@ -3,6 +3,7 @@
  */
 import Logger from '../Logger/Logger';
 import Player from '../VideoElement/Player';
+import ControlsStartStatus from '../Controls/ControlsStartStatus';
 
 function getTimeInSeconds(timeInMili) {
     return timeInMili / 1000;
@@ -34,9 +35,12 @@ class PlaybackController {
         players.forEach(player => {
             promises.push(new Promise((resolve, reject) => {
                 player.onReady(()=> {
-                    player.addLoadedDataEvent(this.onDataLoaded.bind(this));
                     player.setTimeUpdateCallback(this.playerUpdate.bind(this));
-                    resolve();
+                    player.load().then(() => {
+                        console.log("calling load players");
+                        player.addLoadedDataEvent(this.onDataLoaded.bind(this));
+                        resolve();
+                    });
                 });
             }));
         });
