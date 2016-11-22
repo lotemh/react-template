@@ -4,10 +4,6 @@ import ReactDOM from 'react-dom';
 import ControlsStartStatus from './ControlsStartStatus';
 import Extend from './Extend';
 
-const SWIPES = {
-    LEFT: 'swipeleft',
-    RIGHT: 'swiperight'
-};
 const Controls = React.createClass({
     propTypes: {
         eventHandler: PropTypes.func.isRequired
@@ -15,22 +11,6 @@ const Controls = React.createClass({
     contextTypes: {
         store: React.PropTypes.object
     },
-    componentDidMount() {
-        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
-        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
-        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
-        // todo: try to subscribe to the store
-        // this.store.subscribe(()=>{
-        //     this.forceUpdate();
-        // })
-    },
-    swipeLeft() {
-        this.props.eventHandler('next');
-    },
-    swipeRight(){
-        this.props.eventHandler('previous');
-    },
-
     updateControl() {
         this.forceUpdate();
     },
@@ -76,8 +56,6 @@ const Controls = React.createClass({
                     <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
                 <div className={this.getControlsClassName()}>
-                    <div className="controlsTouchScreen" ref="touchScreen"
-                         style={store.getState().pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>
