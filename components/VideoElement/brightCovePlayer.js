@@ -3,10 +3,15 @@
  */
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
+import Hammer from 'hammerjs';
 import Dots from '../Controls/Dots';
 import BrightcoveSeekBar from '../Controls/BrightcoveSeekBar';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
 
+const SWIPES = {
+    LEFT: 'swipeleft',
+    RIGHT: 'swiperight'
+};
 class BrightCovePlayer extends React.Component {
 
     constructor(props) {
@@ -24,9 +29,17 @@ class BrightCovePlayer extends React.Component {
     }
 
     componentDidMount(){
+        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
         this.waitForVideoJs();
+        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
+        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
     }
-
+    swipeLeft() {
+        this.props.eventHandler('next');
+    }
+    swipeRight(){
+        this.props.eventHandler('previous');
+    }
     waitForVideoJs() {
         if (window.videojs) {
             this.initPlayer();
@@ -74,7 +87,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getVideoProps(){
-        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl",
+        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler",
             "style", "data-brightcove-script", "data-elastic-media-account"];
         var videoProps = Object.assign({}, this.props);
         INVALID_VIDEO_PROPS.forEach((attr) => {
@@ -91,7 +104,7 @@ class BrightCovePlayer extends React.Component {
         const container = document.createElement('div');
         container.id = 'progress-container';
         container.className = 'vjs-control';
-        
+
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
 
@@ -133,7 +146,7 @@ class BrightCovePlayer extends React.Component {
 
     render() {
         return (
-            <div className={this.getClassName()}>
+            <div className={this.getClassName()}  ref="touchScreen">
                 <video ref="player"
                        className="player brightcove-player"
                        id={this.props.playerId}
