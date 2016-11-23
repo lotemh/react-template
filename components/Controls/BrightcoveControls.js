@@ -11,12 +11,12 @@ const Controls = React.createClass({
     },
     componentDidMount(){
         this.unsubscribe = this.context.store.subscribe(() => {
-          this.forceUpdate();
-      })
+            this.forceUpdate();
+        })
     },
 
     componentWillUnmount(){
-         this.unsubscribe();
+        this.unsubscribe();
     },
 
     startPlaying() {
