@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import ReactTestUtils from 'react-addons-test-utils';
-//import Controls from '../components/Controls/Controls';
 import React from 'react';
 
 describe('Controls test suite', () => {
