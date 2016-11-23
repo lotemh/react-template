@@ -1,6 +1,5 @@
 import React, {PropTypes} from "react";
 import ElasticMediaSdk from "./ElasticMediaSdk";
-import { connect } from 'react-redux';
 import Controls from "../Controls/BrightcoveControls";
 
 const ElasticMediaController = React.createClass({
@@ -17,7 +16,6 @@ const ElasticMediaController = React.createClass({
     },
 
     componentDidMount() {
-        this.context.store.subscribe(this.refs.controls.updateControl);
         window.addEventListener('resize', this.handleResize);
     },
     calcWidthAndHeight() {
@@ -65,8 +63,4 @@ const ElasticMediaController = React.createClass({
     }
 });
 
-function mapStateToProps(state) {
-    return { startStatus: state.startStatus };
-}
-
-export default connect(mapStateToProps)(ElasticMediaController);
+export default ElasticMediaController;
