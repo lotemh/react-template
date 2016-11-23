@@ -18,33 +18,24 @@ const ElasticMediaSdk = React.createClass({
 
     componentDidMount() {
         const players = Object.values(this.refs).filter(ref => !!ref.props.playerId);
-        var waitForPlayersReady = this.stateMachine.setPlayers(players);
         const stateMachine = this.stateMachine;
-        $.getJSON('metadataExample.json', (metadata) => {
-            stateMachine.setSegments(metadata.segments);
-            var contentUrl = this.props.contentUrl;
-            stateMachine.setContentUrl(contentUrl);
-            waitForPlayersReady.then(()=> {
-                stateMachine.start();
-            })
+        var waitForPlayersReady = this.stateMachine.setPlayers(players);
+        $.ajax({
+            url: 'http://mini-cms-dev.elasticmedia.io/em/v2/' + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId,
+            type: 'GET',
+            dataType: "json",
+            success: (metadata) => {
+                stateMachine.setSegments(metadata.segments);
+                var contentUrl = this.props.contentUrl;
+                stateMachine.setContentUrl(contentUrl);
+                waitForPlayersReady.then(()=> {
+                    stateMachine.start();
+                })
+            },
+            error: function(xhr, status, err){
+                console.error("Fail to get metadata", status, err.toString());
+            }.bind(this)
         });
-        // todo: get metadata from cms server
-        // $.ajax({
-        //     url: 'http://mini-cms.elasticmedia.io/em/v2/' + this.props.publisherId + '/getMetadata?videoId=' + this.props.episodeId,
-        //     type: 'GET',
-        //     success: (metadata) => {
-        //         stateMachine.setSegments(metadata.segments);
-        //         var contentUrl = this.props.contentUrl;
-        //         stateMachine.setContentUrl(contentUrl);
-        //         stateMachine.addUpdateViewListener(controls);
-        //         waitForPlayersReady.then(()=> {
-        //             stateMachine.start();
-        //         })
-        //     },
-        // error: function(xhr, status, err){
-        //     console.error("Fail to get metadata", status, err.toString());
-        // }.bind(this)
-        // });
     },
 
     eventHandler(event, params){
