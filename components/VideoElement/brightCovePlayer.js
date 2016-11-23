@@ -7,6 +7,7 @@ import Hammer from 'hammerjs';
 import Dots from '../Controls/Dots';
 import BrightcoveSeekBar from '../Controls/BrightcoveSeekBar';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
+import {isIphone} from '../utils/webUtils';
 
 const SWIPES = {
     LEFT: 'swipeleft',
@@ -33,7 +34,15 @@ class BrightCovePlayer extends React.Component {
         this.waitForVideoJs();
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
+        this.unsubscribe = this.context.store.subscribe(() => {
+            this.forceUpdate();
+        });
     }
+
+    componentWillUnmount(){
+        this.unsubscribe();
+    }
+
     swipeLeft() {
         this.props.eventHandler('next');
     }
@@ -76,7 +85,7 @@ class BrightCovePlayer extends React.Component {
 
     getClassName() {
         let className = 'player-wrapper';
-        className += (this.state.isHidden || this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE) ? 
+        className += (this.state.isHidden || this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE) ?
             ' hidden' : '';
         className += this.context.store.getState().inExtend ? ' show-progress-bar' : ' show-item-dots';
         return className;
@@ -167,24 +176,26 @@ class BrightCovePlayer extends React.Component {
     }
 
     play() {
-        return new Promise((resolve, reject) => {
-            let returned = false;
-            function gotPlayingEvent(event) {
-                if (!returned) {
-                    returned = true;
-                    this.getPlayer().off("play", gotPlayingEvent.bind(this));
-                    return resolve();
-                }
+        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING){
+            if (isIphone()){
+                return Promise.reject("NotAllowedError");
             }
-            setTimeout(() => {
-                if (!returned) {
-                    returned = true;
-                    return reject("NotAllowedError");
-                }
-            }, 100);
-            this.getPlayer().on('play', gotPlayingEvent.bind(this));
-            this.getPlayer().play();
-        });
+            else {
+                return new Promise((resolve, reject) => {
+                    function gotPlayingEvent() {
+                        this.getPlayer().off("play", gotPlayingEvent.bind(this));
+                        return resolve();
+                    }
+                    setTimeout(() => {
+                        return reject("NotAllowedError");
+                    }, 100);
+                    this.getPlayer().on('play', gotPlayingEvent.bind(this));
+                    this.getPlayer().play();
+                });
+            }
+        }
+        this.getPlayer().play();
+        return Promise.resolve();
     }
 
     show() {
