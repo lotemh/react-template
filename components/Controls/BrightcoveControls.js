@@ -1,6 +1,4 @@
 import React, { PropTypes } from 'react';
-import Hammer from 'hammerjs';
-import ReactDOM from 'react-dom';
 import ControlsStartStatus from './ControlsStartStatus';
 import Extend from './Extend';
 
@@ -11,23 +9,16 @@ const Controls = React.createClass({
     contextTypes: {
         store: React.PropTypes.object
     },
-    updateControl() {
-        this.forceUpdate();
+    componentDidMount(){
+        this.unsubscribe = this.context.store.subscribe(() => {
+          this.forceUpdate();
+      })
     },
 
-    getClassName(name) {
-        let className = 'controller';
-        if (name === 'extend' && this.context.store.getState().inExtend) {
-            className += ' hidden';
-        }
-        if (name === 'play') {
-            className += ' play';
-            className += this.context.store.getState() ? ' hidden' : '';
-        } else if (name === 'pause') {
-            className += !this.context.store.getState() ? ' hidden' : '';
-        }
-        return className;
+    componentWillUnmount(){
+         this.unsubscribe();
     },
+
     startPlaying() {
         this.props.eventHandler("firstPlay");
     },
@@ -36,11 +27,8 @@ const Controls = React.createClass({
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
-        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION) {
-            return 'controller bigPlay';
-        } else {
-            return 'hidden';
-        }
+        return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ?
+            'controller bigPlay' : 'hidden';
     },
     getControlsClassName() {
         return this.context.store.getState().startStatus === ControlsStartStatus.ACTIVE ? 'controls' : 'hidden';
