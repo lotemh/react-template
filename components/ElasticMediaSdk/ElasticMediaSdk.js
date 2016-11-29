@@ -33,6 +33,7 @@ const ElasticMediaSdk = React.createClass({
                 })
             },
             error: function(xhr, status, err){
+                //todo: implement fallback - play regular video
                 console.error("Fail to get metadata", status, err.toString());
             }.bind(this)
         });
