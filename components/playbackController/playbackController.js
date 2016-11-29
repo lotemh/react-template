@@ -208,6 +208,7 @@ class PlaybackController {
     switchPlayers(oldPlayer, nextPlayer) {
         if (!nextPlayer) return;
         return this.activatePlayer(nextPlayer).then(() => {
+            this.store.dispatch({type: 'SWITCH_PLAYERS'});
             if (oldPlayer !== nextPlayer) {
                 this.deactivatePlayer(oldPlayer);
             }

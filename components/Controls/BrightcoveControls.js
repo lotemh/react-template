@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import ControlsStartStatus from './ControlsStartStatus';
 import Extend from './Extend';
+import TransitionEffect from '../transitionEffects/TransitionEffect';
 
 const Controls = React.createClass({
     propTypes: {
@@ -13,6 +14,13 @@ const Controls = React.createClass({
         this.unsubscribe = this.context.store.subscribe(() => {
             this.forceUpdate();
         })
+    },
+
+    getInitialState(){
+        return {
+            isAnimationRunning: false,
+            teClass: ''
+        }
     },
 
     componentWillUnmount(){
@@ -31,13 +39,44 @@ const Controls = React.createClass({
             'controller bigPlay' : 'hidden';
     },
     getControlsClassName() {
-        return this.context.store.getState().startStatus === ControlsStartStatus.ACTIVE ? 'controls' : 'hidden';
+        if (this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE){
+            return 'hidden';
+        }
+        let className =  'controls';
+        if (this.state && this.state.teClass){
+            className += ' te ' + this.state.teClass;
+        }
+        return className;
     },
     seekListener(currentTime){
         this.props.eventHandler('seek', {
             timestamp: currentTime
         });
     },
+
+    performTransitionEffect(){
+        const that = this;
+        const container = this.refs.controls;
+
+        function onEnd() {
+            that.setState({teClass: ''});
+            that.isAnimationRunning = false;
+            container.removeEventListener("animationend", onEnd);
+            that.context.store.dispatch({type: 'TRANSITION_EFFECT_END'});
+        }
+
+        container.addEventListener("animationend", onEnd);
+        const transitionEffectClass = TransitionEffect[this.context.store.getState().transitionEffect];
+        this.setState({teClass: transitionEffectClass});
+    },
+
+    componentWillUpdate(){
+        if (this.context.store.getState().transitionEffect && !this.isAnimationRunning){
+            this.isAnimationRunning = true;
+            this.performTransitionEffect();
+        }
+    },
+
     render(){
         const { store } = this.context;
         return (
@@ -45,7 +84,7 @@ const Controls = React.createClass({
                 <div>
                     <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
-                <div className={this.getControlsClassName()}>
+                <div className={this.getControlsClassName()} ref="controls">
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>
