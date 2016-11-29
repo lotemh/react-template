@@ -72,6 +72,7 @@ const config = {
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': isDebug ? '"development"' : '"production"',
             __DEV__: isDebug,
+            MINI_CMS_BASE_URL: isDebug ? '"http://mini-cms-dev.elasticmedia.io/em/v2/"' : '"https://metadata.elasticmedia.io/em/v2/"'
         }),
         // Emit a JSON file with assets paths
         // https://github.com/sporto/assets-webpack-plugin#options
@@ -80,7 +81,7 @@ const config = {
             filename: 'assets.json',
             prettyPrint: true,
         }),
-        new CopyWebpackPlugin([{ 
+        new CopyWebpackPlugin([{
             from: 'public'
         }])
     ],

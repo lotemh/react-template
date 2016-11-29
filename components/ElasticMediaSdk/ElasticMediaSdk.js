@@ -21,7 +21,7 @@ const ElasticMediaSdk = React.createClass({
         const stateMachine = this.stateMachine;
         var waitForPlayersReady = this.stateMachine.setPlayers(players);
         $.ajax({
-            url: 'http://mini-cms-dev.elasticmedia.io/em/v2/' + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId,
+            url: MINI_CMS_BASE_URL + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId,
             type: 'GET',
             dataType: "json",
             success: (metadata) => {
