@@ -1,5 +1,3 @@
-@font-face { font-family: Dense; src: url('Dense-Regular.otf'); }
-@font-face { font-family: hillel;  src: url('hillelclm-medium-webfont.woff') format('woff');}
 
 body {
     background-color: black;
@@ -43,13 +41,6 @@ body {
     position: absolute;
 }
 
-.definitionLabel {
-    font-size: 38px;
-    text-align: left;
-    font-family: Dense, Arial, serif;
-    margin-left: calc(10% - 20px);
-}
-
 .vjs-control-bar > .vjs-progress-control{
      display: none
  }
@@ -66,30 +57,10 @@ body {
     display: none
 }
 
-#defineContainer .definitionButton {
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.menu {
-    background-color: #484444;
-    color: floralwhite;
-    text-align: center;
-    font-family: Dense, Arial, serif;
-}
-
-.menu h1 {
-    font-size: 50px;
-    padding: 8px 0;
-}
-
 button {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
     border-radius: 15px;
-    font-family: Dense;
     font-size: 30px;
     text-decoration: none;
     color: rgb(255, 255, 255);
