@@ -63,6 +63,10 @@ function reducer(state, action){
             });
         case 'TRANSITION_EFFECT_END':
             return Object.assign({}, state, {transitionEffect: null});
+        case 'TFX_AUDIO_SET':
+            return Object.assign({}, state, {tfxAudio: 'tfxAudioFadeIn'});
+        case 'TFX_AUDIO_END':
+            return Object.assign({}, state, {tfxAudio: null});
         default:
             return state;
     }
