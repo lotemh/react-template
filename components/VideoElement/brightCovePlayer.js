@@ -27,12 +27,12 @@ class BrightCovePlayer extends React.Component {
     componentWillMount(){
         const script = document.createElement("script");
         script.src = this.props["data-brightcove-script"];
-        document.body.appendChild(script);
         if (document.querySelector('#'+this.props.playerId)) {
             this.setState({shouldLoad: false});
             console.log("not loading " + this.props.playerId);
         } else {
             this.setState({shouldLoad: true});
+            document.body.appendChild(script);
             console.log("loading " + this.props.playerId);
         }
     }

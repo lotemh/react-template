@@ -13,6 +13,18 @@ const ElasticMediaController = React.createClass({
     },
     componentWillMount() {
         this.state = this.calcWidthAndHeight();
+        $.ajax({
+            url: MINI_CMS_BASE_URL + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId,
+            type: 'GET',
+            dataType: "json",
+            success: (metadata) => {
+                this.setState({metadata: metadata});
+            },
+            error: function(xhr, status, err){
+                //todo: implement fallback - play regular video
+                console.error("Fail to get metadata", status, err.toString());
+            }.bind(this)
+        });
     },
 
     componentDidMount() {
@@ -51,13 +63,17 @@ const ElasticMediaController = React.createClass({
     render() {
         return (
             <div className="player-container" style={this.state}>
-                <ElasticMediaSdk ref="sdk"
-                                 contentUrl={this.props.contentUrl}
-                                 publisherId={this.props.publisherId}
-                                 episodeId={this.props.episodeId}>
-                    {this.props.children}
-                </ElasticMediaSdk>
-                <Controls eventHandler={this.eventHandler} ref="controls"/>
+                { this.state.metadata ?
+                <div>
+                    <ElasticMediaSdk ref="sdk"
+                        publisherId={this.props.publisherId}
+                        metadata={this.state.metadata}
+                        episodeId={this.props.episodeId}>
+                                    {this.props.children}
+                    </ElasticMediaSdk>
+                    <Controls eventHandler={this.eventHandler} ref="controls"/>
+                </div>
+                : null}
             </div>
         );
     }
