@@ -18,8 +18,8 @@ const Brightcove = React.createClass({
         return (
             <div id="elasticPlayer">
                 <ElasticMediaController contentUrl={this.props["data-video-id"]}
-                                 publisherId={this.props['data-elastic-media-account']}
-                                 episodeId={this.props['data-video-id']}>
+                                 publisherId={this.props['publisherId']}
+                                 episodeId={this.props['episodeId']}>
                     {
                         players.map((elm, i) => {
                             return (

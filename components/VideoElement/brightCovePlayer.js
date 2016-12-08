@@ -18,25 +18,43 @@ class BrightCovePlayer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            src: this.props["data-video-id"] || '',
+            shouldLoad: false,
             isHidden: true
         };
+        //src: this.props["data-video-id"] || '',
     }
 
     componentWillMount(){
         const script = document.createElement("script");
         script.src = this.props["data-brightcove-script"];
         document.body.appendChild(script);
+        if (document.querySelector('#'+this.props.playerId)) {
+            this.setState({shouldLoad: false});
+            console.log("not loading " + this.props.playerId);
+        } else {
+            this.setState({shouldLoad: true});
+            console.log("loading " + this.props.playerId);
+        }
     }
 
     componentDidMount(){
-        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
+        //this.player = window.videojs(this.props.playerId + "_html5_api");
+        //this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
+        console.log("adding hammer to id", this.props.playerId);
+        this.gestureListener = new Hammer(document.getElementById(this.props.playerId));
         this.waitForVideoJs();
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.unsubscribe = this.context.store.subscribe(() => {
             this.forceUpdate();
         });
+        if (this.state.shouldLoad === false) {
+            console.log("moving object " + this.props.playerId);
+            var playerElement = document.getElementById(this.props.playerId);
+            playerElement.classList.add("player");
+            playerElement.classList.add("brightcove-player");
+            document.getElementById(this.props.playerId + "_wrapper").appendChild(playerElement);
+        }
     }
 
     componentWillUnmount(){
@@ -49,11 +67,21 @@ class BrightCovePlayer extends React.Component {
     swipeRight(){
         this.props.eventHandler('previous');
     }
-    waitForVideoJs() {
+    waitForVideoJs(attempt) {
+        if (!attempt) {
+            attempt = 1;
+        }
+        console.log(this.props.playerId + "in wait");
+        if (attempt === 1 && this.state.shouldLoad) {
+            console.log(this.props.playerId + "in wait settimeout");
+            return setTimeout(this.waitForVideoJs.bind(this, attempt + 1), 500);
+        }
         if (window.videojs) {
+            console.log(this.props.playerId + "calling init");
             this.initPlayer();
         } else {
-            setTimeout(this.waitForVideoJs.bind(this), 500);
+            console.log(this.props.playerId + "waiting");
+            setTimeout(this.waitForVideoJs.bind(this, attempt + 1), 500);
         }
     }
 
@@ -96,7 +124,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getVideoProps(){
-        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler",
+        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler", "episodeId", "publisherId", 
             "style", "data-brightcove-script", "data-elastic-media-account"];
         var videoProps = Object.assign({}, this.props);
         INVALID_VIDEO_PROPS.forEach((attr) => {
@@ -155,16 +183,20 @@ class BrightCovePlayer extends React.Component {
 
     render() {
         return (
-            <div className={this.getClassName()}  ref="touchScreen">
-                <video ref="player"
-                       className="player brightcove-player"
-                       id={this.props.playerId}
-                       playsInline
-                       data-embed="default"
-                       data-application-id
-                       preload="metadata"
-                    {...this.getVideoProps()}>
-                </video>
+            <div id={this.props.playerId + "_wrapper"} className={this.getClassName()} ref="touchScreen">
+                { this.state.shouldLoad ? 
+                <div>
+                    <video ref="player"
+                           className="player brightcove-player"
+                           id={this.props.playerId}
+                           playsInline
+                           data-embed="default"
+                           data-application-id
+                           preload="metadata"
+                        {...this.getVideoProps()}>
+                    </video>
+                </div>
+                : null}
             </div>
         );
     }

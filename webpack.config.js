@@ -34,7 +34,7 @@ const config = {
     // The entry point for the bundle
     entry: [
         /* The main entry point of your JavaScript application */
-        './main.js',
+        './main2.js',
     ],
 
     // Options affecting the output of the compilation
@@ -96,7 +96,7 @@ const config = {
                     path.resolve(__dirname, './components'),
                     path.resolve(__dirname, './core'),
                     path.resolve(__dirname, './pages'),
-                    path.resolve(__dirname, './main.js'),
+                    path.resolve(__dirname, './main2.js'),
                 ],
                 loader: `babel-loader?${JSON.stringify(babelConfig)}`,
             },
