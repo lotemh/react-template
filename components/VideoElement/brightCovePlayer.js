@@ -85,7 +85,7 @@ class BrightCovePlayer extends React.Component {
 
     getClassName() {
         let className = 'player-wrapper';
-        className += (this.state.isHidden || this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE) ?
+        className += (this.state.isHidden) ?
             ' hidden' : '';
         className += this.context.store.getState().inExtend ? ' show-progress-bar' : ' show-item-dots';
         return className;
