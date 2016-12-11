@@ -21,7 +21,7 @@ const isDebug = global.DEBUG === false ? false : !process.argv.includes('--relea
 const isRelease = process.argv.includes('--release');
 const isVerbose = process.argv.includes('--verbose') || process.argv.includes('-v');
 const useHMR = !!global.HMR; // Hot Module Replacement (HMR)
-const publicPath = (isRelease ? 'https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/' : 'sdk/');
+const publicPath = (isRelease ? `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/` : 'sdk/');
 const babelConfig = Object.assign({}, pkg.babel, {
     babelrc: false,
     cacheDirectory: useHMR,
@@ -46,7 +46,6 @@ const config = {
         publicPath: publicPath,
         filename: isDebug ? '[name].js?[hash]' : '[name].js',
         chunkFilename: isDebug ? '[id].js?[chunkhash]' : '[id].[chunkhash].js',
-        //sourcePrefix: '  ',
     },
 
     // Switch loaders to debug or release mode
@@ -262,8 +261,8 @@ const demo = {
     },
     
     sdk: {
-        js: '${publicPath}elasticprogram-sdk.js',
-        css: '${publicPath}elasticprogram-sdk.css',
+        js: `${publicPath}elasticprogram-sdk.js`,
+        css: `${publicPath}elasticprogram-sdk.css`,
     },
 }
 

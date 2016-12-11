@@ -20,8 +20,6 @@ const distDir = './dist/';
 const config = {
     title: 'Elastic Media',        // Your website title
     url: 'http://kcet.elasticmedia.io',          // Your website URL
-    project: 'Banias',      // Firebase project. See README.md -> How to Deploy
-    trackingID: 'UA-XXXXX-Y',                 // Google Analytics Site's ID
 };
 
 const tasks = new Map(); // The collection of automation tasks ('clean', 'build', 'publish', etc.)
