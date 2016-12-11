@@ -6,12 +6,11 @@ const Extend = React.createClass({
         onClick: PropTypes.func.isRequired,
         progress: PropTypes.number.isRequired,
     },
-    componentDidMount() {
+
+    componentWillReceiveProps() {
         this.drawProgress(this.props.progress);
     },
-    componentDidUpdate() {
-        this.drawProgress(this.props.progress);
-    },
+
     drawProgress(progress) {
         let canvas = this.refs.extendProgress;
         let ctx = canvas.getContext("2d");
@@ -24,7 +23,7 @@ const Extend = React.createClass({
         ctx.fill();
         ctx.strokeStyle = '#fff';
         ctx.stroke();
-        
+
         ctx.beginPath();
         ctx.arc(50, 50, 20, 1.5 * Math.PI, 1.5 * Math.PI + progress * 2 * Math.PI);
         ctx.lineWidth = 40;

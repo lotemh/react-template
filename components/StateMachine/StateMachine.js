@@ -124,7 +124,7 @@ class StateMachine {
     }
 
     timeUpdate(timeMs) {
-        this.updateView({itemTimeMs: timeMs});
+        this.store.dispatch({type: 'UPDATE_TIME', itemTimeMs: timeMs});
     }
 }
 

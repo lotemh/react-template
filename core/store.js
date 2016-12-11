@@ -11,14 +11,18 @@ import ControlsStartStatus from '../components/Controls/ControlsStartStatus';
 import { createStore } from 'redux';
 
 const defaultState = {
-    inExtend: false,
-    itemStart: 0,
-    numOfItems: 0,
-    itemNum: 0,
-    isPlaying: false,
     startStatus: ControlsStartStatus.PENDING,
+    inExtend: false,
+    isPlaying: false,
+
+    numOfItems: 0,
+
+    itemNum: 0,
+    itemStart: 0,
     itemLength: 0,
     itemTimeMs: 0,
+
+    segmentProgress: 0,
     activeSegment: null
 };
 
@@ -26,23 +30,33 @@ function reducer(state, action){
     // TODO: Add action handlers (aka "reduces")
     switch (action.type) {
         case 'EVENT_HANDLER':
+            const segmentProgressData = {
+                segmentProgress: calcSegmentProgress(state.activeSegment, state.itemTimeMs)
+            };
+            let newState;
             switch (action.actionName) {
                 case 'extend':
-                    return Object.assign({}, state, {inExtend: true});
+                    newState = {inExtend: true};
+                    break;
                 case 'next':
-                    return Object.assign({}, state, {inExtend: false});
+                    newState = {inExtend: false};
+                    break;
                 case 'previous':
-                    return Object.assign({}, state, {inExtend: false});
+                    newState = {inExtend: false};
+                    break;
                 case 'no_action':
-                    return Object.assign({}, state, {inExtend: false});
+                    newState = {inExtend: false};
+                    break;
                 case 'pause':
-                    return Object.assign({}, state, {isPlaying: false});
+                    newState = {isPlaying: false};
+                    break;
                 case 'play':
-                    return Object.assign({}, state, {isPlaying: true});
+                    newState = {isPlaying: true};
+                    break;
                 default:
                     return state;
             }
-            break;
+            return Object.assign({}, state, segmentProgressData, newState);
         case 'SET_PENDING_FIRST_PLAY':
             return Object.assign({}, state, {pendingFirstPlayClick: action.pendingFirstPlayClick, isPlaying: !action.pendingFirstPlayClick});
         case 'FIRST_PLAY':
@@ -63,9 +77,26 @@ function reducer(state, action){
             });
         case 'TRANSITION_EFFECT_END':
             return Object.assign({}, state, {transitionEffect: null});
+        case 'UPDATE_TIME':
+            const segmentData = {
+                segmentProgress: calcSegmentProgress(state.activeSegment, state.itemTimeMs),
+                itemTimeMs: action.itemTimeMs
+            };
+            return Object.assign({}, state, segmentData);
         default:
             return state;
     }
+}
+
+function calcSegmentProgress(segment, currentTime) {
+    let progress = 0;
+    try {
+        const segmentLength = (segment.out - segment.in);
+        const segmentProgressTime = currentTime - segment.in;
+        progress = segmentProgressTime / segmentLength;
+    } catch (e) {
+    }
+    return progress;
 }
 
 // Centralized application state

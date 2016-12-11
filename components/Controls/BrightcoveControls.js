@@ -53,18 +53,6 @@ const Controls = React.createClass({
             timestamp: currentTime
         });
     },
-    progress() {
-        let progress = 0;
-        try {
-            const state = this.context.store.getState();
-            const segment = state.activeSegment;        
-            const segmentLength = (segment.out - segment.in);
-            const segmentProgressTime = state.itemTimeMs - segment.in;
-            progress = segmentProgressTime / segmentLength;
-        } catch (e) {
-        }
-        return progress;
-    },
 
     performTransitionEffect(){
         const that = this;
@@ -97,7 +85,7 @@ const Controls = React.createClass({
                     <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
-                    <Extend isVisible={!store.getState().inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
+                    <Extend isVisible={!store.getState().inExtend} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>
         );
