@@ -125,7 +125,7 @@ button:active {
     height: 26px;
     width: 26px;
 }
- 
+
 #extend {
     top: 10px;
     left: 10px;
@@ -317,4 +317,22 @@ input[type=range]:focus::-ms-fill-upper {
     animation-timing-function: steps(19);
     background-image: url(StudioA.png);
     background-size: cover;
+}
+
+.te-whoosh-reverse {
+    animation-direction: reverse;
+}
+
+@keyframes test-whoosh {
+    from  {background-position: 0}
+    to    {background-position: -1200%}
+}
+
+.te-test {
+    animation-duration: 0.5s;
+    animation-name: test-whoosh;
+    animation-timing-function: steps(12);
+    background-image: url(whoosh.png);
+    background-size: cover;
+    -webkit-animation-name: te-whoosh;
 }
