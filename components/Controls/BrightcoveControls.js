@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import ControlsStartStatus from './ControlsStartStatus';
 import Extend from './Extend';
 import TransitionEffect from '../transitionEffects/TransitionEffect';
+import {isIphone} from '../utils/webUtils';
 
 const Controls = React.createClass({
     propTypes: {
@@ -36,7 +37,7 @@ const Controls = React.createClass({
     },
     getStartPlayingClass() {
         return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ?
-            'controller bigPlay' : 'hidden';
+            'controller bigPlayWrapper' : 'hidden';
     },
     getControlsClassName() {
         if (this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE){
@@ -81,8 +82,10 @@ const Controls = React.createClass({
         const { store } = this.context;
         return (
             <div>
-                <div>
-                    <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
+                <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
+                    {isIphone() ? 
+                        <img src="images/play.png" className="bigPlay"/>
+                    : null }
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
