@@ -1,4 +1,4 @@
-export function toHHMMSS(num) {
+const toHHMMSS = function (num) {
     var sec_num = parseInt(num, 10), // don't forget the second param
         hours   = Math.floor(sec_num / 3600),
         minutes = Math.floor((sec_num - (hours * 3600)) / 60),
@@ -16,4 +16,10 @@ export function toHHMMSS(num) {
         if (hours < 10) {hours = "0" + hours;}
         return hours+':'+minutes+':' + seconds;
     }
-}
+};
+
+const getTimeInSeconds = function(timeInMili) {
+    return timeInMili / 1000;
+};
+
+export {getTimeInSeconds, toHHMMSS};

@@ -1,9 +1,17 @@
-/**
- * Created by user on 9/19/2016.
- */
+import {getTimeInSeconds} from '../utils/timeUtils';
 
-export function isSrcEqual(src, otherSrc) {
+const isSrcEqual = function(src, otherSrc) {
   return otherSrc.split("#")[0] === (src.split("#")[0]);
-}
+};
+
+const buildSrc = function(src, inTime, outTime) {
+    let segment = `${src}#t=${getTimeInSeconds(inTime)}`;
+    if (outTime) {
+        segment += `,${getTimeInSeconds(outTime)}`;
+    }
+    return segment;
+};
+
+export {isSrcEqual, buildSrc}
 
 

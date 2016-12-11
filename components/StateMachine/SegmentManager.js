@@ -63,7 +63,7 @@ class SegmentManager {
         return this.get(segmentName);
     }
     setContentUrl(url) {
-        this.getSegmentsSet().forEach(seg => { seg.src = seg.src || url; });
+        this.getSegmentsSet().forEach(seg => { seg.src = seg.itemId || url; });
     }
     getNumberOtItems() {
         let maxNum = 0;

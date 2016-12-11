@@ -3,19 +3,6 @@
  */
 import Logger from '../Logger/Logger';
 import Player from '../VideoElement/Player';
-import ControlsStartStatus from '../Controls/ControlsStartStatus';
-
-function getTimeInSeconds(timeInMili) {
-    return timeInMili / 1000;
-}
-
-function buildSrc(src, inTime, outTime) {
-    let segment = `${src}#t=${getTimeInSeconds(inTime)}`;
-    if (outTime) {
-        segment += `,${getTimeInSeconds(outTime)}`;
-    }
-    return segment;
-}
 
 class PlaybackController {
     constructor(store) {
@@ -173,9 +160,8 @@ class PlaybackController {
         const src = segment.src;
         const inTime = segment.in;
         // var outTime = segment.out;
-        const videoSegment = buildSrc(src, inTime);
         this.setSegmentLoading(segment.title, player);
-        player.prepare(videoSegment, segment.title);
+        player.prepare(src, inTime, segment.title);
     }
 
     unloadSegment(segmentId, segmentPool) {

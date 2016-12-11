@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import Logger from '../Logger/Logger';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
+import {buildSrc} from '../utils/urlUtils';
 
 class Player {
 
@@ -60,18 +61,14 @@ class Player {
             this.getPlayer().load();
         });
     }
-    prepare(src, segmentTitle) {
+    prepare(src, inTime, segmentTitle) {
         this.loading = segmentTitle;
-        /*
-        if (!this.src) {
+        if (!this.getPlayer().getSrc() || this.getPlayer().getSrc() !== src) {
             this.getPlayer().setSrc(src);
-            this.src = src;
-            this.getPlayer().load();
-            return;
+            return this.load()
+                .then((src, inTime, segmentTitle) => this.prepare);
         }
-        */
-        const timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
-        this.seek(timestamp);
+        this.seek(inTime);
         this.pause();
         this.loadedCallback(segmentTitle);
     }
