@@ -29,18 +29,15 @@ class BrightCovePlayer extends React.Component {
         script.src = this.props["data-brightcove-script"];
         if (document.querySelector('#'+this.props.playerId)) {
             this.setState({shouldLoad: false});
-            console.log("not loading " + this.props.playerId);
         } else {
             this.setState({shouldLoad: true});
             document.body.appendChild(script);
-            console.log("loading " + this.props.playerId);
         }
     }
 
     componentDidMount(){
         //this.player = window.videojs(this.props.playerId + "_html5_api");
         //this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
-        console.log("adding hammer to id", this.props.playerId);
         this.gestureListener = new Hammer(document.getElementById(this.props.playerId));
         this.waitForVideoJs();
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
@@ -52,6 +49,7 @@ class BrightCovePlayer extends React.Component {
             console.log("moving object " + this.props.playerId);
             var playerElement = document.getElementById(this.props.playerId);
             playerElement.classList.add("player");
+            playerElement.classList.add("em-player");
             playerElement.classList.add("brightcove-player");
             document.getElementById(this.props.playerId + "_wrapper").appendChild(playerElement);
         }
@@ -71,18 +69,15 @@ class BrightCovePlayer extends React.Component {
         if (!attempt) {
             attempt = 1;
         }
-        console.log(this.props.playerId + "in wait");
-        if (attempt === 1 && this.state.shouldLoad) {
-            console.log(this.props.playerId + "in wait settimeout");
-            return setTimeout(this.waitForVideoJs.bind(this, attempt + 1), 500);
-        }
-        if (window.videojs) {
-            console.log(this.props.playerId + "calling init");
+        try {
             this.initPlayer();
-        } else {
-            console.log(this.props.playerId + "waiting");
-            setTimeout(this.waitForVideoJs.bind(this, attempt + 1), 500);
+        } catch (e) {
+            if (attempt < 10) {
+                setTimeout(this.waitForVideoJs.bind(this, attempt + 1), 200);
+            }
         }
+
+
     }
 
     onReady(callback){
@@ -95,7 +90,8 @@ class BrightCovePlayer extends React.Component {
     }
 
     initPlayer() {
-        this.player = window.videojs(this.props.playerId + "_html5_api");
+        let videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
+        this.player = window.videojs(videoElement);
         var that = this;
         this.player.ready(function () {
             that.setState({ready: true, src: that.getPlayer().src()});
@@ -124,7 +120,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getVideoProps(){
-        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler", "episodeId", "publisherId", 
+        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler", "episodeId", "publisherId", "player0Id", 
             "style", "data-brightcove-script", "data-elastic-media-account"];
         var videoProps = Object.assign({}, this.props);
         INVALID_VIDEO_PROPS.forEach((attr) => {
