@@ -1,4 +1,5 @@
 import React, {PropTypes} from "react";
+import $ from 'jquery';
 import ElasticMediaSdk from "./ElasticMediaSdk";
 import Controls from "../Controls/BrightcoveControls";
 
