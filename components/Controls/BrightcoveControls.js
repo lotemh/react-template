@@ -85,7 +85,7 @@ const Controls = React.createClass({
                     <img src={require("../../sdk/images/play.png")} className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
-                    <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
+                    <Extend isVisible={!store.getState().inExtend} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>
         );

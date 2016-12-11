@@ -79,11 +79,6 @@ button:active {
 
 }
 
-#extend {
-    top: 10px;
-    left: 10px;
-}
-
 .play {
     bottom: 10px;
     left: 10px;
@@ -125,6 +120,38 @@ button:active {
     position: absolute;
     height: 26px;
     width: 26px;
+}
+ 
+#extend {
+    top: 10px;
+    left: 10px;
+}
+
+.extend {
+    height: 33px;
+    width: 33px;
+    top: 10px;
+    left: 10px;
+    border-radius: 50%;
+}
+
+.extend:after{
+    background: url(./images/extend_overlay.png) no-repeat;
+    border-radius: 50%;
+    content: '';
+    display: block;
+    height: 172px;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 172px;
+    transform-origin: top left;
+    transform: scale(calc(27/172)) translate(20px, 20px);
+}
+
+.extend .extend-progress {
+    height: 100%;
+    width: 100%;
 }
 
 .bigPlay {
