@@ -7,7 +7,7 @@ const Extend = React.createClass({
     },
     render() {
         return (
-            <img src="images/extend.png" className={this.props.isVisible? 'controller extend' : 'hidden'} id="extend"
+            <img src={require("../../sdk/images/extend.png")} className={this.props.isVisible? 'controller extend' : 'hidden'} id="extend"
                  onClick={this.props.onClick}/>
         );
     }

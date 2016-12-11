@@ -1,17 +1,19 @@
 /**
  * Created by user on 10/9/2016.
  */
+import './main.css';
 
 import 'babel-polyfill';
 import 'whatwg-fetch';
+
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FastClick from 'fastclick';
 import { Provider } from 'react-redux';
-import Brightcove from './components/demoClients/kcetDemo';
+import Brightcove from '../components/demoClients/kcetDemo';
 
-import store from './core/store';
+import store from '../core/store';
 
 const container = document.querySelector('[data-elastic-media-player]');
 

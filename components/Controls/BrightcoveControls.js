@@ -82,7 +82,7 @@ const Controls = React.createClass({
         return (
             <div>
                 <div>
-                    <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
+                    <img src={require("../../sdk/images/play.png")} className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
                     <Extend isVisible={!store.getState().inExtend} onClick={this.eventHandler.bind(this, "extend")}/>

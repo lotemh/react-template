@@ -3,14 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title><%= config.title %></title>
+    <title><%= webpackConfig.demoConfig.title %></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,500italic,700,700italic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-      <link href="favicon.png" rel="shortcut icon" type="image/png">
-      <link rel="stylesheet" type="text/css" href="main.css">
-  </head>
+    <link href="favicon.png" rel="shortcut icon" type="image/png">
+    <link rel="stylesheet" href="<%= webpackConfig.sdk.css %>">
+    <% for (key in htmlWebpackPlugin.files.css) { %>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[key] %>">
+    <% } %>
+    </head>
   <body>
     <div data-elastic-media-player="brightcove"
          data-elastic-media-account="9af0fb40-8c90-4006-a668-7844ed81b4d4"
@@ -23,14 +26,9 @@
          data-brightcove-script="//players.brightcove.net/136368194/V1xBaDVb6l_default/index.min.js">
     </div>
 
-
-    <script src="<%= bundle %>"></script>
-    <%_ if (!debug && config.trackingID) { _%>
-    <script>
-      window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
-      ga('create','<%= config.trackingID %>','auto');ga('send','pageview')
-    </script>
-    <script src="https://www.google-analytics.com/analytics.js" async defer></script>
-    <%_ } _%>
+    <script src="<%= webpackConfig.sdk.js %>"></script>
+    <% for (key in htmlWebpackPlugin.files.chunks) { %>
+    <script src="<%= htmlWebpackPlugin.files.chunks[key].entry %>" type="text/javascript"></script>
+    <% } %>
   </body>
 </html>
