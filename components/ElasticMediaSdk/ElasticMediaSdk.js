@@ -26,6 +26,8 @@ const ElasticMediaSdk = React.createClass({
             dataType: "json",
             success: (metadata) => {
                 stateMachine.setSegments(metadata.segments);
+                const programId = metadata.programId || '1234';
+                this.context.store.dispatch({type: 'SET_DATA', programId: programId});
                 var contentUrl = this.props.contentUrl;
                 stateMachine.setContentUrl(contentUrl);
                 waitForPlayersReady.then(()=> {
