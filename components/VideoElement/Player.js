@@ -11,19 +11,20 @@ class Player {
         this.id = id;
         this.logger = new Logger();
         this.src = '';
-        this.audioConetxt = new AudioContext();
+        this.audioContext = new AudioContext();
+        this.audioTfxActive = false;
     }
 
     getPlayer() {
         return this.player;
     }
-    
+
     getPlayerMediaElement() {
         return this.getPlayer().getPlayerMediaElement();
     }
-    
+
     getAudioContext() {
-        return this.audioConetxt;
+        return this.audioContext;
     }
 
     getMediaElementSource() {
@@ -32,7 +33,7 @@ class Player {
             const mediaElement = this.getPlayerMediaElement();
             this.mediaElementSource = audioCtx.createMediaElementSource(mediaElement);
         }
-          
+
         return this.mediaElementSource;
     }
 
@@ -47,12 +48,14 @@ class Player {
 
     play() {
         const state = this.store.getState();
-        if (state.tfxAudio)
+        if (state.tfxAudio && !this.audioTfxActive) {
+            this.audioTfxActive = true;
             this[state.tfxAudio]();
-          
+        }
+
         function playListener(event) {
-            this.store.dispatch({type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE, 
-                                 isPlaying: true, tfxAudioFadeIn: false});
+            this.store.dispatch({type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE,
+                                 isPlaying: true});
             this.getPlayer().removeEventListener("play", playListener.bind(this));
         }
         this.getPlayer().addEventListener("play", playListener.bind(this));
@@ -147,18 +150,19 @@ class Player {
         const audioCtx = this.getAudioContext()
         const gainNode = audioCtx.createGain();
         const source = this.getMediaElementSource();
-        
-        const fadeTimeMs = 20;
-        
+
+        const fadeTimeMs = 40;
+
         gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
         gainNode.gain.linearRampToValueAtTime(1.0, audioCtx.currentTime + fadeTimeMs / 1000);
 
         source.disconnect();
         source.connect(gainNode);
         gainNode.connect(audioCtx.destination);
-        
-        window.setTimeout(() => { 
+
+        window.setTimeout(() => {
             source.connect(audioCtx.destination);
+            this.audioTfxActive = false;
             this.store.dispatch({type: 'TFX_AUDIO_END'});
         }, fadeTimeMs);
     }
