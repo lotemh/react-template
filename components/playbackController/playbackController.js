@@ -207,6 +207,9 @@ class PlaybackController {
 
     switchPlayers(oldPlayer, nextPlayer) {
         if (!nextPlayer) return;
+        
+        this.store.dispatch({type: 'TFX_AUDIO_SET'});
+        
         return this.activatePlayer(nextPlayer).then(() => {
             this.store.dispatch({type: 'SWITCH_PLAYERS'});
             if (oldPlayer !== nextPlayer) {

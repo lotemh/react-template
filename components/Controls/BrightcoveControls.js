@@ -84,7 +84,7 @@ const Controls = React.createClass({
             <div>
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
                     {isIphone() ?
-                        <img src="images/play.png" className="bigPlay"/>
+                        <img src={require("../../sdk/images/play.png")} className="bigPlay"/>
                     : null }
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">

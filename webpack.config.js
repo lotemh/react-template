@@ -13,12 +13,15 @@
 const path = require('path');
 const webpack = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const pkg = require('./package.json');
 
 const isDebug = global.DEBUG === false ? false : !process.argv.includes('--release');
+const isRelease = process.argv.includes('--release');
 const isVerbose = process.argv.includes('--verbose') || process.argv.includes('-v');
 const useHMR = !!global.HMR; // Hot Module Replacement (HMR)
+const publicPath = (isRelease ? `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/` : 'sdk/');
 const babelConfig = Object.assign({}, pkg.babel, {
     babelrc: false,
     cacheDirectory: useHMR,
@@ -32,18 +35,17 @@ const config = {
     context: __dirname,
 
     // The entry point for the bundle
-    entry: [
+    entry: {
         /* The main entry point of your JavaScript application */
-        './main.js',
-    ],
+        'elasticprogram-sdk': './sdk/main',
+    },
 
     // Options affecting the output of the compilation
     output: {
-        path: path.resolve(__dirname, './dist'),
-        publicPath: '',
-        filename: isDebug ? '[name].js?[hash]' : '[name].[hash].js',
+        path: path.resolve(__dirname, './dist/sdk'),
+        publicPath: publicPath,
+        filename: isDebug ? '[name].js?[hash]' : '[name].js',
         chunkFilename: isDebug ? '[id].js?[chunkhash]' : '[id].[chunkhash].js',
-        sourcePrefix: '  ',
     },
 
     // Switch loaders to debug or release mode
@@ -81,9 +83,7 @@ const config = {
             filename: 'assets.json',
             prettyPrint: true,
         }),
-        new CopyWebpackPlugin([{
-            from: 'public'
-        }])
+        new ExtractTextPlugin(isDebug ? '[name].css?[hash]' : '[name].css'),
     ],
 
     // Options affecting the normal modules
@@ -96,24 +96,21 @@ const config = {
                     path.resolve(__dirname, './components'),
                     path.resolve(__dirname, './core'),
                     path.resolve(__dirname, './pages'),
-                    path.resolve(__dirname, './main.js'),
+                    path.resolve(__dirname, './sdk'),
                 ],
                 loader: `babel-loader?${JSON.stringify(babelConfig)}`,
             },
             {
-                test: /\.css/,
-                loaders: [
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract(
                     'style-loader',
                     `css-loader?${JSON.stringify({
                         sourceMap: isDebug,
-                        // CSS Modules https://github.com/css-modules/css-modules
-                        modules: true,
-                        localIdentName: isDebug ? '[name]_[local]_[hash:base64:3]' : '[hash:base64:4]',
-                        // CSS Nano http://cssnano.co/options/
+                        // modules: true,
+                        localIdentName: isDebug ? '[name]_[local]_[hash:base64:3]' : '[name]_[hash:base64:4]',
                         minimize: !isDebug,
-                    })}`,
-                    'postcss-loader',
-                ],
+                    })}`
+                ),
             },
             {
                 test: /\.json$/,
@@ -138,12 +135,20 @@ const config = {
             },
             {
                 test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/,
-                loader: 'url-loader?limit=10000',
+                loader: 'url-loader',
+                query: {
+                    limit: 10000,
+                    name: 'images/[name].[ext]',
+                },
             },
             {
                 test: /\.(eot|ttf|wav|mp3)$/,
                 loader: 'file-loader',
             },
+            {
+                test: /\.ejs$/,
+                loader: 'ejs-loader',
+            }
         ],
     },
 
@@ -195,7 +200,6 @@ const config = {
             require('autoprefixer')(),
         ];
     },
-
 };
 
 // Optimize the bundle in release (production) mode
@@ -208,9 +212,58 @@ if (!isDebug) {
 // Hot Module Replacement (HMR) + React Hot Reload
 if (isDebug && useHMR) {
     babelConfig.plugins.unshift('react-hot-loader/babel');
-    config.entry.unshift('react-hot-loader/patch', 'webpack-hot-middleware/client');
+    config.entry['hot-load'] = 'react-hot-loader/patch';
+    config.entry['hot-middleware'] = 'webpack-hot-middleware/client';
     config.plugins.push(new webpack.HotModuleReplacementPlugin());
     config.plugins.push(new webpack.NoErrorsPlugin());
 }
 
-module.exports = config;
+const demo = {
+    entry: {
+        'index': './public/index'
+    },
+
+    output: {
+        path: path.resolve(__dirname, './dist/'),
+        publicPath: '',
+        filename: '[name].js',
+        chunkFilename: '[id].js',
+    },
+
+    plugins: [
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: 'public/index.ejs',
+            inject: false,
+        }),
+        new ExtractTextPlugin('[name].css'),
+    ],
+    
+    module: {
+        loaders: [
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract(
+                    'style-loader',
+                    'css-loader'
+                ),
+            },
+            {
+                test: /\.ejs$/,
+                loader: 'ejs-loader',
+            }
+        ]
+    },
+    
+    demoConfig: {
+        debug: isDebug,
+        title: 'Demo',
+    },
+    
+    sdk: {
+        js: `${publicPath}elasticprogram-sdk.js`,
+        css: `${publicPath}elasticprogram-sdk.css`,
+    },
+}
+
+module.exports = [demo, config];
