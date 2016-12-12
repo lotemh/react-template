@@ -79,7 +79,11 @@ class StateMachine {
         if (followingSegment === undefined) {
             return;
         }
-        this.updateView({itemNum: SegmentManager.getItemNum(followingSegment.title)});
+        this.updateView({
+            itemNum: SegmentManager.getItemNum(followingSegment.title), 
+            itemTimeMs: followingSegment.in,
+            activeSegment: followingSegment,
+        });
         this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
@@ -120,7 +124,7 @@ class StateMachine {
     }
 
     timeUpdate(timeMs) {
-        this.updateView({itemTimeMs: timeMs});
+        this.store.dispatch({type: 'UPDATE_TIME', itemTimeMs: timeMs});
     }
 }
 

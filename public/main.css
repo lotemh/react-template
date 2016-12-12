@@ -83,11 +83,6 @@ button:active {
 
 }
 
-#extend {
-    top: 10px;
-    left: 10px;
-}
-
 .play {
     bottom: 10px;
     left: 10px;
@@ -129,6 +124,38 @@ button:active {
     position: absolute;
     height: 26px;
     width: 26px;
+}
+
+#extend {
+    top: 10px;
+    left: 10px;
+}
+
+.extend {
+    height: 33px;
+    width: 33px;
+    top: 10px;
+    left: 10px;
+    border-radius: 50%;
+}
+
+.extend:after{
+    background: url(images/extend_overlay.png) no-repeat;
+    border-radius: 50%;
+    content: '';
+    display: block;
+    height: 172px;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 172px;
+    transform-origin: top left;
+    transform: scale(calc(27/172)) translate(20px, 20px);
+}
+
+.extend .extend-progress {
+    height: 100%;
+    width: 100%;
 }
 
 .bigPlayWrapper {
@@ -298,4 +325,22 @@ input[type=range]:focus::-ms-fill-upper {
     animation-timing-function: steps(19);
     background-image: url(StudioA.png);
     background-size: cover;
+}
+
+.te-whoosh-reverse {
+    animation-direction: reverse;
+}
+
+@keyframes test-whoosh {
+    from  {background-position: 0}
+    to    {background-position: -1200%}
+}
+
+.te-test {
+    animation-duration: 0.5s;
+    animation-name: test-whoosh;
+    animation-timing-function: steps(12);
+    background-image: url(whoosh.png);
+    background-size: cover;
+    -webkit-animation-name: te-whoosh;
 }
