@@ -83,6 +83,10 @@ function reducer(state, action){
                 itemTimeMs: action.itemTimeMs
             };
             return Object.assign({}, state, segmentData);
+        case 'TFX_AUDIO_SET':
+            return Object.assign({}, state, {tfxAudio: 'tfxAudioFadeIn'});
+        case 'TFX_AUDIO_END':
+            return Object.assign({}, state, {tfxAudio: null});
         default:
             return state;
     }
