@@ -16,6 +16,7 @@ const defaultState = {
     isPlaying: false,
 
     numOfItems: 0,
+    programId: '',
 
     itemNum: 0,
     itemStart: 0,
@@ -70,10 +71,9 @@ function reducer(state, action){
             delete data.type;
             return Object.assign({}, state, data);
         case 'SWITCH_PLAYERS':
-            //check if we need transition effect and which one we need
+            const tfx = getTfx(state.programId);
             return Object.assign({}, state, {
-                // activePlayer: action.activePlayer,
-                transitionEffect: 'WHOOSH'
+                transitionEffect: tfx
             });
         case 'TRANSITION_EFFECT_END':
             return Object.assign({}, state, {transitionEffect: null});
@@ -97,6 +97,15 @@ function calcSegmentProgress(segment, currentTime) {
     } catch (e) {
     }
     return progress;
+}
+
+function getTfx(programId){
+    const tfxMap = {
+        '1234': 'WHOOSH',
+        '5678': 'WHOOSH_REV',
+        '1111': 'TEST'
+    };
+    return tfxMap[programId] || 'WHOOSH';
 }
 
 // Centralized application state
