@@ -98,9 +98,6 @@ class Player {
         }
         */
         const timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
-        if (timestamp === "0") {
-            return this.loadedCallback(segmentTitle);
-        }
         this.seek(timestamp);
         this.pause();
         this.loadedCallback(segmentTitle);
