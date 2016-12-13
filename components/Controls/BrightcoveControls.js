@@ -44,7 +44,7 @@ const Controls = React.createClass({
         }
         let className =  'controls';
         if (this.state && this.state.teClass){
-            className += ' te ' + this.state.teClass;
+            className += this.state.teClass;
         }
         return className;
     },
