@@ -15,7 +15,7 @@ import Brightcove from '../components/demoClients/kcetDemo';
 
 import store from '../core/store';
 
-var players = document.querySelectorAll('.video-js'),
+var players = document.getElementsByClassName('video-js'),
     firstPlayer,
     parent,
     sdkSpace,
@@ -27,9 +27,7 @@ var players = document.querySelectorAll('.video-js'),
 function render(sdkComponent) {
     ReactDOM.render(<Provider store={store}>{sdkComponent}</Provider>, sdkSpace);
 }
-
-if (!players[0].classList.contains("em-player") && 
-    (players[0].getAttribute("data-player") === "V1xBaDVb6l" || players[0].getAttribute("data-player") === "default")) {
+if (!players[0].classList.contains("em-player")) {
     firstPlayer = players[0];
     if (!firstPlayer.getAttribute("id")) {
         firstPlayer.setAttribute("id", "playe90");
