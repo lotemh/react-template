@@ -1,8 +1,4 @@
 
-body {
-    background-color: black;
-    margin: 0;
-}
 .player-container {
     position: absolute;
 }
@@ -140,7 +136,7 @@ button:active {
 }
 
 .extend:after{
-    background: url(images/extend_overlay.png) no-repeat;
+    background: url(./images/extend_overlay.png) no-repeat;
     border-radius: 50%;
     content: '';
     display: block;
@@ -208,102 +204,11 @@ button:active {
     width: 40px;
 }
 
-
 .IIV::-webkit-media-controls-play-button,
 .IIV::-webkit-media-controls-start-playback-button {
     display:none;
 }
 
-
-
-
-input[type=range] {
-    /*removes default webkit styles*/
-    -webkit-appearance: none;
-
-    /*fix for FF unable to apply focus style bug */
-    border: none;
-    background: transparent;
-
-    /*required for proper track sizing in FF*/
-}
-input[type=range]::-webkit-slider-runnable-track {
-    height: 2px;
-    background: #DB7093;
-    border: none;
-    border-radius: 1px;
-}
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    border: none;
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    background: #DB7093;
-    margin-top: -4.5px;
-}
-input[type=range]:focus {
-    outline: none;
-}
-input[type=range]:focus::-webkit-slider-runnable-track {
-    background: #DB7093;
-}
-
-input[type=range]::-moz-range-track {
-    height: 5px;
-    background: #DB7093;
-    border: none;
-    border-radius: 3px;
-}
-input[type=range]::-moz-range-thumb {
-    border: none;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background: #DB7093;
-}
-
-/*hide the outline behind the border*/
-input[type=range]:-moz-focusring{
-    outline: 1px solid white;
-    outline-offset: -1px;
-}
-
-input[type=range]::-ms-track {
-    width: 300px;
-    height: 5px;
-
-    /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
-    background: transparent;
-
-    /*leave room for the larger thumb to overflow with a transparent border */
-    border-color: transparent;
-    border-width: 6px 0;
-
-    /*remove default tick marks*/
-    color: transparent;
-}
-input[type=range]::-ms-fill-lower {
-    background: #777;
-    border-radius: 10px;
-}
-input[type=range]::-ms-fill-upper {
-    background: goldenrod;
-    border-radius: 10px;
-}
-input[type=range]::-ms-thumb {
-    border: none;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background: goldenrod;
-}
-input[type=range]:focus::-ms-fill-lower {
-    background: #DB7093;
-}
-input[type=range]:focus::-ms-fill-upper {
-    background: transparent;
-}
 
 @keyframes te-whoosh {
     from  {background-position: 0}
@@ -315,6 +220,24 @@ input[type=range]:focus::-ms-fill-upper {
     animation-name: te-whoosh;
     -webkit-animation-name: te-whoosh;
     animation-timing-function: steps(19);
-    background-image: url(StudioA.png);
+    background-image: url(./images/StudioA.png);
     background-size: cover;
+}
+
+.te-whoosh-reverse {
+    animation-direction: reverse;
+}
+
+@keyframes test-whoosh {
+    from  {background-position: 0}
+    to    {background-position: -1200%}
+}
+
+.te-test {
+    animation-duration: 0.5s;
+    animation-name: test-whoosh;
+    animation-timing-function: steps(12);
+    background-image: url(./images/whoosh.png);
+    background-size: cover;
+    -webkit-animation-name: te-whoosh;
 }

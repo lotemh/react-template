@@ -9,9 +9,9 @@ const Dots = React.createClass({
     },
     getImgSource(dotNum) {
         if (dotNum === (this.props.itemNum % 5)) {
-            return 'images/bluedot.png';
+            return require("../../sdk/images/bluedot.png");
         } else {
-            return 'images/dot.png';
+            return require("../../sdk/images/dot.png");
         }
     },
     getClassName(name) {
