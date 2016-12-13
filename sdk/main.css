@@ -237,7 +237,7 @@ button:active {
     animation-duration: 0.5s;
     animation-name: test-whoosh;
     animation-timing-function: steps(12);
-    background-image: url(whoosh.png);
+    background-image: url(./images/whoosh.png);
     background-size: cover;
     -webkit-animation-name: te-whoosh;
 }
