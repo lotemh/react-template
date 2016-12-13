@@ -26,6 +26,8 @@ class PlaybackController {
                     player.load().then(() => {
                         player.addLoadedDataEvent(this.onDataLoaded.bind(this));
                         resolve();
+                    }).catch(()=>{
+                        reject();
                     });
                 });
             }));
@@ -161,7 +163,9 @@ class PlaybackController {
         const inTime = segment.in;
         // var outTime = segment.out;
         this.setSegmentLoading(segment.title, player);
-        player.prepare(src, inTime, segment.title);
+        return player.prepare(src, inTime, segment.title).catch(()=>{
+            this.unloadSegment(segment.title, this.loadingSegmentsMap)
+        });
     }
 
     unloadSegment(segmentId, segmentPool) {
@@ -193,9 +197,9 @@ class PlaybackController {
 
     switchPlayers(oldPlayer, nextPlayer) {
         if (!nextPlayer) return;
-        
+
         this.store.dispatch({type: 'TFX_AUDIO_SET'});
-        
+
         return this.activatePlayer(nextPlayer).then(() => {
             this.store.dispatch({type: 'SWITCH_PLAYERS'});
             if (oldPlayer !== nextPlayer) {

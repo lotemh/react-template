@@ -212,12 +212,12 @@ class BrightCovePlayer extends React.Component {
     }
 
     setSrc(src) {
-        if (src !== this.getSrc()){
-            // this.getPlayer().src({"type": "video/mp4", "src": src});
-            // this.load();
-            this.refs.player.setAttribute('data-video-id', src);
-            this.initPlayer();
-            this.load();
+        if (src !== this.getSrc()) {
+            const player = this.getPlayer();
+            player.catalog.getVideo(src, function (error, video) {
+                console.log(video);
+                player.catalog.load(video);
+            });
         }
     }
 
