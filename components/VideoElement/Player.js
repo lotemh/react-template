@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import Logger from '../Logger/Logger';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
-import {buildSrc} from '../utils/urlUtils';
 
 class Player {
 
