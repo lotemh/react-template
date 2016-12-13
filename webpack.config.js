@@ -21,7 +21,7 @@ const isDebug = global.DEBUG === false ? false : !process.argv.includes('--relea
 const isRelease = process.argv.includes('--release');
 const isVerbose = process.argv.includes('--verbose') || process.argv.includes('-v');
 const useHMR = !!global.HMR; // Hot Module Replacement (HMR)
-const publicPath = (isRelease ? `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/` : 'sdk/');
+const publicPath = (isRelease ? `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/` : '/sdk/');
 const babelConfig = Object.assign({}, pkg.babel, {
     babelrc: false,
     cacheDirectory: useHMR,
@@ -238,7 +238,7 @@ const demo = {
         }),
         new ExtractTextPlugin('[name].css'),
     ],
-    
+
     module: {
         loaders: [
             {
@@ -254,12 +254,12 @@ const demo = {
             }
         ]
     },
-    
+
     demoConfig: {
         debug: isDebug,
         title: 'Demo',
     },
-    
+
     sdk: {
         js: `${publicPath}elasticprogram-sdk.js`,
         css: `${publicPath}elasticprogram-sdk.css`,
