@@ -8,8 +8,5 @@ dist/
 node_modules
 npm-debug.log*
 
-# Firebase
-firebase-debug.log
-
 # idea
 /.idea

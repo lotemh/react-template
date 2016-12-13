@@ -118,7 +118,11 @@ class BrightCovePlayer extends React.Component {
     getPlayer() {
         return this.player;
     }
-
+    
+    getPlayerMediaElement() {
+        return this.getPlayer().tech_.el_;
+    }
+    
     getVideoProps(){
         const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler", "episodeId", "publisherId", "player0Id", 
             "style", "data-brightcove-script", "data-elastic-media-account"];
@@ -183,12 +187,13 @@ class BrightCovePlayer extends React.Component {
                 { this.state.shouldLoad ? 
                 <div>
                     <video ref="player"
-                           className="player brightcove-player"
-                           id={this.props.playerId}
-                           playsInline
-                           data-embed="default"
-                           data-application-id
-                           preload="metadata"
+                            className="player brightcove-player"
+                            id={this.props.playerId}
+                            playsInline
+                            data-embed="default"
+                            data-application-id
+                            crossOrigin="anonymous"
+                            preload="metadata"
                         {...this.getVideoProps()}>
                     </video>
                 </div>

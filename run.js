@@ -20,8 +20,6 @@ const distDir = './dist/';
 const config = {
     title: 'Elastic Media',        // Your website title
     url: 'http://kcet.elasticmedia.io',          // Your website URL
-    project: 'Banias',      // Firebase project. See README.md -> How to Deploy
-    trackingID: 'UA-XXXXX-Y',                 // Google Analytics Site's ID
 };
 
 const tasks = new Map(); // The collection of automation tasks ('clean', 'build', 'publish', etc.)
@@ -74,7 +72,7 @@ tasks.set('bundle', () => {
             if (err) {
                 reject(err);
             } else {
-                console.log(stats.toString(webpackConfig.stats));
+                console.log(stats.toString({colors: true, modules: false, chunkModules: false}));
                 resolve();
             }
         });
@@ -89,7 +87,6 @@ tasks.set('build', () => {
     return Promise.resolve()
         .then(() => run('clean'))
         .then(() => run('bundle'))
-        .then(() => run('html'))
         .then(() => run('sitemap'));
 });
 
@@ -126,17 +123,10 @@ tasks.set('start', () => {
         // Node.js middleware that compiles application in watch mode with HMR support
         // http://webpack.github.io/docs/webpack-dev-middleware.html
         const webpackDevMiddleware = require('webpack-dev-middleware')(compiler, {
-            publicPath: webpackConfig.output.publicPath,
-            stats: webpackConfig.stats,
+            publicPath: webpackConfig[0].output.publicPath,
+            stats: {colors: true, modules: false, chunkModules: false},
         });
         compiler.plugin('done', stats => {
-            // Generate index.html page
-            const bundle = stats.compilation.chunks.find(x => x.name === 'main').files[0];
-            const template = fs.readFileSync(`public/index.ejs`, 'utf8');
-            const render = ejs.compile(template, { filename: 'public/index.ejs' });
-            const output = render({ debug: true, bundle: `${bundle}`, config });
-            fs.writeFileSync(`${distDir}index.html`, output, 'utf8');
-
             // Launch Browsersync after the initial bundling is complete
             // For more information visit https://browsersync.io/docs/options
             if (++count === 1) {

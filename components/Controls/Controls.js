@@ -79,6 +79,18 @@ const Controls = React.createClass({
             timestamp: currentTime
         });
     },
+    progress() {
+        let progress = 0;
+        try {
+            const state = this.context.store.getState();
+            const segment = state.activeSegment;        
+            const segmentLength = (segment.out - segment.in);
+            const segmentProgressTime = state.itemTimeMs - segment.in;
+            progress = segmentProgressTime / segmentLength;
+        } catch (e) {
+        }
+        return progress;
+    },
     render(){
         let timeElement = (this.state.inExtend) ?
             <SeekBar
@@ -95,14 +107,14 @@ const Controls = React.createClass({
         return (
             <div>
                 <div>
-                    <img src="images/play.png" className={this.getStartPlayingClass()} onClick={this.startPlaying} />
+                    <img src={require("../../sdk/images/play.png")} className={this.getStartPlayingClass()} onClick={this.startPlaying} />
                 </div>
                 <div className={this.getControlsClassName()}>
                     <div className="controlsTouchScreen" ref="touchScreen"
                          style={this.state.pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
-                    <Extend isVisible={!this.state.inExtend} onClick={this.eventHandler.bind(this, "extend")}/>
-                    <img src="images/play.png" className={this.getClassName("play")} onClick={this.togglePlay}/>
-                    <img src="images/pause.png" className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
+                    <Extend isVisible={!this.state.inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
+                    <img src={require("../../sdk/images/play.png")} className={this.getClassName("play")} onClick={this.togglePlay}/>
+                    <img src={require("../../sdk/images/pause.png")} className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
                     {timeElement}
                 </div>
             </div>
