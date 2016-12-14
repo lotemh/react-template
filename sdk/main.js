@@ -3,10 +3,7 @@
  */
 import './main.css';
 if (! window._babelPolyfill) {
-    console.log("adding babel");
     require("babel-polyfill");
-} else {
-    console.log("not adding babel");
 }
 
 import 'whatwg-fetch';

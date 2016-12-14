@@ -18,10 +18,10 @@ class BrightCovePlayer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            src: this.props["data-video-id"] || '',
             shouldLoad: false,
             isHidden: true
         };
-        //src: this.props["data-video-id"] || '',
     }
 
     componentWillMount(){
