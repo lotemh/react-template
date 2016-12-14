@@ -18,7 +18,7 @@ class BrightCovePlayer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            src: this.props["data-video-id"] || '',
+            src: this.props["data-video-id"] || null,
             isHidden: true
         };
     }
@@ -94,11 +94,11 @@ class BrightCovePlayer extends React.Component {
     getPlayer() {
         return this.player;
     }
-    
+
     getPlayerMediaElement() {
         return this.getPlayer().tech_.el_;
     }
-    
+
     getVideoProps(){
         const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler",
             "style", "data-brightcove-script", "data-elastic-media-account"];
@@ -213,16 +213,16 @@ class BrightCovePlayer extends React.Component {
 
     setSrc(src) {
         if (src !== this.getSrc()) {
+            this.src = src;
             const player = this.getPlayer();
             player.catalog.getVideo(src, function (error, video) {
-                console.log(video);
                 player.catalog.load(video);
             });
         }
     }
 
     getSrc() {
-        return this.refs.player.getAttribute('data-video-id')
+        return this.src || this.refs.player.getAttribute('data-video-id')
     }
 
     load() {

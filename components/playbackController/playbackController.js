@@ -23,12 +23,8 @@ class PlaybackController {
             promises.push(new Promise((resolve, reject) => {
                 player.onReady(()=> {
                     player.setTimeUpdateCallback(this.playerUpdate.bind(this));
-                    player.load().then(() => {
-                        player.addLoadedDataEvent(this.onDataLoaded.bind(this));
-                        resolve();
-                    }).catch(()=>{
-                        reject();
-                    });
+                    player.addLoadedDataEvent(this.onDataLoaded.bind(this));
+                    player.load().then(resolve, resolve);
                 });
             }));
         });
@@ -238,8 +234,9 @@ class PlaybackController {
 
     shouldContinuePlaying(src, timeMs) {
         if (!this.getActive()) { return false; }
-        /* check if src is equal this.getActive().getSrc() === src &&*/
-        return Math.abs(this.getActive().getCurrentTime() - timeMs) < 1000;
+        const isSrcEqual = this.getActive().getSrc() === src;
+        const isInTimeCloseToCurrentTime = Math.abs(this.getActive().getCurrentTime() - timeMs) < 1000;
+        return isSrcEqual && isInTimeCloseToCurrentTime;
     }
 
     //Thank you Aaron Atar for finding the solution!!!
