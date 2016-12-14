@@ -82,9 +82,11 @@ class Player {
             }
             setTimeout(() => {
                 if (!returned) {
-                    this.getPlayer().load();
+                    player.removeEventListener("loadeddata", gotLoadingEvent.bind(this));
+                    this.loadedCallback();
+                    return reject();
                 }
-            }, 8000);
+            }, 2000);
             player.load();
         });
     }

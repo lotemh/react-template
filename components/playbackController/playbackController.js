@@ -23,11 +23,11 @@ class PlaybackController {
             promises.push(new Promise((resolve, reject) => {
                 player.onReady(()=> {
                     player.setTimeUpdateCallback(this.playerUpdate.bind(this));
+                    player.addLoadedDataEvent(this.onDataLoaded.bind(this));
                     player.load().then(() => {
-                        player.addLoadedDataEvent(this.onDataLoaded.bind(this));
                         resolve();
                     }).catch(()=>{
-                        reject();
+                        resolve();
                     });
                 });
             }));
