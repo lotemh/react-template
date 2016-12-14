@@ -63,9 +63,9 @@ const ElasticMediaController = React.createClass({
     },
     render() {
         return (
-            <div className="player-container" style={this.state}>
+            <div>
                 { this.state.metadata ?
-                <div>
+                <div className="player-container" style={this.state}>
                     <ElasticMediaSdk ref="sdk"
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}
