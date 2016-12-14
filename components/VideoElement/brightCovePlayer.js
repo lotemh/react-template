@@ -30,11 +30,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     componentDidMount(){
-        let videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
-        this.gestureListener = new Hammer(videoElement, {velocity: 0.80});
         this.waitForVideoJs();
-        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
-        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.unsubscribe = this.context.store.subscribe(() => {
             this.forceUpdate();
         });
@@ -68,8 +64,12 @@ class BrightCovePlayer extends React.Component {
     }
 
     initPlayer() {
-        this.player = window.videojs(this.props.playerId + "_html5_api");
         var that = this;
+        this.player = window.videojs(this.props.playerId + "_html5_api");
+        let videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
+        this.gestureListener = new Hammer(videoElement, {velocity: 0.80});
+        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
+        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.player.ready(function () {
             that.setState({ready: true, src: that.getPlayer().src()});
             that.addControls();

@@ -85,7 +85,7 @@ class Player {
                     this.loadedCallback();
                     return reject();
                 }
-            }, 2000);
+            }, 500);
             player.load();
         });
     }
