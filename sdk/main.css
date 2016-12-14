@@ -1,6 +1,10 @@
 
 .player-container {
     position: absolute;
+    width:800px !important;
+    height:600px !important;
+    left: 0 !important;
+    top: 0 !important;
 }
 
 .player-wrapper {

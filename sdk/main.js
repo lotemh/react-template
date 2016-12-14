@@ -2,8 +2,13 @@
  * Created by user on 10/9/2016.
  */
 import './main.css';
+if (! window._babelPolyfill) {
+    console.log("adding babel");
+    require("babel-polyfill");
+} else {
+    console.log("not adding babel");
+}
 
-import 'babel-polyfill';
 import 'whatwg-fetch';
 
 
@@ -33,6 +38,7 @@ if (!players[0].classList.contains("em-player")) {
         firstPlayer.setAttribute("id", "playe90");
     }
     players[0].classList.add("em-player");
+    players[0].classList.add("player");
     parent = firstPlayer.parentNode;
     sdkSpace = document.createElement('div');
     parent.appendChild(sdkSpace);

@@ -187,7 +187,7 @@ class BrightCovePlayer extends React.Component {
                 { this.state.shouldLoad ? 
                 <div>
                     <video ref="player"
-                            className="player brightcove-player"
+                            className="player brightcove-player video-js"
                             id={this.props.playerId}
                             playsInline
                             data-embed="default"
