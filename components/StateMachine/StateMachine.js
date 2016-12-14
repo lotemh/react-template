@@ -77,10 +77,11 @@ class StateMachine {
         this.logger.log(`handle action ${action}`);
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
         if (followingSegment === undefined) {
+            this.playbackController.pause();
             return;
         }
         this.updateView({
-            itemNum: SegmentManager.getItemNum(followingSegment.title), 
+            itemNum: SegmentManager.getItemNum(followingSegment.title),
             itemTimeMs: followingSegment.in,
             activeSegment: followingSegment,
         });
