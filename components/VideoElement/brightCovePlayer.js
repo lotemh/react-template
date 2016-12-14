@@ -30,7 +30,8 @@ class BrightCovePlayer extends React.Component {
     }
 
     componentDidMount(){
-        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
+        let videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
+        this.gestureListener = new Hammer(videoElement, {velocity: 0.80});
         this.waitForVideoJs();
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
