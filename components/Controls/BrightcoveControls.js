@@ -29,14 +29,16 @@ const Controls = React.createClass({
     },
 
     startPlaying() {
-        this.props.eventHandler("firstPlay");
+        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION) {
+            this.props.eventHandler("firstPlay");
+        }
     },
     eventHandler(action) {
         this.context.store.dispatch({type: "EVENT_HANDLER", actionName: action});
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
-        return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ?
+        return this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE ?
             'controller bigPlayWrapper' : 'hidden';
     },
     getControlsClassName() {
