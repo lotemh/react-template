@@ -94,11 +94,11 @@ class BrightCovePlayer extends React.Component {
     getPlayer() {
         return this.player;
     }
-    
+
     getPlayerMediaElement() {
         return this.getPlayer().tech_.el_;
     }
-    
+
     getVideoProps(){
         const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler",
             "style", "data-brightcove-script", "data-elastic-media-account"];
@@ -215,7 +215,6 @@ class BrightCovePlayer extends React.Component {
         if (src !== this.getSrc()) {
             const player = this.getPlayer();
             player.catalog.getVideo(src, function (error, video) {
-                console.log(video);
                 player.catalog.load(video);
             });
         }
