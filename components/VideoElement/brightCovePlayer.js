@@ -18,7 +18,7 @@ class BrightCovePlayer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            src: this.props["data-video-id"] || '',
+            src: this.props["data-video-id"] || null,
             isHidden: true
         };
     }
@@ -213,6 +213,7 @@ class BrightCovePlayer extends React.Component {
 
     setSrc(src) {
         if (src !== this.getSrc()) {
+            this.src = src;
             const player = this.getPlayer();
             player.catalog.getVideo(src, function (error, video) {
                 player.catalog.load(video);
@@ -221,7 +222,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getSrc() {
-        return this.refs.player.getAttribute('data-video-id')
+        return this.src || this.refs.player.getAttribute('data-video-id')
     }
 
     load() {
