@@ -24,6 +24,7 @@
 	controls ></video>
 	<script src="//players.brightcove.net/136368194/V1xBaDVb6l_default/index.min.js" id="firstScript"></script>
 
+
     <script src="<%= webpackConfig.sdk.js %>"></script>
     <% for (key in htmlWebpackPlugin.files.chunks) { %>
     <script src="<%= htmlWebpackPlugin.files.chunks[key].entry %>" type="text/javascript"></script>

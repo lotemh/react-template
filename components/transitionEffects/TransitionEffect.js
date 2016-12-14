@@ -1,7 +1,10 @@
 const TransitionEffect = {
-    WHOOSH: 'te-whoosh',
-    WHOOSH_REV: 'te-whoosh te-whoosh-reverse',
-    TEST: 'te-test'
+    WHOOSH: 'tfx-basic te-whoosh',
+    WHOOSH_REV: 'tfx-basic te-whoosh te-whoosh-reverse',
+    TEST: 'te-test',
+    NO_TFX: '',
+    SOCAL: 'tfx-basic socal-tfx',
+    BORDER_BLASTERS: 'tfx-basic border-blasters-tfx'
 };
 
 export default TransitionEffect;

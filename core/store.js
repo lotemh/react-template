@@ -107,7 +107,8 @@ function getTfx(programId){
     const tfxMap = {
         '1234': 'WHOOSH',
         '5678': 'WHOOSH_REV',
-        '1111': 'TEST'
+        'd943a98e-d05b-4c9f-8370-c198a2105d34': 'SOCAL',
+        'e59df5d0-db3c-4d7e-8304-2ced65e952ac': 'BORDER_BLASTERS'
     };
     return tfxMap[programId] || 'WHOOSH';
 }

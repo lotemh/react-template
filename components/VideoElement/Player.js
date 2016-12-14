@@ -69,12 +69,14 @@ class Player {
         this.getPlayer().hide();
     }
     load() {
+        const player = this.getPlayer();
         return new Promise((resolve, reject) => {
             let returned = false;
-            function gotLoadingEvent(event) {
+            player.addEventListener("loadeddata", gotLoadingEvent.bind(this));
+            function gotLoadingEvent() {
                 if (!returned) {
                     returned = true;
-                    this.getPlayer().removeEventListener("loadeddata", gotLoadingEvent.bind(this));
+                    player.removeEventListener("loadeddata", gotLoadingEvent.bind(this));
                     return resolve();
                 }
             }
@@ -82,23 +84,20 @@ class Player {
                 if (!returned) {
                     this.getPlayer().load();
                 }
-            }, 2000);
-            this.getPlayer().addEventListener("loadeddata", gotLoadingEvent.bind(this));
-            this.getPlayer().load();
+            }, 8000);
+            player.load();
         });
     }
-    prepare(src, segmentTitle) {
+    prepare(src, inTime, segmentTitle) {
         this.loading = segmentTitle;
-        /*
-        if (!this.src) {
+        if (!this.getPlayer().getSrc() || this.getPlayer().getSrc() !== src) {
             this.getPlayer().setSrc(src);
-            this.src = src;
-            this.getPlayer().load();
-            return;
+            return this.load().then(()=> {
+                this.pause();
+            });
+            //todo: add seek
         }
-        */
-        const timestamp = src.match(/.*#t=(\d*\.*\d*)/)[1];
-        this.seek(timestamp);
+        this.seek(inTime/1000);
         this.pause();
         this.loadedCallback(segmentTitle);
     }

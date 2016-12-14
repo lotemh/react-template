@@ -109,7 +109,7 @@ class BrightCovePlayer extends React.Component {
 
     getClassName() {
         let className = 'player-wrapper';
-        className += (this.state.isHidden || this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE) ?
+        className += (this.state.isHidden) ?
             ' hidden' : '';
         className += this.context.store.getState().inExtend ? ' show-progress-bar' : ' show-item-dots';
         return className;
@@ -240,11 +240,17 @@ class BrightCovePlayer extends React.Component {
     }
 
     setSrc(src) {
-        //todo - at the moment the src is already set by brightcove
+        if (src !== this.getSrc()) {
+            const player = this.getPlayer();
+            player.catalog.getVideo(src, function (error, video) {
+                console.log(video);
+                player.catalog.load(video);
+            });
+        }
     }
 
     getSrc() {
-        return this.getPlayer().src();
+        return this.refs.player.getAttribute('data-video-id')
     }
 
     load() {
