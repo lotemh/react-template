@@ -10,7 +10,6 @@ class Player {
         this.loading = null;
         this.id = id;
         this.logger = new Logger();
-        this.src = '';
         this.audioContext = new AudioContext();
         this.audioTfxActive = false;
     }
@@ -82,9 +81,11 @@ class Player {
             }
             setTimeout(() => {
                 if (!returned) {
-                    this.getPlayer().load();
+                    player.removeEventListener("loadeddata", gotLoadingEvent.bind(this));
+                    this.loadedCallback();
+                    return reject();
                 }
-            }, 8000);
+            }, 2000);
             player.load();
         });
     }
@@ -92,9 +93,7 @@ class Player {
         this.loading = segmentTitle;
         if (!this.getPlayer().getSrc() || this.getPlayer().getSrc() !== src) {
             this.getPlayer().setSrc(src);
-            return this.load().then(()=> {
-                this.pause();
-            });
+            return this.load();
             //todo: add seek
         }
         this.seek(inTime/1000);
@@ -112,12 +111,10 @@ class Player {
     }
     addLoadedDataEvent(listener) {
         function loadedCallback() {
-            if (!this.src){
-                this.src = this.getPlayer().getSrc();
-            }
             const loadedSegment = this.loading;
             if (loadedSegment) {
                 this.loading = null;
+                this.pause();
                 listener(loadedSegment, this);
             }
         }
@@ -133,7 +130,7 @@ class Player {
     }
 
     getSrc() {
-        return this.src;
+        return this.getPlayer().getSrc();
     }
 
     timeUpdatedListener(event) {
