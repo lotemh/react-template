@@ -31,13 +31,12 @@ class BrightCovePlayer extends React.Component {
             this.setState({shouldLoad: false});
         } else {
             this.setState({shouldLoad: true});
+            console.log("adding script", script.src);
             document.body.appendChild(script);
         }
     }
 
     componentDidMount(){
-        //this.player = window.videojs(this.props.playerId + "_html5_api");
-        //this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
         this.gestureListener = new Hammer(document.getElementById(this.props.playerId));
         this.waitForVideoJs();
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
