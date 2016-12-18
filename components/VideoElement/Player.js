@@ -10,7 +10,9 @@ class Player {
         this.loading = null;
         this.id = id;
         this.logger = new Logger();
-        this.audioContext = new AudioContext();
+        if ('AudioContext' in window) {
+            this.audioContext = new AudioContext();
+        }
         this.audioTfxActive = false;
     }
 
@@ -144,6 +146,9 @@ class Player {
 
     tfxAudioFadeIn() {
         const audioCtx = this.getAudioContext()
+        if (!audioCtx) {
+            return;
+        }
         const gainNode = audioCtx.createGain();
         const source = this.getMediaElementSource();
 
