@@ -20,7 +20,13 @@ const BrightcoveSeekBar = React.createClass({
     },
     seekByMouse(event) {
         const position = event.target.getBoundingClientRect();
-        const seekPosition = event.clientX - position.left;
+
+        if (event.changedTouches)
+            var pageX = event.changedTouches[0].pageX;
+        else
+            var pageX = event.clientX;
+          
+        const seekPosition = pageX - position.left;
         const progress = seekPosition / position.width;
         const seekTime = (progress * this.props.itemLength + this.props.itemStart)/ 1000.0;
 
@@ -36,6 +42,8 @@ const BrightcoveSeekBar = React.createClass({
 
         document.addEventListener("mousemove", this.onMouseMove);
         document.addEventListener("mouseup", this.onMouseUp);
+        document.addEventListener("touchmove", this.onMouseMove);
+        document.addEventListener("touchend", this.onMouseUp);
         document.onselectstart = () => {return false};
 
         this.seekByMouse(event);
@@ -48,6 +56,8 @@ const BrightcoveSeekBar = React.createClass({
 
         document.removeEventListener("mousemove", this.onMouseMove);
         document.removeEventListener("mouseup", this.onMouseUp);
+        document.removeEventListener("touchmove", this.onMouseMove);
+        document.removeEventListener("touchend", this.onMouseUp);
         document.onselectstart = this.onselectstart;
 
         setTimeout(() => { // TODO move to seek promise return
@@ -106,15 +116,12 @@ const BrightcoveSeekBar = React.createClass({
                 <div className="vjs-progress-control vjs-control"
                      onChange={this.seekChange}
                      onMouseDown={this.onMouseDown}
-                     onTouchStart={this.onMouseDown}
-                     onTouchEnd={this.onMouseUp}>
+                     onTouchStart={this.onMouseDown}>
                     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
-                        <div className="vjs-load-progress" style={progressStyle}>
-                            <span className="vjs-control-text">
-                                <span>Loaded</span>
-                                : 0%
-                            </span>
+                        <div className="vjs-load-progress">
                             <div></div>
+                        </div>
+                        <div className="vjs-play-progress vjs-slider-bar" style={progressStyle}>
                         </div>
                     </div>
                 </div>
