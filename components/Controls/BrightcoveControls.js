@@ -85,7 +85,7 @@ const Controls = React.createClass({
         return (
             <div>
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
-                    {isIphone() ?
+                    {isIphone() && this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ?
                         <img src={require("../../sdk/images/play.png")} className="bigPlay"/>
                     : null }
                 </div>

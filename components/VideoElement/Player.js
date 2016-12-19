@@ -12,6 +12,8 @@ class Player {
         this.logger = new Logger();
         if ('AudioContext' in window) {
             this.audioContext = new AudioContext();
+        } else if('webkitAudioContext' in window) {
+            this.audioContext = new webkitAudioContext();
         }
         this.audioTfxActive = false;
     }
@@ -87,7 +89,7 @@ class Player {
                     this.loadedCallback();
                     return reject();
                 }
-            }, 500);
+            }, 100);
             player.load();
         });
     }
