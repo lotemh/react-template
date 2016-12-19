@@ -5,7 +5,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title><%= webpackConfig.demoConfig.title %></title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" id="vp">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,500italic,700,700italic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link href="favicon.png" rel="shortcut icon" type="image/png">
@@ -13,6 +13,12 @@
     <% for (key in htmlWebpackPlugin.files.css) { %>
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[key] %>">
     <% } %>
+    <script>
+        if (screen.width < 450) {
+            var mvp = document.getElementById('vp');
+            mvp.setAttribute('content','width=450');
+        }
+    </script>
     </head>
   <body>
     <div data-elastic-media-player="brightcove"
