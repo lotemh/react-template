@@ -127,27 +127,12 @@ class PlaybackController {
         this.onSegmentEndAction = onSegmentEndAction;
     }
 
-    playerEndVerifier(playerId, waitForTime) {
-        if (this.getActive().getCurrentTime() >= this.segmentEndTimeMs) {
-            if (this.onSegmentEndAction && playerId === this.getActive().id) {
-                this.onSegmentEndAction();
-            }
-            clearTimeout(this.playerEndVerifierTimeout);
-        }
-        //Stop retry if anything changed
-        if (playerId !== this.getActive().id || waitForTime !== this.segmentEndTimeMs) {
-            clearTimeout(this.playerEndVerifierTimeout);
-        }
-    }
     playerUpdate(timeMs, playerId) {
-        clearTimeout(this.playerEndVerifierTimeout);
         if (playerId === this.getActive().id) {
             if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
                 if (this.onSegmentEndAction) {
                     this.onSegmentEndAction();
                 }
-            } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
-                this.playerEndVerifierTimeout = setInterval(this.playerEndVerifier.bind(this, playerId, this.segmentEndTimeMs), this.segmentEndTimeMs - timeMs);
             }
             this.timeUpdateCallback(timeMs);
         }

@@ -243,11 +243,25 @@ class BrightCovePlayer extends React.Component {
     }
 
     addTimeUpdateEvent(listener) {
-        this.getPlayer().on('timeupdate', listener, false);
+        this.runTimeUpdate = true;
+        let lastTime;
+        function updateInfo(callback) {
+            let currentTime = this.getPlayer().currentTime();
+            if (currentTime !== lastTime) {
+                listener();
+                lastTime = currentTime;
+            }
+            if (this.runTimeUpdate) {
+                window.requestAnimationFrame(updateInfo.bind(this));
+            }
+        }
+        window.requestAnimationFrame(updateInfo.bind(this));
+        //this.getPlayer().on('timeupdate', listener, false);
     }
 
     removeTimeUpdateEvent(listener) {
-        this.getPlayer().off('timeupdate', listener);
+        this.runTimeUpdate = false;
+        //this.getPlayer().off('timeupdate', listener);
     }
 
     addEventListener(event, listener) {
