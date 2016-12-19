@@ -67,7 +67,6 @@ class PlaybackController {
     }
 
     playSegment(segment, onSegmentEndAction) {
-        this.cancelOnSegmentEndAction();
         if (this.shouldContinuePlaying(segment.src, segment.in)) {
             this.logger.log('continue playing');
             this.setSegmentReady(segment.title, this.getActive());
@@ -123,29 +122,17 @@ class PlaybackController {
         }, () => {});
     }
 
-    cancelOnSegmentEndAction() {
-        clearTimeout(this.playerEndVerifierTimeout);
-        this.segmentEndTimeMs = false;
-    }
-
     waitForSegmentEnd(endTimeStamp, onSegmentEndAction) {
         this.segmentEndTimeMs = endTimeStamp;
         this.onSegmentEndAction = onSegmentEndAction;
     }
 
-    playerEndVerifier() {
-        if (this.getActive().getCurrentTime() >= this.segmentEndTimeMs) {
-            this.onSegmentEndAction();
-        }
-    }
     playerUpdate(timeMs, playerId) {
-        clearTimeout(this.playerEndVerifierTimeout);
         if (playerId === this.getActive().id) {
             if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
-                this.onSegmentEndAction();
-                this.cancelOnSegmentEndAction();
-            } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
-                this.playerEndVerifierTimeout = setInterval(this.playerEndVerifier.bind(this), this.segmentEndTimeMs - timeMs);
+                if (this.onSegmentEndAction) {
+                    this.onSegmentEndAction();
+                }
             }
             this.timeUpdateCallback(timeMs);
         }

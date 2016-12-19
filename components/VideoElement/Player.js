@@ -10,7 +10,11 @@ class Player {
         this.loading = null;
         this.id = id;
         this.logger = new Logger();
-        this.audioContext = new AudioContext();
+        if ('AudioContext' in window) {
+            this.audioContext = new AudioContext();
+        } else if('webkitAudioContext' in window) {
+            this.audioContext = new webkitAudioContext();
+        }
         this.audioTfxActive = false;
     }
 
@@ -85,7 +89,7 @@ class Player {
                     this.loadedCallback();
                     return reject();
                 }
-            }, 2000);
+            }, 100);
             player.load();
         });
     }
@@ -144,6 +148,9 @@ class Player {
 
     tfxAudioFadeIn() {
         const audioCtx = this.getAudioContext()
+        if (!audioCtx) {
+            return;
+        }
         const gainNode = audioCtx.createGain();
         const source = this.getMediaElementSource();
 
