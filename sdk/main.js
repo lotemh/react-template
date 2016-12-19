@@ -45,6 +45,7 @@ render(client);
 // Eliminates the 300ms delay between a physical tap
 // and the firing of a click event on mobile browsers
 // https://github.com/ftlabs/fastclick
+// This broke the ios buttons, so dont put it back unless its fixed
 //FastClick.attach(document.body);
 
 // Enable Hot Module Replacement (HMR)
