@@ -53,10 +53,6 @@
     display: none
 }
 
-.vjs-control-bar .vjs-progress-control .vjs-play-progress {
-    margin-top: 0;
-}
-
 button {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
