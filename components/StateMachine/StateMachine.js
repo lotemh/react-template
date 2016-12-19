@@ -74,6 +74,7 @@ class StateMachine {
 
     actionHandler(action) {
         this.logger.log(`handle action ${action}`);
+        this.playbackController.onSegmentEndAction = null;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
         if (followingSegment === undefined) {
             return;
