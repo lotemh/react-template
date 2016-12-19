@@ -61,7 +61,6 @@ class StateMachine {
     /** **********************/
 
     extend() {
-        this.playbackController.cancelOnSegmentEndAction();
         this.extendItem(this.segmentsManager.getActive());
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }

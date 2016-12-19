@@ -67,7 +67,7 @@ class PlaybackController {
     }
 
     playSegment(segment, onSegmentEndAction) {
-        this.cancelOnSegmentEndAction();
+        this.onSegmentEndAction = null;
         if (this.shouldContinuePlaying(segment.src, segment.in)) {
             this.logger.log('continue playing');
             this.setSegmentReady(segment.title, this.getActive());
@@ -123,29 +123,34 @@ class PlaybackController {
         }, () => {});
     }
 
-    cancelOnSegmentEndAction() {
-        clearTimeout(this.playerEndVerifierTimeout);
-        this.segmentEndTimeMs = false;
-    }
-
     waitForSegmentEnd(endTimeStamp, onSegmentEndAction) {
         this.segmentEndTimeMs = endTimeStamp;
         this.onSegmentEndAction = onSegmentEndAction;
     }
 
-    playerEndVerifier() {
+    playerEndVerifier(playerId) {
+        let onSegmentEndAction;
         if (this.getActive().getCurrentTime() >= this.segmentEndTimeMs) {
-            this.onSegmentEndAction();
+            if (this.onSegmentEndAction && playerId === this.getActive().id) {
+                onSegmentEndAction = this.onSegmentEndAction;
+                this.onSegmentEndAction = null;
+                onSegmentEndAction();
+            }
+            clearTimeout(this.playerEndVerifierTimeout);
         }
     }
     playerUpdate(timeMs, playerId) {
+        let onSegmentEndAction;
         clearTimeout(this.playerEndVerifierTimeout);
         if (playerId === this.getActive().id) {
             if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
-                this.onSegmentEndAction();
-                this.cancelOnSegmentEndAction();
+                if (this.onSegmentEndAction) {
+                    onSegmentEndAction = this.onSegmentEndAction;
+                    this.onSegmentEndAction = null;
+                    onSegmentEndAction();
+                }
             } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
-                this.playerEndVerifierTimeout = setInterval(this.playerEndVerifier.bind(this), this.segmentEndTimeMs - timeMs);
+                this.playerEndVerifierTimeout = setInterval(this.playerEndVerifier.bind(this, playerId), this.segmentEndTimeMs - timeMs);
             }
             this.timeUpdateCallback(timeMs);
         }
