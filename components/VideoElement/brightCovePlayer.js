@@ -205,6 +205,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     show() {
+        this.getPlayer().userActive(true);
         this.setState({ isHidden: false });
     }
 
