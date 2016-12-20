@@ -34,7 +34,6 @@ const Controls = React.createClass({
         }
     },
     eventHandler(action) {
-        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: action});
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
