@@ -31,7 +31,7 @@ function render(sdkComponent) {
 if (!players[0].classList.contains("em-player")) {
     firstPlayer = players[0];
     if (!firstPlayer.getAttribute("id")) {
-        firstPlayer.setAttribute("id", "playe90");
+        firstPlayer.setAttribute("id", "originalPlayer1");
     }
     players[0].classList.add("em-player");
     players[0].classList.add("player");
@@ -47,7 +47,7 @@ if (!players[0].classList.contains("em-player")) {
     props["data-application-id"] = "";
     props["publisherId"] = "9af0fb40-8c90-4006-a668-7844ed81b4d4";
     props["episodeId"] = firstPlayer.getAttribute("data-video-id");
-    props["player0Id"] = firstPlayer.getAttribute("id");
+    props["originalPlayerId"] = firstPlayer.getAttribute("id");
     scripts = document.getElementsByTagName("script");
     for (let i = 0; i < scripts.length; i++) {
         if (scripts[i].getAttribute("src") && scripts[i].getAttribute("src").startsWith("//players.brightcove.net/" + props["data-account"] + "/" + props["data-player"])) {

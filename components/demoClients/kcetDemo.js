@@ -21,8 +21,8 @@ const Brightcove = React.createClass({
                     {
                         players.map((elm, i) => {
                             let id;
-                            if (i === 0 && this.props["player0Id"]) {
-                                id =  this.props["player0Id"];
+                            if (i === players.length - 1 && this.props["originalPlayerId"]) {
+                                id =  this.props["originalPlayerId"];
                             } else {
                                 id = "player" + i;
                             }
