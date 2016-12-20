@@ -31,7 +31,6 @@ class BrightCovePlayer extends React.Component {
             this.setState({shouldLoad: false});
         } else {
             this.setState({shouldLoad: true});
-            console.log("adding script", script.src);
             document.body.appendChild(script);
         }
     }
@@ -42,7 +41,6 @@ class BrightCovePlayer extends React.Component {
             this.forceUpdate();
         });
         if (this.state.shouldLoad === false) {
-            console.log("moving object " + this.props.playerId);
             var playerElement = document.getElementById(this.props.playerId);
             playerElement.classList.add("player");
             playerElement.classList.add("em-player");
@@ -87,9 +85,9 @@ class BrightCovePlayer extends React.Component {
 
     initPlayer() {
         var that = this;
-        this.videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
-        this.player = window.videojs(this.videoElement.id);
-        this.gestureListener = new Hammer(this.videoElement, {velocity: 0.80});
+        let videoElement = this.getPlayerMediaElement();
+        this.player = window.videojs(videoElement.id);
+        this.gestureListener = new Hammer(videoElement, {velocity: 0.80});
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.player.ready(function () {
@@ -119,7 +117,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getPlayerMediaElement() {
-        return this.videoElement;
+        return document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
     }
 
     getVideoProps(){
@@ -249,7 +247,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getSrc() {
-        return this.src || this.refs.player.getAttribute('data-video-id')
+        return this.src || this.getPlayerMediaElement().getAttribute('data-video-id')
     }
 
     load() {

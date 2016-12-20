@@ -95,7 +95,7 @@ class Player {
     }
     prepare(src, inTime, segmentTitle) {
         this.loading = segmentTitle;
-        if (!this.getPlayer().getSrc() || this.getPlayer().getSrc() !== src) {
+        if (src && (!this.getPlayer().getSrc() || this.getPlayer().getSrc() !== src)) {
             this.getPlayer().setSrc(src);
             return this.load();
             //todo: add seek
