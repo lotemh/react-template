@@ -2,4 +2,4 @@ utils/
 core/router.js
 core/store.js
 main.js
-dist/main*
+dist/
