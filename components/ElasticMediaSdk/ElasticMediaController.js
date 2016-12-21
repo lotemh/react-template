@@ -1,5 +1,4 @@
 import React, {PropTypes} from "react";
-import $ from 'jquery';
 import ElasticMediaSdk from "./ElasticMediaSdk";
 import Controls from "../Controls/BrightcoveControls";
 
@@ -13,19 +12,30 @@ const ElasticMediaController = React.createClass({
         store: React.PropTypes.object
     },
     componentWillMount() {
+        let metadata,
+            that = this;
         this.state = this.calcWidthAndHeight();
-        $.ajax({
-            url: MINI_CMS_BASE_URL + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId,
-            type: 'GET',
-            dataType: "json",
-            success: (metadata) => {
-                this.setState({metadata: metadata});
-            },
-            error: function(xhr, status, err){
-                //todo: implement fallback - play regular video
-                console.error("Fail to get metadata", status, err.toString());
-            }.bind(this)
-        });
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+                if (xmlhttp.status == 200) {
+                    console.log("got 200");
+                    //console.log(xmlhttp.responseText);
+                    try {
+                        metadata = JSON.parse(xmlhttp.responseText);
+                        that.setState({metadata: metadata});
+                        //console.log(metadata);
+                    } catch(e) {
+                        console.log(e);
+                    }
+                }
+                else {
+                    console.log("got " + xmlhttp.status);
+                }
+            }
+        };
+        xmlhttp.open("GET", MINI_CMS_BASE_URL + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId, true);
+        xmlhttp.send();
     },
 
     componentDidMount() {
