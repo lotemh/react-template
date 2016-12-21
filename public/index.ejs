@@ -13,12 +13,6 @@
     <% for (key in htmlWebpackPlugin.files.css) { %>
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[key] %>">
     <% } %>
-    <script>
-        if (screen.width < 450) {
-            var mvp = document.getElementById('vp');
-            mvp.setAttribute('content','width=450');
-        }
-    </script>
     </head>
   <body>
     <div data-elastic-media-player="brightcove"
