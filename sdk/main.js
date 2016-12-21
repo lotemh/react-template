@@ -28,12 +28,13 @@ var players = document.getElementsByClassName('video-js'),
 function render(sdkComponent) {
     ReactDOM.render(<Provider store={store}>{sdkComponent}</Provider>, sdkSpace);
 }
-if (!players[0].classList.contains("em-player")) {
+if (!players[0].getAttribute("em-player")) {
+    console.log("running");
     firstPlayer = players[0];
     if (!firstPlayer.getAttribute("id")) {
         firstPlayer.setAttribute("id", "originalPlayer1");
     }
-    players[0].classList.add("em-player");
+    players[0].setAttribute("em-player", true);
     players[0].classList.add("player");
     parent = firstPlayer.parentNode;
     sdkSpace = document.createElement('div');

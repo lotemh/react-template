@@ -40,12 +40,13 @@ class BrightCovePlayer extends React.Component {
         this.unsubscribe = this.context.store.subscribe(() => {
             this.forceUpdate();
         });
+        var playerElement = document.getElementById(this.props.playerId);
         if (this.state.shouldLoad === false) {
-            var playerElement = document.getElementById(this.props.playerId);
             playerElement.classList.add("player");
-            playerElement.classList.add("em-player");
             playerElement.classList.add("brightcove-player");
             document.getElementById(this.props.playerId + "_wrapper").appendChild(playerElement);
+        } else {
+            playerElement.setAttribute("em-player", true);
         }
     }
 
@@ -91,6 +92,7 @@ class BrightCovePlayer extends React.Component {
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.player.ready(function () {
+            videoElement.setAttribute("crossOrigin", "anonymous");
             that.setState({ready: true, src: that.getPlayer().src()});
             that.addControls();
             that.setItemTime();

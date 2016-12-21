@@ -51,7 +51,7 @@ class Player {
 
     play() {
         const state = this.store.getState();
-        if (state.tfxAudio && !this.audioTfxActive) {
+        if (state.startStatus !== ControlsStartStatus.PENDING && state.tfxAudio && !this.audioTfxActive) {
             this.audioTfxActive = true;
             this[state.tfxAudio]();
         }
