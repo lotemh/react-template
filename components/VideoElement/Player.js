@@ -58,7 +58,7 @@ class Player {
 
         function playListener(event) {
             this.store.dispatch({type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE,
-                                 isPlaying: true});
+                isPlaying: true});
             this.getPlayer().removeEventListener("play", playListener.bind(this));
         }
         this.getPlayer().addEventListener("play", playListener.bind(this));
