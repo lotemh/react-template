@@ -115,7 +115,7 @@ class StateMachine {
         setTimeout(() => {
             const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
             this.playbackController.prepareSegments(segmentsToPrepare);
-        }, 1500);
+        }, 300);
     }
 
     extendItem(activeSegment) {
