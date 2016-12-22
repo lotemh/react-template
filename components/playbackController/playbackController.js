@@ -128,7 +128,7 @@ class PlaybackController {
     }
 
     playerUpdate(timeMs, playerId) {
-        if (playerId === this.getActive().id) {
+        if (this.getActive() && playerId === this.getActive().id) {
             if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
                 if (this.onSegmentEndAction) {
                     this.onSegmentEndAction();

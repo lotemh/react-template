@@ -41,12 +41,14 @@ class Player {
     }
 
     onReady(callback) {
-        this.getPlayer().onReady(callback);
+        this.getPlayer().onReady(()=>{
+            this.addTimeUpdateEvent();
+            callback();
+        });
     }
 
     pause() {
         this.getPlayer().pause();
-        this.removeTimeUpdateEvent();
     }
 
     play() {
@@ -62,7 +64,6 @@ class Player {
             this.getPlayer().removeEventListener("play", playListener.bind(this));
         }
         this.getPlayer().addEventListener("play", playListener.bind(this));
-        this.addTimeUpdateEvent();
         return this.getPlayer().play();
     }
     show() {
