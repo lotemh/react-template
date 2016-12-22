@@ -124,8 +124,9 @@ class StateMachine {
             const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
             this.segmentsManager.setActive(extendedSegment);
             itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
+        } else {
+            itemLength = (activeSegment.out - activeSegment.in);
         }
-        itemLength = itemLength || (activeSegment.out - activeSegment.in);
         this.updateView({itemLength: itemLength, itemStart: activeSegment.in});
     }
 
