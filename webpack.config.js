@@ -85,11 +85,11 @@ const config = {
             prettyPrint: true,
         }),
         new BannerPlugin({
-          chunks: {
-            'elasticprogram-sdk': {
-              beforeContent: `/* Elastic Media elasticprogram-sdk v${pkg.version} */\n`
+            chunks: {
+                'elasticprogram-sdk': {
+                    beforeContent: `/* Elastic Media elasticprogram-sdk v${pkg.version} */\n`
+                }
             }
-          }
         }),
         new ExtractTextPlugin(isDebug ? '[name].css?[hash]' : '[name].css'),
     ],
