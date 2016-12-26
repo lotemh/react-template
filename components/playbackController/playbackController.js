@@ -24,7 +24,8 @@ class PlaybackController {
                 player.onReady(()=> {
                     player.setTimeUpdateCallback(this.playerUpdate.bind(this));
                     player.addLoadedDataEvent(this.onDataLoaded.bind(this));
-                    player.load().then(resolve, resolve);
+                    return resolve();
+                    //player.load().then(resolve, resolve);
                 });
             }));
         });

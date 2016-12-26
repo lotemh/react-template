@@ -43,8 +43,6 @@ class StateMachine {
         this.actionHandler('next').catch((error) => {
             if (error === "NotAllowedError" || error.name === 'NotAllowedError') {
                 this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
-                const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
-                this.playbackController.prepareSegments(segmentsToPrepare);
             } else {
                 throw error;
             }
@@ -115,6 +113,10 @@ class StateMachine {
 
     firstPlay() {
         this.playbackController.startPlaying();
+        setTimeout(() => {
+            const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+            this.playbackController.prepareSegments(segmentsToPrepare);
+        }, 300);
     }
 
     extendItem(activeSegment) {
