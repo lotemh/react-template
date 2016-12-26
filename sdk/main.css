@@ -268,3 +268,8 @@ button:active {
 .border-blasters-tfx {
     background-image: url(./images/border-short.png);
 }
+
+*::-webkit-media-controls-start-playback-button {
+    display: none!important;
+    -webkit-appearance: none;
+}
