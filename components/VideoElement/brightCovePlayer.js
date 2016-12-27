@@ -42,8 +42,7 @@ class BrightCovePlayer extends React.Component {
         });
         var playerElement = document.getElementById(this.props.playerId);
         if (this.state.shouldLoad === false) {
-            playerElement.classList.add("player");
-            playerElement.classList.add("brightcove-player");
+            playerElement.classList.add("player", "brightcove-player");
             document.getElementById(this.props.playerId + "_wrapper").appendChild(playerElement);
         } else {
             playerElement.setAttribute("em-player", true);
@@ -119,7 +118,10 @@ class BrightCovePlayer extends React.Component {
     }
 
     getPlayerMediaElement() {
-        return document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
+        if (!this.videoElement) {
+            this.videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0]
+        }
+        return this.videoElement;
     }
 
     getVideoProps(){
