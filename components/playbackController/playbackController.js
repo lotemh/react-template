@@ -40,8 +40,8 @@ class PlaybackController {
             }
             if (this.isLoading(segment.title)) {
                 if (isForce){
-                    this.setSegmentReady(segment.title);
-                    const player = this.getPreparedPlayer(segment);
+                    const player = this.loadingSegmentsMap[segment.title];
+                    this.setSegmentReady(segment.title, player);
                     player.seek(segment.in);
                     this.loadedCallback = resolve;
                     return resolve();
@@ -266,9 +266,6 @@ class PlaybackController {
     }
 
     setSegmentReady(segmentTitle, player) {
-        if (!player){
-            player = this.loadingSegmentsMap[segmentTitle];
-        }
         if (!segmentTitle || !player) return;
         this.segmentToPlayerMap[segmentTitle] = player;
         this.clearSegmentLoading(segmentTitle);
