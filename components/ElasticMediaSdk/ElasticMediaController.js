@@ -19,12 +19,10 @@ const ElasticMediaController = React.createClass({
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
                 if (xmlhttp.status == 200) {
-                    console.log("got 200");
-                    //console.log(xmlhttp.responseText);
+                    console.log("got metadata!");
                     try {
                         metadata = JSON.parse(xmlhttp.responseText);
                         that.setState({metadata: metadata});
-                        //console.log(metadata);
                     } catch(e) {
                         console.log(e);
                     }
