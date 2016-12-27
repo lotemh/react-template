@@ -93,9 +93,14 @@ button:active {
     left: 10px;
 }
 
+.player-wrapper .bc-player-V1xBaDVb6l_default .vjs-control {
+    width: 50px;
+}
+
 #progress-container {
     flex-grow: 1;
     order: 5;
+    width: 148px;
 }
 
 .dots {
@@ -106,9 +111,13 @@ button:active {
 }
 
 .brightcove-dots {
-    position: absolute;
-    transform: translate(-48%, 0%);
-    left: 48%;
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.vjs-mouse .brightcove-dots {
+    margin: 11.5px 0;
 }
 
 .dot {
@@ -262,4 +271,9 @@ button:active {
 
 .border-blasters-tfx {
     background-image: url(./images/border-short.png);
+}
+
+*::-webkit-media-controls-start-playback-button {
+    display: none!important;
+    -webkit-appearance: none;
 }

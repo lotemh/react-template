@@ -37,15 +37,15 @@
 	</style>
     </head>
   <body>
-      <div id="parent">
-		<video
+    <div id="parent">
+	<video
 		   data-video-id="3884616525001"
 		   data-account="136368194"
 		   data-player="V1xBaDVb6l"
 		   data-embed="default"
 		   class="video-js kl-video-player" controls></video>
-		<script src="//players.brightcove.net/136368194/V1xBaDVb6l_default/index.min.js"></script>
-        </div>
+	<script src="//players.brightcove.net/136368194/V1xBaDVb6l_default/index.min.js"></script>
+    </div>
 	<script src="<%= webpackConfig.sdk.js %>"></script>
     <% for (key in htmlWebpackPlugin.files.chunks) { %>
     <script src="<%= htmlWebpackPlugin.files.chunks[key].entry %>" type="text/javascript"></script>
