@@ -98,15 +98,16 @@ class Player {
         this.loading = segmentTitle;
         if (!this.getPlayer().getSrc() || this.getPlayer().getSrc() !== src) {
             this.getPlayer().setSrc(src);
-            return this.load();
-            //todo: add seek
+            return this.load().then(() => this.prepare(src, inTime, segmentTitle));
         }
         this.seek(inTime/1000);
         this.pause();
         this.loadedCallback(segmentTitle);
     }
     seek(timestamp) {
-        this.getPlayer().seek(timestamp);
+        if (this.getCurrentTime() !== timestamp){
+            this.getPlayer().seek(timestamp);
+        }
     }
     getCurrentTime() {
         return this.getPlayer().getCurrentTime();
