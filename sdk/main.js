@@ -67,10 +67,13 @@ function render(client, container) {
 }
 
 function getClientByVideoElement() {
+    if (!document.currentScript || !document.currentScript.parentNode) {
+        return;
+    }
     let container = null;
 
     hideVjsControlsBar();
-    var players = document.querySelectorAll("[data-account]");
+    var players = document.currentScript.parentNode.querySelectorAll("[data-account]");
     let foundClient = false;
     let props = {};
     players.forEach((player, i)=> {
