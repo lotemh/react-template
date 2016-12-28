@@ -12,7 +12,28 @@ const ElasticMediaController = React.createClass({
         store: React.PropTypes.object
     },
     componentWillMount() {
+        let metadata,
+            that = this;
         this.state = this.calcWidthAndHeight();
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+                if (xmlhttp.status == 200) {
+                    console.log("got metadata!");
+                    try {
+                        metadata = JSON.parse(xmlhttp.responseText);
+                        that.setState({metadata: metadata});
+                    } catch(e) {
+                        console.log(e);
+                    }
+                }
+                else {
+                    console.log("got " + xmlhttp.status);
+                }
+            }
+        };
+        xmlhttp.open("GET", MINI_CMS_BASE_URL + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId, true);
+        xmlhttp.send();
     },
 
     componentDidMount() {
@@ -50,14 +71,18 @@ const ElasticMediaController = React.createClass({
     },
     render() {
         return (
-            <div className="player-container" style={this.state}>
-                <ElasticMediaSdk ref="sdk"
-                                 contentUrl={this.props.contentUrl}
-                                 publisherId={this.props.publisherId}
-                                 episodeId={this.props.episodeId}>
-                    {this.props.children}
-                </ElasticMediaSdk>
-                <Controls eventHandler={this.eventHandler} ref="controls"/>
+            <div>
+                { this.state.metadata ?
+                <div className="player-container" style={this.state}>
+                    <ElasticMediaSdk ref="sdk"
+                        publisherId={this.props.publisherId}
+                        metadata={this.state.metadata}
+                        episodeId={this.props.episodeId}>
+                                    {this.props.children}
+                    </ElasticMediaSdk>
+                    <Controls eventHandler={this.eventHandler} ref="controls"/>
+                </div>
+                : null}
             </div>
         );
     }

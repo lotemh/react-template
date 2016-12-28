@@ -273,3 +273,7 @@ button:active {
     display: none!important;
     -webkit-appearance: none;
 }
+
+.hide-controls {
+    display: none;
+}
