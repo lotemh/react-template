@@ -30,10 +30,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     componentDidMount(){
-        this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
         this.waitForVideoJs();
-        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
-        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.unsubscribe = this.context.store.subscribe(() => {
             this.forceUpdate();
         });
@@ -67,8 +64,12 @@ class BrightCovePlayer extends React.Component {
     }
 
     initPlayer() {
-        this.player = window.videojs(this.props.playerId + "_html5_api");
         var that = this;
+        this.videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
+        this.player = window.videojs(this.videoElement.id);
+        this.gestureListener = new Hammer(this.videoElement, {velocity: 0.80});
+        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
+        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.player.ready(function () {
             that.setState({ready: true, src: that.getPlayer().src()});
             that.addControls();
@@ -85,7 +86,7 @@ class BrightCovePlayer extends React.Component {
 
     getClassName() {
         let className = 'player-wrapper';
-        className += (this.state.isHidden) ?
+        className += (this.state.isHidden && this.context.store.getState().startStatus !== ControlsStartStatus.PENDING) ?
             ' hidden' : '';
         className += this.context.store.getState().inExtend ? ' show-progress-bar' : ' show-item-dots';
         return className;
@@ -96,7 +97,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getPlayerMediaElement() {
-        return this.getPlayer().tech_.el_;
+        return this.videoElement;
     }
 
     getVideoProps(){
@@ -204,6 +205,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     show() {
+        this.getPlayer().userActive(true);
         this.setState({ isHidden: false });
     }
 
@@ -242,11 +244,23 @@ class BrightCovePlayer extends React.Component {
     }
 
     addTimeUpdateEvent(listener) {
-        this.getPlayer().on('timeupdate', listener, false);
+        this.runTimeUpdate = true;
+        let lastTime;
+        function updateInfo(callback) {
+            let currentTime = this.getPlayer().currentTime();
+            if (currentTime !== lastTime) {
+                listener();
+                lastTime = currentTime;
+            }
+            if (this.runTimeUpdate) {
+                window.requestAnimationFrame(updateInfo.bind(this));
+            }
+        }
+        window.requestAnimationFrame(updateInfo.bind(this));
     }
 
     removeTimeUpdateEvent(listener) {
-        this.getPlayer().off('timeupdate', listener);
+        this.runTimeUpdate = false;
     }
 
     addEventListener(event, listener) {

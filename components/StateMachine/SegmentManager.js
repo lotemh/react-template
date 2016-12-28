@@ -83,6 +83,9 @@ class SegmentManager {
 
     getExtendedSegment(activeSegment) {
         const followingSegment = this.getNextSegmentAccordingToAction('extend');
+        if (!followingSegment){
+            return activeSegment;
+        }
         const inTime = activeSegment.in;
         const newSegment = new Segment(followingSegment, 'extendedItem');
         newSegment.in = inTime;

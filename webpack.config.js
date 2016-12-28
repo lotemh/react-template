@@ -13,6 +13,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin');
+const BannerPlugin = require('banner-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const pkg = require('./package.json');
@@ -82,6 +83,13 @@ const config = {
             path: path.resolve(__dirname, './dist'),
             filename: 'assets.json',
             prettyPrint: true,
+        }),
+        new BannerPlugin({
+            chunks: {
+                'elasticprogram-sdk': {
+                    beforeContent: `/* Elastic Media elasticprogram-sdk v${pkg.version} */\n`
+                }
+            }
         }),
         new ExtractTextPlugin(isDebug ? '[name].css?[hash]' : '[name].css'),
     ],

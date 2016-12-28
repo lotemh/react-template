@@ -17,7 +17,7 @@ describe('Brightcove Seek bar test suite', () => {
 
     it('should display item length', () => {
         const component = ReactTestUtils.renderIntoDocument(
-            <BrightcoveSeekBar seekListener={function(){}} itemStart={10000} itemLength={33000} itemTimeMs={19000} />
+            <BrightcoveSeekBar seekListener={function(){}} itemStart={10000} itemLength={33000} itemTimeMs={19000} isVisible={true}/>
         );
         const currentTimeNode = component.refs.itemLength;
         const currentTime = currentTimeNode.innerHTML;
@@ -26,7 +26,7 @@ describe('Brightcove Seek bar test suite', () => {
 
     it('should display the seek bar value', () => {
         const component = ReactTestUtils.renderIntoDocument(
-            <BrightcoveSeekBar seekListener={function(){}} itemStart={10000} itemLength={33000} itemTimeMs={19000} />
+            <BrightcoveSeekBar seekListener={function(){}} itemStart={10000} itemLength={33000} itemTimeMs={19000} isVisible={true}/>
         );
         const bar = ReactDOM.findDOMNode(component).getElementsByClassName("vjs-load-progress")[0];
         var width = parseInt(bar.style.width.replace('%',''), 10);

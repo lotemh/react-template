@@ -29,14 +29,15 @@ const Controls = React.createClass({
     },
 
     startPlaying() {
-        this.props.eventHandler("firstPlay");
+        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION) {
+            this.props.eventHandler("firstPlay");
+        }
     },
     eventHandler(action) {
-        this.context.store.dispatch({type: "EVENT_HANDLER", actionName: action});
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
-        return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ?
+        return this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE ?
             'controller bigPlayWrapper' : 'hidden';
     },
     getControlsClassName() {
@@ -83,12 +84,12 @@ const Controls = React.createClass({
         return (
             <div>
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
-                    {isIphone() ?
+                    {isIphone() && this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ?
                         <img src={require("../../sdk/images/play.png")} className="bigPlay"/>
                     : null }
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
-                    <Extend isVisible={!store.getState().inExtend} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
+                    <Extend isVisible={store.getState().shouldShowExtendBtn} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>
         );

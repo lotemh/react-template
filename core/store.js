@@ -14,6 +14,7 @@ const defaultState = {
     startStatus: ControlsStartStatus.PENDING,
     inExtend: false,
     isPlaying: false,
+    shouldShowExtendBtn: false,
 
     numOfItems: 0,
     programId: '',
@@ -31,8 +32,9 @@ function reducer(state, action){
     // TODO: Add action handlers (aka "reduces")
     switch (action.type) {
         case 'EVENT_HANDLER':
-            const segmentProgressData = {
-                segmentProgress: calcSegmentProgress(state.activeSegment, state.itemTimeMs)
+            const generalData = {
+                segmentProgress: calcSegmentProgress(state.activeSegment, state.itemTimeMs),
+                shouldShowExtendBtn: shouldShowExtendButton(state.activeSegment, action.actionName)
             };
             let newState;
             switch (action.actionName) {
@@ -57,7 +59,7 @@ function reducer(state, action){
                 default:
                     return state;
             }
-            return Object.assign({}, state, segmentProgressData, newState);
+            return Object.assign({}, state, generalData, newState);
         case 'SET_PENDING_FIRST_PLAY':
             return Object.assign({}, state, {pendingFirstPlayClick: action.pendingFirstPlayClick, isPlaying: !action.pendingFirstPlayClick});
         case 'FIRST_PLAY':
@@ -92,6 +94,10 @@ function reducer(state, action){
     }
 }
 
+function shouldShowExtendButton(activeSegment, action){
+    return action !== 'extend' && activeSegment.extend ? true : false;
+}
+
 function calcSegmentProgress(segment, currentTime) {
     let progress = 0;
     try {
@@ -105,12 +111,13 @@ function calcSegmentProgress(segment, currentTime) {
 
 function getTfx(programId){
     const tfxMap = {
-        '1234': 'WHOOSH',
+        '1234': 'NO_TFX',
         '5678': 'WHOOSH_REV',
         'd943a98e-d05b-4c9f-8370-c198a2105d34': 'SOCAL',
-        'e59df5d0-db3c-4d7e-8304-2ced65e952ac': 'BORDER_BLASTERS'
+        'e59df5d0-db3c-4d7e-8304-2ced65e952ac': 'BORDER_BLASTERS',
+        'e603fdcf-fab1-4b67-8dc6-90bf82c35d58': 'STUDIO_A'
     };
-    return tfxMap[programId] || 'WHOOSH';
+    return tfxMap[programId] || 'NO_TFX';
 }
 
 // Centralized application state

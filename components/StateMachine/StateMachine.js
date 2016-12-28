@@ -43,8 +43,6 @@ class StateMachine {
         this.actionHandler('next').catch((error) => {
             if (error === "NotAllowedError" || error.name === 'NotAllowedError') {
                 this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
-                const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
-                this.playbackController.prepareSegments(segmentsToPrepare);
             } else {
                 throw error;
             }
@@ -61,7 +59,7 @@ class StateMachine {
     /** **********************/
 
     extend() {
-        this.playbackController.cancelOnSegmentEndAction();
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'extend'});
         this.extendItem(this.segmentsManager.getActive());
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
@@ -75,6 +73,7 @@ class StateMachine {
 
     actionHandler(action) {
         this.logger.log(`handle action ${action}`);
+        this.playbackController.onSegmentEndAction = null;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
         if (followingSegment === undefined) {
             this.playbackController.pause();
@@ -114,13 +113,22 @@ class StateMachine {
 
     firstPlay() {
         this.playbackController.startPlaying();
+        setTimeout(() => {
+            const segmentsToPrepare = this.segmentsManager.getSegmentsToPrepare();
+            this.playbackController.prepareSegments(segmentsToPrepare);
+        }, 300);
     }
 
     extendItem(activeSegment) {
+        let itemLength;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction('extend');
-        const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
-        this.segmentsManager.setActive(extendedSegment);
-        const itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
+        if (followingSegment){
+            const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
+            this.segmentsManager.setActive(extendedSegment);
+            itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
+        } else {
+            itemLength = (activeSegment.out - activeSegment.in);
+        }
         this.updateView({itemLength: itemLength, itemStart: activeSegment.in});
     }
 

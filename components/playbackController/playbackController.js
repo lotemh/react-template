@@ -24,7 +24,8 @@ class PlaybackController {
                 player.onReady(()=> {
                     player.setTimeUpdateCallback(this.playerUpdate.bind(this));
                     player.addLoadedDataEvent(this.onDataLoaded.bind(this));
-                    player.load().then(resolve, resolve);
+                    return resolve();
+                    //player.load().then(resolve, resolve);
                 });
             }));
         });
@@ -38,6 +39,13 @@ class PlaybackController {
                 return resolve();
             }
             if (this.isLoading(segment.title)) {
+                if (isForce){
+                    const player = this.loadingSegmentsMap[segment.title];
+                    this.setSegmentReady(segment.title, player);
+                    player.seek(segment.in);
+                    this.loadedCallback = resolve;
+                    return resolve();
+                }
                 if (!!this.cancelLoading) {
                     this.cancelLoading();
                     delete this.cancelLoading;
@@ -67,7 +75,6 @@ class PlaybackController {
     }
 
     playSegment(segment, onSegmentEndAction) {
-        this.cancelOnSegmentEndAction();
         if (this.shouldContinuePlaying(segment.src, segment.in)) {
             this.logger.log('continue playing');
             this.setSegmentReady(segment.title, this.getActive());
@@ -123,29 +130,17 @@ class PlaybackController {
         }, () => {});
     }
 
-    cancelOnSegmentEndAction() {
-        clearTimeout(this.playerEndVerifierTimeout);
-        this.segmentEndTimeMs = false;
-    }
-
     waitForSegmentEnd(endTimeStamp, onSegmentEndAction) {
         this.segmentEndTimeMs = endTimeStamp;
         this.onSegmentEndAction = onSegmentEndAction;
     }
 
-    playerEndVerifier() {
-        if (this.getActive().getCurrentTime() >= this.segmentEndTimeMs) {
-            this.onSegmentEndAction();
-        }
-    }
     playerUpdate(timeMs, playerId) {
-        clearTimeout(this.playerEndVerifierTimeout);
-        if (playerId === this.getActive().id) {
+        if (this.getActive() && playerId === this.getActive().id) {
             if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
-                this.onSegmentEndAction();
-                this.cancelOnSegmentEndAction();
-            } else if (this.segmentEndTimeMs && this.segmentEndTimeMs - 400 <= timeMs) {
-                this.playerEndVerifierTimeout = setInterval(this.playerEndVerifier.bind(this), this.segmentEndTimeMs - timeMs);
+                if (this.onSegmentEndAction) {
+                    this.onSegmentEndAction();
+                }
             }
             this.timeUpdateCallback(timeMs);
         }
@@ -271,7 +266,7 @@ class PlaybackController {
     }
 
     setSegmentReady(segmentTitle, player) {
-        if (!segmentTitle) return;
+        if (!segmentTitle || !player) return;
         this.segmentToPlayerMap[segmentTitle] = player;
         this.clearSegmentLoading(segmentTitle);
     }
