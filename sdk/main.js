@@ -62,7 +62,10 @@ if (module.hot) {
 }
 
 function getClientByVideoElement() {
-    var players = document.querySelectorAll("[data-account]");
+    if (!document.currentScript || !document.currentScript.parentNode) {
+        return;
+    }
+    var players = document.currentScript.parentNode.querySelectorAll("[data-account]");
     let foundClient = false;
     let props = {};
     players.forEach((player, i)=> {
