@@ -89,7 +89,7 @@ const Controls = React.createClass({
                     : null }
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
-                    <Extend isVisible={!store.getState().inExtend} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
+                    <Extend isVisible={store.getState().shouldShowExtendBtn} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>
         );

@@ -76,10 +76,11 @@ class StateMachine {
         this.playbackController.onSegmentEndAction = null;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
         if (followingSegment === undefined) {
+            this.playbackController.pause();
             return;
         }
         this.updateView({
-            itemNum: SegmentManager.getItemNum(followingSegment.title), 
+            itemNum: SegmentManager.getItemNum(followingSegment.title),
             itemTimeMs: followingSegment.in,
             activeSegment: followingSegment,
         });
@@ -119,10 +120,15 @@ class StateMachine {
     }
 
     extendItem(activeSegment) {
+        let itemLength;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction('extend');
-        const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
-        this.segmentsManager.setActive(extendedSegment);
-        const itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
+        if (followingSegment){
+            const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
+            this.segmentsManager.setActive(extendedSegment);
+            itemLength = (activeSegment.out - activeSegment.in) + (followingSegment.out - followingSegment.in);
+        } else {
+            itemLength = (activeSegment.out - activeSegment.in);
+        }
         this.updateView({itemLength: itemLength, itemStart: activeSegment.in});
     }
 

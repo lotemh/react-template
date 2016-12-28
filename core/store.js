@@ -14,6 +14,7 @@ const defaultState = {
     startStatus: ControlsStartStatus.PENDING,
     inExtend: false,
     isPlaying: false,
+    shouldShowExtendBtn: false,
 
     numOfItems: 0,
     programId: '',
@@ -31,8 +32,9 @@ function reducer(state, action){
     // TODO: Add action handlers (aka "reduces")
     switch (action.type) {
         case 'EVENT_HANDLER':
-            const segmentProgressData = {
-                segmentProgress: calcSegmentProgress(state.activeSegment, state.itemTimeMs)
+            const generalData = {
+                segmentProgress: calcSegmentProgress(state.activeSegment, state.itemTimeMs),
+                shouldShowExtendBtn: shouldShowExtendButton(state.activeSegment, action.actionName)
             };
             let newState;
             switch (action.actionName) {
@@ -57,7 +59,7 @@ function reducer(state, action){
                 default:
                     return state;
             }
-            return Object.assign({}, state, segmentProgressData, newState);
+            return Object.assign({}, state, generalData, newState);
         case 'SET_PENDING_FIRST_PLAY':
             return Object.assign({}, state, {pendingFirstPlayClick: action.pendingFirstPlayClick, isPlaying: !action.pendingFirstPlayClick});
         case 'FIRST_PLAY':
@@ -94,6 +96,10 @@ function reducer(state, action){
         default:
             return state;
     }
+}
+
+function shouldShowExtendButton(activeSegment, action){
+    return action !== 'extend' && activeSegment.extend ? true : false;
 }
 
 function calcSegmentProgress(segment, currentTime) {

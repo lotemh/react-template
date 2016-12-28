@@ -41,12 +41,14 @@ class Player {
     }
 
     onReady(callback) {
-        this.getPlayer().onReady(callback);
+        this.getPlayer().onReady(()=>{
+            this.addTimeUpdateEvent();
+            callback();
+        });
     }
 
     pause() {
         this.getPlayer().pause();
-        this.removeTimeUpdateEvent();
     }
 
     play() {
@@ -62,7 +64,6 @@ class Player {
             this.getPlayer().removeEventListener("play", playListener.bind(this));
         }
         this.getPlayer().addEventListener("play", playListener.bind(this));
-        this.addTimeUpdateEvent();
         return this.getPlayer().play();
     }
     show() {
@@ -97,15 +98,16 @@ class Player {
         this.loading = segmentTitle;
         if (src && (!this.getPlayer().getSrc() || this.getPlayer().getSrc() !== src)) {
             this.getPlayer().setSrc(src);
-            return this.load();
-            //todo: add seek
+            return this.load().then(() => this.prepare(src, inTime, segmentTitle));
         }
         this.seek(inTime/1000);
         this.pause();
         this.loadedCallback(segmentTitle);
     }
     seek(timestamp) {
-        this.getPlayer().seek(timestamp);
+        if (this.getCurrentTime() !== timestamp){
+            this.getPlayer().seek(timestamp);
+        }
     }
     getCurrentTime() {
         return this.getPlayer().getCurrentTime();
