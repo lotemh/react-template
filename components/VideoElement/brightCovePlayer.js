@@ -98,6 +98,7 @@ class BrightCovePlayer extends React.Component {
             if (that.state.readyCallback){
                 that.state.readyCallback();
             }
+            that.getControlBar().style.display = "flex";
         });
     }
 
@@ -185,7 +186,7 @@ class BrightCovePlayer extends React.Component {
     render() {
         return (
             <div id={this.props.playerId + "_wrapper"} className={this.getClassName()} ref="touchScreen">
-                { this.state.shouldLoad ? 
+                { this.state.shouldLoad ?
                 <div>
                     <video ref="player"
                             className="player brightcove-player video-js"

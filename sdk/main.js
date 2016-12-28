@@ -2,28 +2,42 @@
  * Created by user on 10/9/2016.
  */
 import './main.css';
-
-if (! window._babelPolyfill) {
-    require("babel-polyfill");
-}
 import 'whatwg-fetch';
-
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import Brightcove from '../components/demoClients/kcetDemo';
-
 import store from '../core/store';
-
-var container = document.querySelector('[data-elastic-media-player]');
-var client;
+if (! window._babelPolyfill) {
+    require("babel-polyfill");
+}
 
 const clientMap = {
     'brightcove': createSdkWithBrightcovePlayer
 };
 
+main();
+
+function main(){
+    if (isBrightcove()){
+        renderBrightcoveClient();
+    } else {
+        getClientByVideoElement();
+    }
+}
+
+function renderBrightcoveClient() {
+    const container = document.querySelector('[data-elastic-media-player]');
+    const client = createSdkCompByAccount(container);
+    renderComponent(client, container);
+}
+
+function isBrightcove(){
+    return !!document.querySelector('[data-elastic-media-player="brightcove"]');
+}
+
 function createSdkWithBrightcovePlayer(){
+    const container = document.querySelector('[data-elastic-media-player]');
     var props = {};
     for (var i=0; i < container.attributes.length; i++){
         var attr = container.attributes[i];
@@ -32,36 +46,30 @@ function createSdkWithBrightcovePlayer(){
     return React.createElement(Brightcove, props);
 }
 
-function getClientByAccount(container) {
+function createSdkCompByAccount(container) {
     var player = container.getAttribute('data-elastic-media-player');
-    return clientMap[player](container);
+    return clientMap[player]();
 }
 
-if (container) {
-    client = getClientByAccount(container);
-} else {
-    client = getClientByVideoElement();
-}
-
-function render(client) {
-    ReactDOM.render(<Provider store={store}>{client}</Provider>, container);
-}
-if (client) {
-    render(client);
-}
-
-// Eliminates the 300ms delay between a physical tap
-// and the firing of a click event on mobile browsers
-// https://github.com/ftlabs/fastclick
-// This broke the ios buttons, so dont put it back unless its fixed
-//FastClick.attach(document.body);
+function renderComponent(client, container){
+    if (client) {
+        render(client, container);
+    }
 
 // Enable Hot Module Replacement (HMR)
-if (module.hot) {
-    render(client);
+    if (module.hot) {
+        render(client, container);
+    }
+}
+
+function render(client, container) {
+    ReactDOM.render(<Provider store={store}>{client}</Provider>, container);
 }
 
 function getClientByVideoElement() {
+    let container = null;
+
+    hideVjsControlsBar();
     var players = document.querySelectorAll("[data-account]");
     let foundClient = false;
     let props = {};
@@ -70,7 +78,7 @@ function getClientByVideoElement() {
             return;
         }
         let brightcovePlayerId = player.getAttribute("data-player");
-        if (brightcovePlayerId !== "V1xBaDVb6l" && brightcovePlayerId !== "default" && brightcovePlayerId !=="S1eJmZOTml" && brightcovePlayerId !== "S1AxOqLme") { 
+        if (brightcovePlayerId !== "V1xBaDVb6l" && brightcovePlayerId !== "default" && brightcovePlayerId !=="S1eJmZOTml" && brightcovePlayerId !== "S1AxOqLme") {
             //TODO replace with desired playerId
             return;
         }
@@ -104,8 +112,15 @@ function getClientByVideoElement() {
         return true;
     });
     if (foundClient) {
-        return React.createElement(Brightcove, props);
-    } else {
-        return null;
+        const sdkClient = React.createElement(Brightcove, props);
+        renderComponent(sdkClient, container);
+    }
+}
+
+function hideVjsControlsBar() {
+    const vjsControlBar = document.querySelector('[data-account="136368194"] .vjs-control-bar');
+    if (vjsControlBar) {
+        vjsControlBar.style.display = 'none';
+        vjsControlBar.classList.add('hide-controls');
     }
 }
