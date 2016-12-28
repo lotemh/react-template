@@ -84,7 +84,11 @@ function reducer(state, action){
             };
             return Object.assign({}, state, segmentData);
         case 'TFX_AUDIO_SET':
-            return Object.assign({}, state, {tfxAudio: 'tfxAudioFadeIn'});
+            if (state.startStatus !== ControlsStartStatus.PENDING) {
+                return Object.assign({}, state, {tfxAudio: 'tfxAudioFadeIn'});
+            } else {
+                return state;
+            }
         case 'TFX_AUDIO_END':
             return Object.assign({}, state, {tfxAudio: null});
         default:
