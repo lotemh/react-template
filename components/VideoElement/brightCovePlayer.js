@@ -25,13 +25,10 @@ class BrightCovePlayer extends React.Component {
     }
 
     componentWillMount(){
-        const script = document.createElement("script");
-        script.src = this.props["data-brightcove-script"];
         if (document.querySelector('#'+this.props.playerId)) {
             this.setState({shouldLoad: false});
         } else {
             this.setState({shouldLoad: true});
-            document.body.appendChild(script);
         }
     }
 
@@ -40,12 +37,15 @@ class BrightCovePlayer extends React.Component {
         this.unsubscribe = this.context.store.subscribe(() => {
             this.forceUpdate();
         });
+        const script = document.createElement("script");
+        script.src = this.props["data-brightcove-script"];
         var playerElement = document.getElementById(this.props.playerId);
         if (this.state.shouldLoad === false) {
             playerElement.classList.add("player", "brightcove-player");
             document.getElementById(this.props.playerId + "_wrapper").appendChild(playerElement);
         } else {
             playerElement.setAttribute("em-player", true);
+            playerElement.parentNode.appendChild(script);
         }
     }
 
@@ -70,8 +70,6 @@ class BrightCovePlayer extends React.Component {
                 setTimeout(this.waitForVideoJs.bind(this, attempt + 1), 200);
             }
         }
-
-
     }
 
     onReady(callback){
@@ -86,12 +84,15 @@ class BrightCovePlayer extends React.Component {
     initPlayer() {
         var that = this;
         let videoElement = this.getPlayerMediaElement();
+        if (!this.state.shouldLoad) {
+            videoElement.setAttribute("crossOrigin", "anonymous");
+            videoElement.setAttribute("src", videoElement.getAttribute("src"));
+        }
         this.player = window.videojs(videoElement.id);
         this.gestureListener = new Hammer(videoElement, {velocity: 0.80});
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.player.ready(function () {
-            videoElement.setAttribute("crossOrigin", "anonymous");
             that.setState({ready: true, src: that.getPlayer().src()});
             that.addControls();
             that.setItemTime();
