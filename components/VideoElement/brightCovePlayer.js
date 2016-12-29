@@ -194,7 +194,7 @@ class BrightCovePlayer extends React.Component {
                     }
                     setTimeout(() => {
                         return reject("NotAllowedError");
-                    }, 100);
+                    }, 1000);
                     this.getPlayer().on('play', gotPlayingEvent.bind(this));
                     this.getPlayer().play();
                 });
@@ -216,10 +216,6 @@ class BrightCovePlayer extends React.Component {
     setSrc(src) {
         if (src !== this.getSrc()) {
             this.src = src;
-            const player = this.getPlayer();
-            player.catalog.getVideo(src, function (error, video) {
-                player.catalog.load(video);
-            });
         }
     }
 
@@ -227,8 +223,18 @@ class BrightCovePlayer extends React.Component {
         return this.src || this.refs.player.getAttribute('data-video-id')
     }
 
-    load() {
-        this.getPlayer().load();
+    load(src) {
+        if (src !== this.getSrc()) {
+            this.src = src;
+        }
+        return new Promise((resolve, reject) => {
+            const player = this.getPlayer();
+            player.catalog.getVideo(this.getSrc(), function (error, video) {
+                player.catalog.load(video);
+                player.on("loadeddata", resolve, {once: true});
+            });
+        });
+
     }
 
     seek(timeInSeconds) {

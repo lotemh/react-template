@@ -7,12 +7,11 @@ class Player {
     constructor(videoPlayer, id, store) {
         this.player = videoPlayer;
         this.store = store;
-        this.loading = null;
         this.id = id;
         this.logger = new Logger();
         if ('AudioContext' in window) {
             this.audioContext = new AudioContext();
-        } else if('webkitAudioContext' in window) {
+        } else if ('webkitAudioContext' in window) {
             this.audioContext = new webkitAudioContext();
         }
         this.audioTfxActive = false;
@@ -41,7 +40,7 @@ class Player {
     }
 
     onReady(callback) {
-        this.getPlayer().onReady(()=>{
+        this.getPlayer().onReady(()=> {
             this.addTimeUpdateEvent();
             callback();
         });
@@ -51,20 +50,29 @@ class Player {
         this.getPlayer().pause();
     }
 
-    play() {
-        const state = this.store.getState();
-        if (state.tfxAudio && !this.audioTfxActive) {
-            this.audioTfxActive = true;
-            this[state.tfxAudio]();
-        }
-
-        function playListener(event) {
-            this.store.dispatch({type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE,
-                isPlaying: true});
+    play(segment) {
+        const src = segment.src;
+        const inTime = segment.in;
+        const store = this.store;
+        function playListener() {
+            store.dispatch({
+                type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE,
+                isPlaying: true
+            });
             this.getPlayer().removeEventListener("play", playListener.bind(this));
         }
         this.getPlayer().addEventListener("play", playListener.bind(this));
-        return this.getPlayer().play();
+
+        if (!this.isReady(src, inTime)){
+            return this.prepareAndPlay(segment);
+        } else {
+            const state = this.store.getState();
+            if (state.tfxAudio && !this.audioTfxActive) {
+                this.audioTfxActive = true;
+                this[state.tfxAudio]();
+            }
+            return this.getPlayer().play();
+        }
     }
     show() {
         this.getPlayer().show();
@@ -72,7 +80,7 @@ class Player {
     hide() {
         this.getPlayer().hide();
     }
-    load() {
+    load(src) {
         const player = this.getPlayer();
         return new Promise((resolve, reject) => {
             let returned = false;
@@ -87,50 +95,57 @@ class Player {
             setTimeout(() => {
                 if (!returned) {
                     player.removeEventListener("loadeddata", gotLoadingEvent.bind(this));
-                    this.loadedCallback();
                     return reject();
                 }
-            }, 100);
-            player.load();
+            }, 1500);
+            player.load(src);
         });
     }
+
     prepare(src, inTime, segmentTitle) {
         this.loading = segmentTitle;
-        if (!this.getPlayer().getSrc() || this.getPlayer().getSrc() !== src) {
-            this.getPlayer().setSrc(src);
-            return this.load().then(() => this.prepare(src, inTime, segmentTitle));
+        if (!this.isReady(src, inTime)){
+            return this.load(src).then(() => {
+                return this.prepare(src, inTime, segmentTitle);
+            }, ()=> {
+                this.seek(inTime / 1000);
+                this.pause();
+                return Promise.reject();
+            });
         }
-        this.seek(inTime/1000);
+        this.seek(inTime / 1000);
         this.pause();
-        this.loadedCallback(segmentTitle);
+        //todo: wait for player to reach seeked timestamp
+        return Promise.resolve();
     }
+
+    prepareAndPlay(segment) {
+        return this.prepare(segment.src, segment.in, segment.title)
+            .then(() => {
+                return this.play(segment);
+            },() => {
+                return this.getPlayer().play()
+            });
+    }
+
     seek(timestamp) {
-        if (this.getCurrentTime() !== timestamp){
+        if (this.getCurrentTime() !== timestamp) {
             this.getPlayer().seek(timestamp);
         }
     }
+
     getCurrentTime() {
         return this.getPlayer().getCurrentTime();
     }
+
     getId() {
         return this.id;
-    }
-    addLoadedDataEvent(listener) {
-        function loadedCallback() {
-            const loadedSegment = this.loading;
-            if (loadedSegment) {
-                this.loading = null;
-                this.pause();
-                listener(loadedSegment, this);
-            }
-        }
-        this.loadedCallback = loadedCallback;
-        this.getPlayer().addLoadedDataEvent(loadedCallback.bind(this));
     }
 
     addTimeUpdateEvent() {
         this.getPlayer().addTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
+
     removeTimeUpdateEvent() {
         this.getPlayer().removeTimeUpdateEvent(this.timeUpdatedListener.bind(this));
     }
@@ -149,7 +164,7 @@ class Player {
     }
 
     tfxAudioFadeIn() {
-        const audioCtx = this.getAudioContext()
+        const audioCtx = this.getAudioContext();
         if (!audioCtx) {
             return;
         }
@@ -170,6 +185,15 @@ class Player {
             this.audioTfxActive = false;
             this.store.dispatch({type: 'TFX_AUDIO_END'});
         }, fadeTimeMs);
+    }
+
+    /*******************  private methods  ***************************/
+
+    isReady(src, inTime) {
+        return this.getPlayer().getSrc() &&
+            this.getPlayer().getSrc() === src &&
+            this.getCurrentTime() === inTime &&
+            this.getPlayer().getPlayer().buffered().end(0) > 0;
     }
 }
 
