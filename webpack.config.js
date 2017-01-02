@@ -47,7 +47,8 @@ for (let e in environments) {
   }
 }
 
-env = env || (isDebug ? environments.local : environments.prod);
+
+env = env || (isDebug ? "local" : "prod");
 const envConfig = environments[env];
 
 
