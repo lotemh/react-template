@@ -1,5 +1,6 @@
 import Logger from '../Logger/Logger';
 import SegmentManager from './SegmentManager';
+import AnalyticsReporter from './AnalyticsReporter';
 import PlaybackController from '../playbackController/playbackController';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
 
@@ -13,6 +14,7 @@ class StateMachine {
         this.store = store;
         this.playbackController = new PlaybackController(this.store);
         this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
+        this.analyticsReporter = new AnalyticsReporter(this.store);
     }
 
     /** **  public APi ****/
@@ -84,6 +86,7 @@ class StateMachine {
             itemTimeMs: followingSegment.in,
             activeSegment: followingSegment,
         });
+        this.analyticsReporter.reportAction(action);
         this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
