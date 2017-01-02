@@ -22,11 +22,34 @@ const isDebug = global.DEBUG === false ? false : !process.argv.includes('--relea
 const isRelease = process.argv.includes('--release');
 const isVerbose = process.argv.includes('--verbose') || process.argv.includes('-v');
 const useHMR = !!global.HMR; // Hot Module Replacement (HMR)
-const publicPath = (isRelease ? `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/` : '/sdk/');
 const babelConfig = Object.assign({}, pkg.babel, {
     babelrc: false,
     cacheDirectory: useHMR,
 });
+
+const environments = {
+  dev: {
+    publicPath: `https://cdn-dev.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
+  },
+  prod: {
+    publicPath: `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
+  },
+  local: {
+    publicPath: `/sdk/`
+  },
+};
+
+let env;
+for (let e in environments) {
+  if (process.argv.includes(`--${e}`)) {
+    env = e;
+    break;
+  }
+}
+
+env = env || (isDebug ? environments.local : environments.prod);
+const envConfig = environments[env];
+
 
 // Webpack configuration (main.js => public/dist/main.{hash}.js)
 // http://webpack.github.io/docs/configuration.html
@@ -44,7 +67,7 @@ const config = {
     // Options affecting the output of the compilation
     output: {
         path: path.resolve(__dirname, './dist/sdk'),
-        publicPath: publicPath,
+        publicPath: envConfig.publicPath,
         filename: isDebug ? '[name].js?[hash]' : '[name].js',
         chunkFilename: isDebug ? '[id].js?[chunkhash]' : '[id].[chunkhash].js',
     },
@@ -269,8 +292,8 @@ const demo = {
     },
 
     sdk: {
-        js: `${publicPath}elasticprogram-sdk.js`,
-        css: `${publicPath}elasticprogram-sdk.css`,
+        js: `${envConfig.publicPath}elasticprogram-sdk.js`,
+        css: `${envConfig.publicPath}elasticprogram-sdk.css`,
     },
 }
 
