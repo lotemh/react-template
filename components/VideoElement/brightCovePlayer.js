@@ -280,7 +280,6 @@ class BrightCovePlayer extends React.Component {
 
 BrightCovePlayer.propTypes = {
     src: PropTypes.string,
-    className: PropTypes.string,
     account: PropTypes.string
 };
 
