@@ -28,23 +28,23 @@ const babelConfig = Object.assign({}, pkg.babel, {
 });
 
 const environments = {
-  dev: {
-    publicPath: `https://cdn-dev.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
-  },
-  prod: {
-    publicPath: `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
-  },
-  local: {
-    publicPath: `/sdk/`
-  },
+    dev: {
+        publicPath: `https://cdn-dev.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
+    },
+    prod: {
+        publicPath: `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
+    },
+    local: {
+        publicPath: `/sdk/`
+    },
 };
 
 let env;
 for (let e in environments) {
-  if (process.argv.includes(`--${e}`)) {
-    env = e;
-    break;
-  }
+    if (process.argv.includes(`--${e}`)) {
+        env = e;
+        break;
+    }
 }
 
 
