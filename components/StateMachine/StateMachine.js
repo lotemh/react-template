@@ -81,12 +81,12 @@ class StateMachine {
             this.playbackController.pause();
             return;
         }
+        this.analyticsReporter.reportAction(action);
         this.updateView({
             itemNum: SegmentManager.getItemNum(followingSegment.title),
             itemTimeMs: followingSegment.in,
             activeSegment: followingSegment,
         });
-        this.analyticsReporter.reportAction(action);
         this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
@@ -125,6 +125,7 @@ class StateMachine {
     extendItem(activeSegment) {
         let itemLength;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction('extend');
+        this.analyticsReporter.reportAction('extend');
         if (followingSegment){
             const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
             this.segmentsManager.setActive(extendedSegment);
