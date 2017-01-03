@@ -1,5 +1,7 @@
 import { expect } from 'chai';
 import Player from '../components/VideoElement/Player';
+import Mocks from './mocks';
+import ControlsStartStatus from '../components/Controls/ControlsStartStatus';
 
 describe('Player suite', () => {
 
@@ -22,5 +24,18 @@ describe('Player suite', () => {
         expect(player).to.have.property('addTimeUpdateEvent');
         expect(player).to.have.property('removeTimeUpdateEvent');
         expect(player).to.have.property('getId');
+    });
+
+    describe('play', () => {
+        it('should reject promise if play event is not triggered in 1000 ms', (done) => {
+            const customStore = Mocks.getStore({startStatus: ControlsStartStatus.ACTIVE});
+            const player = Mocks.getBrightcovePlayer({}, customStore);
+            const segment = Mocks.getDefaultSegment();
+
+            player.play(segment).catch((e)=> {
+                expect(e).to.equal("NotAllowedError");
+                done();
+            });
+        });
     });
 });
