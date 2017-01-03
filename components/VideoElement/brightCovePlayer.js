@@ -19,14 +19,17 @@ class BrightCovePlayer extends React.Component {
         super(props);
         this.state = {
             src: this.props["data-video-id"] || null,
+            shouldLoad: false,
             isHidden: true
         };
     }
 
     componentWillMount(){
-        const script = document.createElement("script");
-        script.src = this.props["data-brightcove-script"];
-        document.body.appendChild(script);
+        if (document.querySelector('#'+this.props.playerId)) {
+            this.setState({shouldLoad: false});
+        } else {
+            this.setState({shouldLoad: true});
+        }
     }
 
     componentDidMount(){
@@ -34,6 +37,16 @@ class BrightCovePlayer extends React.Component {
         this.unsubscribe = this.context.store.subscribe(() => {
             this.forceUpdate();
         });
+        const script = document.createElement("script");
+        script.src = this.props["data-brightcove-script"];
+        var playerElement = document.getElementById(this.props.playerId);
+        if (this.state.shouldLoad === false) {
+            playerElement.classList.add("player", "brightcove-player");
+            document.getElementById(this.props.playerId + "_wrapper").appendChild(playerElement);
+        } else {
+            playerElement.setAttribute("em-player", true);
+            playerElement.parentNode.appendChild(script);
+        }
     }
 
     componentWillUnmount(){
@@ -46,11 +59,16 @@ class BrightCovePlayer extends React.Component {
     swipeRight(){
         this.props.eventHandler('previous');
     }
-    waitForVideoJs() {
-        if (window.videojs) {
+    waitForVideoJs(attempt) {
+        if (!attempt) {
+            attempt = 1;
+        }
+        try {
             this.initPlayer();
-        } else {
-            setTimeout(this.waitForVideoJs.bind(this), 500);
+        } catch (e) {
+            if (attempt < 10) {
+                setTimeout(this.waitForVideoJs.bind(this, attempt + 1), 200);
+            }
         }
     }
 
@@ -65,9 +83,13 @@ class BrightCovePlayer extends React.Component {
 
     initPlayer() {
         var that = this;
-        this.videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0];
-        this.player = window.videojs(this.videoElement.id);
-        this.gestureListener = new Hammer(this.videoElement, {velocity: 0.80});
+        let videoElement = this.getPlayerMediaElement();
+        if (!this.state.shouldLoad) {
+            videoElement.setAttribute("crossOrigin", "anonymous");
+            videoElement.setAttribute("src", videoElement.getAttribute("src"));
+        }
+        this.player = window.videojs(videoElement.id);
+        this.gestureListener = new Hammer(videoElement, {velocity: 0.80});
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
         this.player.ready(function () {
@@ -77,6 +99,7 @@ class BrightCovePlayer extends React.Component {
             if (that.state.readyCallback){
                 that.state.readyCallback();
             }
+            that.getControlBar().style.display = "flex";
         });
     }
 
@@ -97,11 +120,14 @@ class BrightCovePlayer extends React.Component {
     }
 
     getPlayerMediaElement() {
+        if (!this.videoElement) {
+            this.videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0]
+        }
         return this.videoElement;
     }
 
     getVideoProps(){
-        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler",
+        const INVALID_VIDEO_PROPS = ["class", "playerId", "contentUrl", "eventHandler", "episodeId", "publisherId", "originalPlayerId",
             "style", "data-brightcove-script", "data-elastic-media-account"];
         var videoProps = Object.assign({}, this.props);
         INVALID_VIDEO_PROPS.forEach((attr) => {
@@ -160,17 +186,21 @@ class BrightCovePlayer extends React.Component {
 
     render() {
         return (
-            <div className={this.getClassName()}  ref="touchScreen">
-                <video ref="player"
-                       className="player brightcove-player"
-                       id={this.props.playerId}
-                       playsInline
-                       data-embed="default"
-                       data-application-id
-                       crossOrigin="anonymous"
-                       preload="metadata"
-                    {...this.getVideoProps()}>
-                </video>
+            <div id={this.props.playerId + "_wrapper"} className={this.getClassName()} ref="touchScreen">
+                { this.state.shouldLoad ?
+                <div>
+                    <video ref="player"
+                            className="player brightcove-player video-js"
+                            id={this.props.playerId}
+                            playsInline
+                            data-embed="default"
+                            data-application-id
+                            crossOrigin="anonymous"
+                            preload="metadata"
+                        {...this.getVideoProps()}>
+                    </video>
+                </div>
+                : null}
             </div>
         );
     }
@@ -220,7 +250,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     getSrc() {
-        return this.src || this.refs.player.getAttribute('data-video-id')
+        return this.src || this.getPlayerMediaElement().getAttribute('data-video-id')
     }
 
     load(src) {

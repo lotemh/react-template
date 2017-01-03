@@ -9,21 +9,25 @@ const numOfPlayers = 2;
 
 const Brightcove = React.createClass({
     propTypes: {
-        contentUrl: PropTypes.string,
-        'data-elastic-media-account': PropTypes.string.isRequired,
         'data-video-id': PropTypes.string.isRequired
     },
     render() {
         const players = new Array(numOfPlayers).fill(0);
         return (
             <div id="elasticPlayer">
-                <ElasticMediaController contentUrl={this.props["data-video-id"]}
-                                 publisherId={this.props['data-elastic-media-account']}
-                                 episodeId={this.props['data-video-id']}>
+                <ElasticMediaController 
+                        publisherId={this.props.publisherId}
+                        episodeId={this.props["data-video-id"]}>
                     {
                         players.map((elm, i) => {
+                            let id;
+                            if (i === players.length - 1 && this.props["originalPlayerId"]) {
+                                id =  this.props["originalPlayerId"];
+                            } else {
+                                id = "player" + i;
+                            }
                             return (
-                                <BrightCovePlayer key={`player${i}`} playerId={`player${i}`} {...this.props}/>
+                                <BrightCovePlayer key={`player${i}`} playerId={id} {...this.props}/>
                             );
                         })
                     }
