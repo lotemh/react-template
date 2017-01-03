@@ -12,7 +12,7 @@ const ElasticMediaSdk = React.createClass({
     componentWillMount() {
         const {store} = this.context;
         this.context.store.dispatch({
-            type: 'SET_DATA', 
+            type: 'SET_DATA',
             programId: this.props.metadata.programId,
             publisherId: this.props.publisherId,
             episodeId: this.props.episodeId,

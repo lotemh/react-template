@@ -80,7 +80,7 @@ class AnalyticsReporter {
                     }
                 }
             };
-            xmlhttp.open("POST", "http://analytics-dev.elasticmedia.io/em/v2/report", true);
+            xmlhttp.open("POST", ANALYTICS_BASE_URL + "report", true);
             xmlhttp.setRequestHeader("Content-Type", "application/json");
             xmlhttp.send(JSON.stringify(toSendObj));
         }
