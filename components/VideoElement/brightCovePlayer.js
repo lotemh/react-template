@@ -254,9 +254,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     load(src) {
-        if (src !== this.getSrc()) {
-            this.src = src;
-        }
+        this.setSrc(src);
         return new Promise((resolve, reject) => {
             const player = this.getPlayer();
             player.catalog.getVideo(this.getSrc(), function (error, video) {
