@@ -84,7 +84,6 @@ function getClientByVideoElement() {
         if (brightcovePlayerId !== "r1hasDFSe" &&
             brightcovePlayerId !=="S1eJmZOTml" &&
             brightcovePlayerId !== "S1AxOqLme") {
-            //TODO replace with desired playerId
             return;
         }
         if (!player.getAttribute("em-player")) {
