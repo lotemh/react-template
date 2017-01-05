@@ -52,6 +52,7 @@ class Player {
     }
 
     play() {
+        console.log("in the big player play!!!");
         const state = this.store.getState();
         if (state.tfxAudio && !this.audioTfxActive) {
             this.audioTfxActive = true;

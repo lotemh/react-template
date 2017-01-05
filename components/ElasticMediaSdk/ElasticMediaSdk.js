@@ -22,7 +22,9 @@ const ElasticMediaSdk = React.createClass({
         if (this.props.metadata.programId) {
             this.context.store.dispatch({type: 'SET_DATA', programId: this.props.metadata.programId});
         }
+        console.log("waitForPlayersReady!!!!!");
         waitForPlayersReady.then(()=> {
+            console.log("state machine start!!!!!");
             stateMachine.start();
         });
     },

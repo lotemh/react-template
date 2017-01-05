@@ -3,21 +3,31 @@
  */
 import React, { PropTypes } from 'react';
 import VideoElement from '../VideoElement/VideoElement';
-import ElasticMediaSdk from '../ElasticMediaSdk/ElasticMediaSdk';
+import ElasticMediaController from '../ElasticMediaSdk/ElasticMediaController';
+
+const numOfPlayers = 2;
 
 const Html5Demo = React.createClass({
+    propTypes: {
+        'data-video-url': PropTypes.string.isRequired
+    },
     render() {
-        const players = new Array(this.props.numOfPlayers).fill(0);
+        const players = new Array(numOfPlayers).fill(0);
         return (
-            <ElasticMediaSdk>
-                {
-                    players.map((elm, i) => {
-                        return (
-                            <VideoElement key={`player${i}`} playerId={`player${i}`} />
-                        );
-                    })
-                }
-            </ElasticMediaSdk>
+            <div id="elasticPlayer">
+                <ElasticMediaController 
+                        publisherId={this.props.publisherId}
+                        episodeId={this.props["data-video-id"]}>
+                    {
+                        players.map((elm, i) => {
+                            let id;
+                            return (
+                                <VideoElement key={`player${i}`} playerId={`player${i}`} {...this.props}/>
+                            );
+                        })
+                    }
+                </ElasticMediaController>
+            </div>
         );
     }
 });

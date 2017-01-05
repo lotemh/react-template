@@ -19,9 +19,11 @@ class PlaybackController {
         var id = 0;
         var promises = [];
         const players = videoElements.map(p => new Player(p, "player" + id++, this.store));
+        console.log("in createPlayers");
         players.forEach(player => {
             promises.push(new Promise((resolve, reject) => {
                 player.onReady(()=> {
+                    console.log("in player.onReady");
                     player.setTimeUpdateCallback(this.playerUpdate.bind(this));
                     player.addLoadedDataEvent(this.onDataLoaded.bind(this));
                     return resolve();

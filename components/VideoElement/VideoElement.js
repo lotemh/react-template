@@ -5,6 +5,7 @@ class VideoElement extends React.Component {
 
     constructor(props) {
         super(props);
+        console.log("in video element constructor with props", props);
         this.state = {
             isHidden: true,
         };
@@ -20,12 +21,34 @@ class VideoElement extends React.Component {
         return ReactDOM.findDOMNode(this);
     }
 
+    componentDidMount(){
+        console.log("in player itself componentDidMount");
+        this.setState({ready: true});
+    }
+
+    onReady(callback, attempt){
+        console.log("in player itself .onReady", this.state);
+        console.log("attempt is", attempt);
+        if (this.state.ready === true){
+            console.log("in player itself .onReady true");
+            callback();
+        } else if (attempt < 10) {
+            console.log("in player itself .onReady else");
+            if (!attempt) {
+                attempt = 1;
+            }
+            setTimeout(this.onReady.bind(this, callback, attempt), 50);
+        } else {
+            console.log("in player itself .onReady super else!!!!!!!!!!!!!!!!!!");
+            callback();
+        }
+    }
+
     render() {
         return (
-            <video ref={'video'}
+            <video ref='video'
                    className={this.getClassName()}
-                   webkit-playsinline
-                   playsinline
+                   playsInline
                    preload="none"
             >
                 <source type="video/mp4" ref="source" src={this.props.src} />
@@ -40,6 +63,7 @@ class VideoElement extends React.Component {
     }
 
     play() {
+        console.log("in player play!!");
         return new Promise((resolve, reject) => {
             this.getPlayer().play().then(resolve, (error) => {
                 console.log(`can't play video ${error}`);
@@ -59,6 +83,13 @@ class VideoElement extends React.Component {
     setSrc(src) {
         this.refs.source.setAttribute('src', src);
     }
+    getSrc() {
+        return this.refs.source.getAttribute('src');
+    }
+    getPlayerMediaElement() {
+        return this.refs.video;
+        //this.videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0]
+    }
 
     load() {
         this.getPlayer().load();
@@ -75,15 +106,20 @@ class VideoElement extends React.Component {
     addLoadedDataEvent(listener) {
         this.getPlayer().addEventListener('canplay', listener);
     }
-
+    
     addTimeUpdateEvent(listener) {
         this.getPlayer().addEventListener('timeupdate', listener);
     }
-
     removeTimeUpdateEvent(listener) {
         this.getPlayer().removeEventListener('timeupdate', listener);
     }
 
+    removeEventListener(event, listener) {
+        this.getPlayer().removeEventListener(event, listener);
+    }
+    addEventListener(event, listener) {
+        this.getPlayer().addEventListener(event, listener);
+    }
 }
 
 VideoElement.propTypes = {

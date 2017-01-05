@@ -1,6 +1,6 @@
 import React, {PropTypes} from "react";
 import ElasticMediaSdk from "./ElasticMediaSdk";
-import Controls from "../Controls/BrightcoveControls";
+import Controls from "../Controls/Controls";
 
 const ElasticMediaController = React.createClass({
     propTypes: {
@@ -12,6 +12,7 @@ const ElasticMediaController = React.createClass({
         store: React.PropTypes.object
     },
     componentWillMount() {
+        console.log("in ElasticMediaController with props", this.props);
         let metadata,
             that = this;
         this.state = this.calcWidthAndHeight();

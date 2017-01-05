@@ -7,6 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import Brightcove from '../components/demoClients/kcetDemo';
+import HTML5 from '../components/demoClients/html5Demo';
 import store from '../core/store';
 if (! window._babelPolyfill) {
     require("babel-polyfill");
@@ -21,6 +22,8 @@ main();
 function main(){
     if (isBrightcove()){
         renderBrightcoveClient();
+    } else if (isHTML5()){
+        renderHTML5Client();
     } else {
         getClientByVideoElement();
     }
@@ -34,6 +37,22 @@ function renderBrightcoveClient() {
 
 function isBrightcove(){
     return !!document.querySelector('[data-elastic-media-player="brightcove"]');
+}
+function isHTML5(){
+    return !!document.querySelector('[data-elastic-media-player="html5"]');
+}
+
+function renderHTML5Client() {
+    const container = document.querySelector('[data-elastic-media-player="html5"]');
+    var props = {};
+    for (var i=0; i < container.attributes.length; i++){
+        var attr = container.attributes[i];
+        props[attr.nodeName] = attr.nodeValue;
+    }
+    props["publisherId"] = props["data-elastic-media-account"];
+    props["src"] = props["data-video-url"];
+    const client = React.createElement(HTML5, props);
+    renderComponent(client, container);
 }
 
 function createSdkWithBrightcovePlayer(){
