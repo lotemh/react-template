@@ -175,6 +175,17 @@ class BrightCovePlayer extends React.Component {
         }
         store.subscribe(render);
         render();
+
+        var fullScreenControl = document.querySelector('#'+this.props.playerId + ' .vjs-fullscreen-control');
+
+        if (fullScreenControl) {
+            var newFullScreenControl = fullScreenControl.cloneNode(true);
+            fullScreenControl.parentNode.replaceChild(newFullScreenControl, fullScreenControl);
+            newFullScreenControl.addEventListener("click", function(event){
+                store.dispatch({type: 'TOGGLE_FULLSCREEN'});
+            });
+        }
+
     }
 
     getControlBar(){

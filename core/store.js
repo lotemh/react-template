@@ -14,6 +14,7 @@ const defaultState = {
     startStatus: ControlsStartStatus.PENDING,
     inExtend: false,
     isPlaying: false,
+    isFullscreen: false,
     shouldShowExtendBtn: false,
 
     numOfItems: 0,
@@ -68,6 +69,8 @@ function reducer(state, action){
             return Object.assign({}, state, {isPlaying: true, pendingFirstPlayClick: false});
         case 'TOGGLE_PLAY':
             return Object.assign({}, state, {isPlaying: !state.isPlaying});
+        case 'TOGGLE_FULLSCREEN':
+            return Object.assign({}, state, {isFullscreen: !state.isFullscreen});
         case  'SET_DATA':
             var data = Object.assign({}, action);
             delete data.type;

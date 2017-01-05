@@ -38,6 +38,9 @@ const ElasticMediaController = React.createClass({
 
     componentDidMount() {
         window.addEventListener('resize', this.handleResize);
+        this.unsubscribe = this.context.store.subscribe(() => {
+            this.forceUpdate();
+        })
     },
     calcWidthAndHeight() {
         let result = {
@@ -69,11 +72,18 @@ const ElasticMediaController = React.createClass({
     eventHandler(event, props){
         this.refs.sdk.eventHandler(event, props);
     },
+    getClassName() {
+        if (this.context.store.getState().isFullscreen){
+            return 'player-container-full-screen';
+        } else {
+            return 'player-container';
+        }
+    },
     render() {
         return (
             <div>
                 { this.state.metadata ?
-                <div className="player-container" style={this.state}>
+                <div className={this.getClassName()} style={this.state}>
                     <ElasticMediaSdk ref="sdk"
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}
