@@ -1,6 +1,8 @@
 import React, {PropTypes} from "react";
+import ReactDOM from 'react-dom';
 import ElasticMediaSdk from "./ElasticMediaSdk";
 import Controls from "../Controls/BrightcoveControls";
+const screenfull = require('screenfull');
 
 const ElasticMediaController = React.createClass({
     propTypes: {
@@ -42,6 +44,16 @@ const ElasticMediaController = React.createClass({
             this.forceUpdate();
         })
     },
+    componentDidUpdate() {
+        let screen = ReactDOM.findDOMNode(this.refs.playerContainer);
+        if (screenfull.enabled && 
+            ((!screenfull.isFullscreen && this.context.store.getState().isFullscreen) || 
+            (screenfull.isFullscreen && !this.context.store.getState().isFullscreen))) {
+            console.log("should toggle full screen");
+            console.log("requesting full screen");
+            screenfull.toggle(screen);
+        }
+    },
     calcWidthAndHeight() {
         let result = {
                 width: window.innerWidth,
@@ -72,18 +84,11 @@ const ElasticMediaController = React.createClass({
     eventHandler(event, props){
         this.refs.sdk.eventHandler(event, props);
     },
-    getClassName() {
-        if (this.context.store.getState().isFullscreen){
-            return 'player-container-full-screen';
-        } else {
-            return 'player-container';
-        }
-    },
     render() {
         return (
             <div>
                 { this.state.metadata ?
-                <div className={this.getClassName()} style={this.state}>
+                <div className='player-container' style={this.state} ref="playerContainer">
                     <ElasticMediaSdk ref="sdk"
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}

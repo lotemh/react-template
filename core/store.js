@@ -9,6 +9,7 @@
  */
 import ControlsStartStatus from '../components/Controls/ControlsStartStatus';
 import { createStore } from 'redux';
+const screenfull = require('screenfull');
 
 const defaultState = {
     startStatus: ControlsStartStatus.PENDING,
@@ -70,7 +71,7 @@ function reducer(state, action){
         case 'TOGGLE_PLAY':
             return Object.assign({}, state, {isPlaying: !state.isPlaying});
         case 'TOGGLE_FULLSCREEN':
-            return Object.assign({}, state, {isFullscreen: !state.isFullscreen});
+            return Object.assign({}, state, {isFullscreen: !getFullScreenMode()});
         case  'SET_DATA':
             var data = Object.assign({}, action);
             delete data.type;
@@ -125,6 +126,17 @@ function getTfx(programId){
         'e603fdcf-fab1-4b67-8dc6-90bf82c35d58': 'STUDIO_A'
     };
     return tfxMap[programId] || 'NO_TFX';
+}
+
+function getFullScreenMode() {
+    alert(screenfull.enabled);
+    if (!screenfull.enabled) {
+        return false;
+    } else if (screenfull.isFullscreen) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // Centralized application state
