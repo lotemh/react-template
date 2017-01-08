@@ -17,6 +17,7 @@ const Html5Demo = React.createClass({
             <div id="elasticPlayer">
                 <ElasticMediaController 
                         publisherId={this.props.publisherId}
+                        html5={true}
                         episodeId={this.props["data-video-id"]}>
                     {
                         players.map((elm, i) => {
