@@ -47,9 +47,10 @@ class VideoElement extends React.Component {
     render() {
         return (
             <video ref='video'
-                   className={this.getClassName()}
-                   playsInline
-                   preload="none"
+                className={this.getClassName()}
+                playsInline
+                crossOrigin="anonymous"
+                preload="none"
             >
                 <source type="video/mp4" ref="source" src={this.props.src} />
             </video>

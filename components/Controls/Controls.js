@@ -19,7 +19,7 @@ const Controls = React.createClass({
     },
     componentDidMount() {
         this.unsubscribe = this.context.store.subscribe(() => {
-            this.render();
+            this.forceUpdate();
         })
         this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
@@ -40,10 +40,8 @@ const Controls = React.createClass({
         if (name === 'play') {
             className += ' play';
             className += this.context.store.getState().isPlaying ? ' hidden' : '';
-            console.log("play gets", className);
         } else if (name === 'pause') {
             className += !this.context.store.getState().isPlaying ? ' hidden' : '';
-            console.log("pause gets", className);
         }
         return className;
     },
@@ -62,12 +60,9 @@ const Controls = React.createClass({
         return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
     },
     getControlsClassName() {
-        console.log("in getControlsClassName with startStatus", this.context.store.getState().startStatus);
         if (this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE){
-            console.log("return hidden");
             return 'hidden';
         }
-        console.log("not!!!!!!!!!!!!");
         let className = 'controls';
         if (this.state && this.state.teClass){
             className += ' ' + this.state.teClass;
@@ -93,7 +88,6 @@ const Controls = React.createClass({
     },
     render(){
         let state = this.context.store.getState();
-        console.log("in render with state", state.isPlaying);
         let timeElement = (state.inExtend) ?
             <SeekBar
                 ref='seekBar'
@@ -103,6 +97,7 @@ const Controls = React.createClass({
                 seekListener={this.seekListener}
             /> :
             <Dots
+                isVisible={true}
                 itemNum={state.itemNum}
                 numOfItems={state.numOfItems}
             />;
@@ -111,13 +106,13 @@ const Controls = React.createClass({
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
                     <img src={require("../../sdk/images/play.png")} className="bigPlay"/>
                 </div>
-                <div className="controls">
+                <div className={this.getControlsClassName()}>
                     <div className="controlsTouchScreen" ref="touchScreen"></div>
                     <Extend isVisible={!state.inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
                     {state.isPlaying ? 
-                        <img src={require("../../sdk/images/play.png")} className='controller play' id="play" onClick={this.togglePlay}/>
-                    :
                         <img src={require("../../sdk/images/pause.png")} className='controller pause' id="pause" onClick={this.togglePlay}/>
+                    :
+                        <img src={require("../../sdk/images/play.png")} className='controller play' id="play" onClick={this.togglePlay}/>
                     }
                     {timeElement}
                 </div>

@@ -29,7 +29,6 @@ const defaultState = {
 };
 
 function reducer(state, action){
-    console.log("state was", state);
     // TODO: Add action handlers (aka "reduces")
     switch (action.type) {
         case 'EVENT_HANDLER':
