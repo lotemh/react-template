@@ -105,7 +105,6 @@ class StateMachine {
     }
 
     pause() {
-        console.log("in playbackController pause");
         this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'pause'});
         this.playbackController.pause();
     }

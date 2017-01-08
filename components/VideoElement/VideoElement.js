@@ -5,7 +5,6 @@ class VideoElement extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log("in video element constructor with props", props);
         this.state = {
             isHidden: true,
         };
@@ -22,24 +21,18 @@ class VideoElement extends React.Component {
     }
 
     componentDidMount(){
-        console.log("in player itself componentDidMount");
         this.setState({ready: true});
     }
 
     onReady(callback, attempt){
-        console.log("in player itself .onReady", this.state);
-        console.log("attempt is", attempt);
         if (this.state.ready === true){
-            console.log("in player itself .onReady true");
             callback();
         } else if (attempt < 10) {
-            console.log("in player itself .onReady else");
             if (!attempt) {
                 attempt = 1;
             }
             setTimeout(this.onReady.bind(this, callback, attempt), 50);
         } else {
-            console.log("in player itself .onReady super else!!!!!!!!!!!!!!!!!!");
             callback();
         }
     }
@@ -64,10 +57,8 @@ class VideoElement extends React.Component {
     }
 
     play() {
-        console.log("in player play!!");
         return new Promise((resolve, reject) => {
             this.getPlayer().play().then(resolve, (error) => {
-                console.log(`can't play video ${error}`);
                 reject();
             });
         });

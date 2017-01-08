@@ -12,7 +12,6 @@ const ElasticMediaController = React.createClass({
         store: React.PropTypes.object
     },
     componentWillMount() {
-        console.log("in ElasticMediaController with props", this.props);
         let metadata,
             that = this;
         this.state = this.calcWidthAndHeight();
