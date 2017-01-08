@@ -179,7 +179,7 @@ button:active {
     position: absolute;
 }
 
-.seekBar {
+.emSeekBar {
     color: white;
     pointer-events:auto;
     font-family: Arial, serif;
@@ -193,6 +193,35 @@ button:active {
     height: 10px;
 }
 
+.emSeekBar input[type=range] {
+    -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+    width: 100%; /* Specific width is required for Firefox. */
+    background: transparent; /* Otherwise white in Chrome */
+}
+.emSeekBar input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+}
+
+.emSeekBar input[type=range]:focus {
+    outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+}
+
+.emSeekBar input[type=range]::-webkit-slider-runnable-track {
+    height: 2px;
+    background: white;
+    border: none;
+    border-radius: 1px;
+}
+
+.emSeekBar input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: white;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: #339EFF;
+    margin-top: -4.5px;
+}  
 .brightcoveSeekBar {
     display: flex;
 }
