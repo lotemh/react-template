@@ -81,8 +81,9 @@ function getClientByVideoElement() {
             return;
         }
         let brightcovePlayerId = player.getAttribute("data-player");
-        if (brightcovePlayerId !== "V1xBaDVb6l" && brightcovePlayerId !== "default" && brightcovePlayerId !=="S1eJmZOTml" && brightcovePlayerId !== "S1AxOqLme") {
-            //TODO replace with desired playerId
+        if (brightcovePlayerId !== "r1hasDFSe" &&
+            brightcovePlayerId !=="S1eJmZOTml" &&
+            brightcovePlayerId !== "S1AxOqLme") {
             return;
         }
         if (!player.getAttribute("em-player")) {
