@@ -95,7 +95,6 @@ function hideVjsControlsBar(id) {
     const vjsControlBar = document.querySelector('#' + id +' .vjs-control-bar');
     if (vjsControlBar) {
         vjsControlBar.style.display = 'none';
-        vjsControlBar.classList.add('hide-controls');
     }
 }
 
