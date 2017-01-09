@@ -20,6 +20,9 @@ const ElasticMediaController = React.createClass({
             if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
                 if (xmlhttp.status == 200) {
                     console.log("got metadata!");
+                    if (that.props["originalPlayerId"]) {
+                        hideVjsControlsBar(that.props["originalPlayerId"]);
+                    }
                     try {
                         metadata = JSON.parse(xmlhttp.responseText);
                         that.setState({metadata: metadata});
@@ -87,5 +90,13 @@ const ElasticMediaController = React.createClass({
         );
     }
 });
+
+function hideVjsControlsBar(id) {
+    const vjsControlBar = document.querySelector('#' + id +' .vjs-control-bar');
+    if (vjsControlBar) {
+        vjsControlBar.style.display = 'none';
+        vjsControlBar.classList.add('hide-controls');
+    }
+}
 
 export default ElasticMediaController;

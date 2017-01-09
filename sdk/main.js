@@ -72,7 +72,6 @@ function getClientByVideoElement() {
     }
     let container = null;
 
-    hideVjsControlsBar();
     var players = document.currentScript.parentNode.querySelectorAll("[data-account]");
     let foundClient = false;
     let props = {};
@@ -121,10 +120,4 @@ function getClientByVideoElement() {
     }
 }
 
-function hideVjsControlsBar() {
-    const vjsControlBar = document.querySelector('[data-account="136368194"] .vjs-control-bar');
-    if (vjsControlBar) {
-        vjsControlBar.style.display = 'none';
-        vjsControlBar.classList.add('hide-controls');
-    }
-}
+
