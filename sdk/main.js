@@ -14,7 +14,7 @@ if (! window._babelPolyfill) {
 }
 
 const clientMap = {
-    'brightcove': renderSdkWithBrightcovePlayer,
+    'brightcove': renderBrightcoveClient,
     'html5': renderHTML5Client
 
 };
@@ -27,7 +27,7 @@ function main(){
         var player = container.getAttribute('data-elastic-media-player');
         return clientMap[player](container);
     } else {
-        getClientByVideoElement();
+        renderPlugin();
     }
 }
 
@@ -43,7 +43,7 @@ function renderHTML5Client(container) {
     renderComponent(client, container);
 }
 
-function renderSdkWithBrightcovePlayer(container){
+function renderBrightcoveClient(container){
     var props = {};
     for (var i=0; i < container.attributes.length; i++){
         var attr = container.attributes[i];
@@ -69,7 +69,7 @@ function render(client, container) {
     ReactDOM.render(<Provider store={store}>{client}</Provider>, container);
 }
 
-function getClientByVideoElement() {
+function renderPlugin() {
     if (!document.currentScript || !document.currentScript.parentNode) {
         return;
     }
