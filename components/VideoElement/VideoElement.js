@@ -20,21 +20,8 @@ class VideoElement extends React.Component {
         return ReactDOM.findDOMNode(this);
     }
 
-    componentDidMount(){
-        this.setState({ready: true});
-    }
-
-    onReady(callback, attempt){
-        if (this.state.ready === true){
-            callback();
-        } else if (attempt < 10) {
-            if (!attempt) {
-                attempt = 1;
-            }
-            setTimeout(this.onReady.bind(this, callback, attempt), 50);
-        } else {
-            callback();
-        }
+    onReady(callback){
+        callback();
     }
 
     render() {
@@ -80,7 +67,6 @@ class VideoElement extends React.Component {
     }
     getPlayerMediaElement() {
         return this.refs.video;
-        //this.videoElement = document.getElementById(this.props.playerId).getElementsByTagName('video')[0]
     }
 
     load() {
