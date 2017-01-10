@@ -3,10 +3,6 @@
     position: absolute;
 }
 
-.player-container-full-screen {
-    position: fixed;
-}
-
 .player-wrapper {
     width: 100%;
     height: 100%;
