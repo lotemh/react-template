@@ -1,4 +1,3 @@
-import Logger from '../Logger/Logger';
 import v4 from 'uuid/v4';
 import {setCookie, getCookie} from '../utils/cookieUtils';
 const LIMIT = 50;
@@ -13,98 +12,96 @@ const EVENT_NUM = {
     'previous': 3,
     'no_action': 4
 };
+let AnalyticsReporter = {};
 
 
 /**
  * Created by user on 8/28/2016.
  */
 
-class AnalyticsReporter {
-    constructor(store) {
-        this.logger = new Logger();
-        this.store = store;
-        this.events = [];
-        this.sessionId = v4();
-        this.publisherId = store.getState().publisherId;
-        this.metadataId = store.getState().metadataId;
-        this.episodeId =  store.getState().episodeId;
-        this.interval = setInterval(this.report.bind(this), 3000); 
-        this.userId = getCookie("emid");
-        if (!this.userId) {
-            this.userId = v4();
-        }
-        setCookie("emid", this.userId, 7); 
+AnalyticsReporter.start = function start(store) {
+    AnalyticsReporter.events = [];
+    AnalyticsReporter.sessionId = v4();
+    AnalyticsReporter.publisherId = store.getState().publisherId;
+    AnalyticsReporter.metadataId = store.getState().metadataId;
+    AnalyticsReporter.episodeId =  store.getState().episodeId;
+    AnalyticsReporter.lastActionTime = Date.now();
+    AnalyticsReporter.interval = setInterval(reportEvents, 3000);
+    AnalyticsReporter.userId = getCookie("emid");
+    if (!AnalyticsReporter.userId) {
+        AnalyticsReporter.userId = v4();
     }
+    setCookie("emid", AnalyticsReporter.userId, 7);
+}
 
-    storeEvent(action) {
-        let event;
-        let currentState = this.store.getState();
-        if (!currentState.activeSegment) {
-            this.lastActionTime = Date.now();
-            return;
-        }
-        event = {
-            eventTime: Date.now(),
-            itemNum: currentState.itemNum + 1,
-            segmentType: this.getSegmentType(currentState),
-            itemPlayedTime: this.getPlayedTime(currentState),
-            itemRealTime: Date.now() - this.lastActionTime,
-            event: EVENT_NUM[action]
-        }
-        this.lastActionTime = Date.now();
-        this.events.push(event);
+AnalyticsReporter.storeEvent = function storeEvent(action, currentState) {
+    let event;
+    if (!EVENT_NUM[action]) {
+        return;
     }
+    if (!currentState.activeSegment) {
+        AnalyticsReporter.lastActionTime = Date.now();
+        return;
+    }
+    event = {
+        eventTime: Date.now(),
+        itemNum: currentState.itemNum + 1,
+        segmentType: getSegmentType(currentState),
+        itemPlayedTime: getPlayedTime(currentState),
+        itemRealTime: Date.now() - AnalyticsReporter.lastActionTime,
+        event: EVENT_NUM[action]
+    }
+    AnalyticsReporter.lastActionTime = Date.now();
+    AnalyticsReporter.events.push(event);
+}
 
-    reportEvents() {
-        let toSendRows,
-            toSendObj,
-            xmlhttp;
-        if (!this.events.length) {
-            return ;
-        }
-        toSendRows = this.events.splice(0, this.events.length);
-        toSendObj = {
-            publisherId: this.publisherId,
-            episodeId: this.episodeId,
-            reportId: this.sessionId,
-            metaDataId: this.metadataId,
-            userId: this.userId,
-            segmentEvents: toSendRows
-        };
-        xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
-                /*
-                 * retry policy we might add on demand
-                if (xmlhttp.status !== 200) {
-                    this.events = this.events.concat(toSendRows);
-                }
-                */
+function reportEvents() {
+    let toSendRows,
+        toSendObj,
+        xmlhttp;
+    if (!AnalyticsReporter.events.length) {
+        return ;
+    }
+    toSendRows = AnalyticsReporter.events.splice(0, AnalyticsReporter.events.length);
+    toSendObj = {
+        publisherId: AnalyticsReporter.publisherId,
+        episodeId: AnalyticsReporter.episodeId,
+        reportId: AnalyticsReporter.sessionId,
+        metaDataId: AnalyticsReporter.metadataId,
+        userId: AnalyticsReporter.userId,
+        segmentEvents: toSendRows
+    };
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+            /*
+             * retry policy we might add on demand
+            if (xmlhttp.status !== 200) {
+                AnalyticsReporter.events = AnalyticsReporter.events.concat(toSendRows);
             }
-        };
-        xmlhttp.open("POST", ANALYTICS_BASE_URL + "report", true);
-        xmlhttp.setRequestHeader("Content-Type", "application/json");
-        xmlhttp.send(JSON.stringify(toSendObj));
-    }
-    getSegmentType(currentState) {
-        let typeString,
-            type;
-        if (currentState.activeSegment && currentState.activeSegment.title) {
-            typeString = currentState.activeSegment.title.substring(0, 1);
+            */
         }
-        if (currentState.inExtend) {
-            typeString = "b";
-        }
-        return SEGMENT_TYPE[typeString];
-    }
+    };
+    xmlhttp.open("POST", ANALYTICS_BASE_URL + "report", true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.send(JSON.stringify(toSendObj));
+}
 
-    getPlayedTime(currentState) {
-        if (currentState.activeSegment && currentState.itemTimeMs && 
-            (currentState.activeSegment.in || currentState.activeSegment.in === 0)) {
-            return parseInt(currentState.itemTimeMs - currentState.activeSegment.in, 10);
-        } 
-        return null;
+function getSegmentType(currentState) {
+    let typeString,
+        type;
+    if (currentState.activeSegment && currentState.activeSegment.title) {
+        typeString = currentState.activeSegment.title.substring(0, 1);
     }
+    return SEGMENT_TYPE[typeString];
+}
+
+function getPlayedTime(currentState) {
+    if (currentState.activeSegment && currentState.itemTimeMs && 
+        (currentState.itemStart || currentState.itemStart === 0)) {
+        return parseInt(currentState.itemTimeMs - currentState.itemStart, 10);
+    } 
+    return null;
 }
 
 export default AnalyticsReporter;

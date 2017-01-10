@@ -14,7 +14,7 @@ class StateMachine {
         this.store = store;
         this.playbackController = new PlaybackController(this.store);
         this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
-        this.analyticsReporter = new AnalyticsReporter(this.store);
+        AnalyticsReporter.start(this.store);
     }
 
     /** **  public APi ****/
@@ -42,6 +42,7 @@ class StateMachine {
     }
 
     start() {
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: "next"});
         this.actionHandler('next').catch((error) => {
             if (error === "NotAllowedError" || error.name === 'NotAllowedError') {
                 this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
@@ -52,7 +53,7 @@ class StateMachine {
     }
 
     eventHandler(event, params) {
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: event});
         if (this[event]) {
             this.logger.log(`handle event ${event}`);
             this[event](params);
@@ -81,10 +82,11 @@ class StateMachine {
             this.playbackController.pause();
             return;
         }
-        this.analyticsReporter.reportAction(action);
-        this.updateView({
+        this.store.dispatch({
+            type: "SET_SEGMENT",
             itemNum: SegmentManager.getItemNum(followingSegment.title),
             itemTimeMs: followingSegment.in,
+            itemStart: followingSegment.in,
             activeSegment: followingSegment,
         });
         this.segmentsManager.setActive(followingSegment);
@@ -124,7 +126,6 @@ class StateMachine {
     extendItem(activeSegment) {
         let itemLength;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction('extend');
-        this.analyticsReporter.reportAction('extend');
         if (followingSegment){
             const extendedSegment = this.segmentsManager.getExtendedSegment(activeSegment);
             this.segmentsManager.setActive(extendedSegment);
@@ -132,7 +133,12 @@ class StateMachine {
         } else {
             itemLength = (activeSegment.out - activeSegment.in);
         }
-        this.updateView({itemLength: itemLength, itemStart: activeSegment.in});
+        this.store.dispatch({
+            type: "SET_SEGMENT",
+            itemLength: itemLength,
+            itemStart: activeSegment.in,
+            activeSegment: followingSegment,
+        });
     }
 
     timeUpdate(timeMs) {
