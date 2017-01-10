@@ -1,7 +1,5 @@
 import React, {PropTypes} from "react";
 import ElasticMediaSdk from "./ElasticMediaSdk";
-import Controls from "../Controls/BrightcoveControls";
-import HTML5Controls from "../Controls/Controls";
 
 const ElasticMediaController = React.createClass({
     propTypes: {
@@ -79,13 +77,9 @@ const ElasticMediaController = React.createClass({
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}
                         episodeId={this.props.episodeId}>
-                                    {this.props.children}
+                        {this.props.videoElements}
                     </ElasticMediaSdk>
-                    { this.props.html5 ?
-                        <HTML5Controls eventHandler={this.eventHandler} ref="controls"/>
-                    :
-                        <Controls eventHandler={this.eventHandler} ref="controls"/>
-                    }
+                    {React.createElement(this.props.controls, {eventHandler:this.eventHandler, ref:"controls"})}
                 </div>
                 : null}
             </div>

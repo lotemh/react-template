@@ -25,6 +25,9 @@ const Controls = React.createClass({
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
     },
+    componentWillUnmount(){
+        this.unsubscribe();
+    },
     swipeLeft() {
         this.props.eventHandler('next');
     },
@@ -77,7 +80,6 @@ const Controls = React.createClass({
     progress() {
         let progress = 0;
         try {
-            const state = this.context.store.getState();
             const segment = this.context.store.getState().activeSegment;        
             const segmentLength = (segment.out - segment.in);
             const segmentProgressTime = context.store.getState().itemTimeMs - segment.in;
@@ -87,19 +89,19 @@ const Controls = React.createClass({
         return progress;
     },
     render(){
-        let state = this.context.store.getState();
-        let timeElement = (state.inExtend) ?
+        let storeState = this.context.store.getState();
+        let timeElement = (storeState.inExtend) ?
             <SeekBar
                 ref='seekBar'
-                itemTimeMs={state.itemTimeMs}
-                itemStart={state.itemStart}
-                itemLength={state.itemLength}
+                itemTimeMs={storeState.itemTimeMs}
+                itemStart={storeState.itemStart}
+                itemLength={storeState.itemLength}
                 seekListener={this.seekListener}
             /> :
             <Dots
                 isVisible={true}
-                itemNum={state.itemNum}
-                numOfItems={state.numOfItems}
+                itemNum={storeState.itemNum}
+                numOfItems={storeState.numOfItems}
             />;
         return (
             <div>
@@ -108,8 +110,8 @@ const Controls = React.createClass({
                 </div>
                 <div className={this.getControlsClassName()}>
                     <div className="controlsTouchScreen" ref="touchScreen"></div>
-                    <Extend isVisible={!state.inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
-                    {state.isPlaying ? 
+                    <Extend isVisible={!storeState.inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
+                    {storeState.isPlaying ? 
                         <img src={require("../../sdk/images/pause.png")} className='controller pause' id="pause" onClick={this.togglePlay}/>
                     :
                         <img src={require("../../sdk/images/play.png")} className='controller play' id="play" onClick={this.togglePlay}/>

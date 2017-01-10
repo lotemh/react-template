@@ -4,6 +4,7 @@
 import React, { PropTypes } from 'react';
 import VideoElement from '../VideoElement/VideoElement';
 import ElasticMediaController from '../ElasticMediaSdk/ElasticMediaController';
+import Controls from "../Controls/Controls";
 
 const numOfPlayers = 2;
 
@@ -13,21 +14,19 @@ const Html5Demo = React.createClass({
     },
     render() {
         const players = new Array(numOfPlayers).fill(0);
+        let VideoElements = players.map((elm, i) => {
+            let id;
+            return (
+                <VideoElement key={`player${i}`} playerId={`player${i}`} {...this.props}/>
+            );
+        })
         return (
-            <div id="elasticPlayer">
+            <div>
                 <ElasticMediaController 
                         publisherId={this.props.publisherId}
-                        html5={true}
-                        episodeId={this.props["data-video-id"]}>
-                    {
-                        players.map((elm, i) => {
-                            let id;
-                            return (
-                                <VideoElement key={`player${i}`} playerId={`player${i}`} {...this.props}/>
-                            );
-                        })
-                    }
-                </ElasticMediaController>
+                        videoElements={VideoElements}
+                        controls={Controls}
+                        episodeId={this.props["data-video-id"]}/>
             </div>
         );
     }
