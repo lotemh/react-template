@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import ControlsStartStatus from './ControlsStartStatus';
 import Extend from './Extend';
-import TransitionEffect from '../transitionEffects/TransitionEffect';
+import {TransitionEffect} from '../transitionEffects/TransitionEffect';
 import {isIphone} from '../utils/webUtils';
 
 const Controls = React.createClass({

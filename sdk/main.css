@@ -226,47 +226,24 @@ button:active {
     display:none;
 }
 
-@keyframes te-whoosh {
+@keyframes tfx-sprite {
     from  {background-position: 0}
     to    {background-position: -1900%}
 }
 
-.te-whoosh-reverse {
-    animation-direction: reverse;
+.tfx {
+  background-size: cover;
 }
 
-@keyframes test-whoosh-test {
-    from  {background-position: 0}
-    to    {background-position: -1200%}
-}
-
-.te-test {
-    animation-duration: 0.5s;
-    animation-name: test-whoosh;
-    animation-timing-function: steps(12);
-    background-image: url(./images/whoosh.png);
-    background-size: cover;
-    -webkit-animation-name: te-whoosh-test;
-}
-
-.tfx-basic {
-    animation-duration: 0.5s;
-    animation-name: test-whoosh;
+.tfx-whoosh {
+    animation-duration: 0.8s;
+    animation-name: tfx-sprite;
     animation-timing-function: steps(19);
-    background-size: cover;
-    -webkit-animation-name: te-whoosh;
+    -webkit-animation-name: tfx-sprite;
 }
 
-.studio-a {
-    background-image: url(./images/StudioA.png);
-}
-
-.socal-tfx {
-    background-image: url(./images/socal.jpeg);
-}
-
-.border-blasters-tfx {
-    background-image: url(./images/border-short.png);
+.tfx-reverse {
+    animation-direction: reverse;
 }
 
 *::-webkit-media-controls-start-playback-button {
