@@ -14,23 +14,19 @@ const Controls = React.createClass({
     propTypes: {
         eventHandler: PropTypes.func.isRequired
     },
-    getInitialState() {
-        return {
-            startStatus: ControlsStartStatus.PENDING,
-            isPlaying: false,
-            pendingPlay: true,
-            numOfItems: 0,
-            itemTimeMs: 0,
-            itemNum: 0,
-            itemStart: 0,
-            itemLength: 0,
-            inExtend: false
-        };
+    contextTypes: {
+        store: React.PropTypes.object
     },
     componentDidMount() {
+        this.unsubscribe = this.context.store.subscribe(() => {
+            this.forceUpdate();
+        })
         this.gestureListener = new Hammer(ReactDOM.findDOMNode(this.refs.touchScreen));
         this.gestureListener.on(SWIPES.LEFT, this.swipeLeft);
         this.gestureListener.on(SWIPES.RIGHT, this.swipeRight);
+    },
+    componentWillUnmount(){
+        this.unsubscribe();
     },
     swipeLeft() {
         this.props.eventHandler('next');
@@ -39,27 +35,22 @@ const Controls = React.createClass({
         this.props.eventHandler('previous');
     },
 
-    updateControl(state) {
-        this.setState(state);
-    },
-
     getClassName(name) {
         let className = 'controller';
-        if (name === 'extend' && this.state.inExtend) {
+        if (name === 'extend' && this.context.store.getState().inExtend) {
             className += ' hidden';
         }
         if (name === 'play') {
             className += ' play';
-            className += this.state.isPlaying ? ' hidden' : '';
+            className += this.context.store.getState().isPlaying ? ' hidden' : '';
         } else if (name === 'pause') {
-            className += !this.state.isPlaying ? ' hidden' : '';
+            className += !this.context.store.getState().isPlaying ? ' hidden' : '';
         }
         return className;
     },
     togglePlay() {
-        const isPlaying = !this.state.isPlaying;
+        const isPlaying = !this.context.store.getState().isPlaying;
         const action = isPlaying ? 'play' : 'pause';
-        this.setState({ isPlaying });
         this.eventHandler(action);
     },
     startPlaying() {
@@ -69,10 +60,17 @@ const Controls = React.createClass({
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
-        return this.state.startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
+        return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
     },
     getControlsClassName() {
-        return this.state.startStatus === ControlsStartStatus.ACTIVE ? 'controls' : 'hidden';
+        if (this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE){
+            return 'hidden';
+        }
+        let className = 'controls';
+        if (this.state && this.state.teClass){
+            className += ' ' + this.state.teClass;
+        }
+        return className;
     },
     seekListener(currentTime){
         this.props.eventHandler('seek', {
@@ -82,39 +80,42 @@ const Controls = React.createClass({
     progress() {
         let progress = 0;
         try {
-            const state = this.context.store.getState();
-            const segment = state.activeSegment;        
+            const segment = this.context.store.getState().activeSegment;        
             const segmentLength = (segment.out - segment.in);
-            const segmentProgressTime = state.itemTimeMs - segment.in;
+            const segmentProgressTime = context.store.getState().itemTimeMs - segment.in;
             progress = segmentProgressTime / segmentLength;
         } catch (e) {
         }
         return progress;
     },
     render(){
-        let timeElement = (this.state.inExtend) ?
+        let storeState = this.context.store.getState();
+        let timeElement = (storeState.inExtend) ?
             <SeekBar
                 ref='seekBar'
-                itemTimeMs={this.state.itemTimeMs}
-                itemStart={this.state.itemStart}
-                itemLength={this.state.itemLength}
+                itemTimeMs={storeState.itemTimeMs}
+                itemStart={storeState.itemStart}
+                itemLength={storeState.itemLength}
                 seekListener={this.seekListener}
             /> :
             <Dots
-                itemNum={this.state.itemNum}
-                numOfItems={this.state.numOfItems}
+                isVisible={true}
+                itemNum={storeState.itemNum}
+                numOfItems={storeState.numOfItems}
             />;
         return (
             <div>
-                <div>
-                    <img src={require("../../sdk/images/play.png")} className={this.getStartPlayingClass()} onClick={this.startPlaying} />
+                <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
+                    <img src={require("../../sdk/images/play.png")} className="bigPlay"/>
                 </div>
                 <div className={this.getControlsClassName()}>
-                    <div className="controlsTouchScreen" ref="touchScreen"
-                         style={this.state.pendingFirstPlayClick ? {pointerEvents: 'none'} : {}}></div>
-                    <Extend isVisible={!this.state.inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
-                    <img src={require("../../sdk/images/play.png")} className={this.getClassName("play")} onClick={this.togglePlay}/>
-                    <img src={require("../../sdk/images/pause.png")} className={this.getClassName("pause")} id="pause" onClick={this.togglePlay}/>
+                    <div className="controlsTouchScreen" ref="touchScreen"></div>
+                    <Extend isVisible={!storeState.inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
+                    {storeState.isPlaying ? 
+                        <img src={require("../../sdk/images/pause.png")} className='controller pause' id="pause" onClick={this.togglePlay}/>
+                    :
+                        <img src={require("../../sdk/images/play.png")} className='controller play' id="play" onClick={this.togglePlay}/>
+                    }
                     {timeElement}
                 </div>
             </div>

@@ -20,13 +20,17 @@ class VideoElement extends React.Component {
         return ReactDOM.findDOMNode(this);
     }
 
+    onReady(callback){
+        callback();
+    }
+
     render() {
         return (
-            <video ref={'video'}
-                   className={this.getClassName()}
-                   webkit-playsinline
-                   playsinline
-                   preload="none"
+            <video ref='video'
+                className={this.getClassName()}
+                playsInline
+                crossOrigin="anonymous"
+                preload="none"
             >
                 <source type="video/mp4" ref="source" src={this.props.src} />
             </video>
@@ -42,7 +46,6 @@ class VideoElement extends React.Component {
     play() {
         return new Promise((resolve, reject) => {
             this.getPlayer().play().then(resolve, (error) => {
-                console.log(`can't play video ${error}`);
                 reject();
             });
         });
@@ -58,6 +61,12 @@ class VideoElement extends React.Component {
 
     setSrc(src) {
         this.refs.source.setAttribute('src', src);
+    }
+    getSrc() {
+        return this.refs.source.getAttribute('src');
+    }
+    getPlayerMediaElement() {
+        return this.refs.video;
     }
 
     load() {
@@ -75,15 +84,20 @@ class VideoElement extends React.Component {
     addLoadedDataEvent(listener) {
         this.getPlayer().addEventListener('canplay', listener);
     }
-
+    
     addTimeUpdateEvent(listener) {
         this.getPlayer().addEventListener('timeupdate', listener);
     }
-
     removeTimeUpdateEvent(listener) {
         this.getPlayer().removeEventListener('timeupdate', listener);
     }
 
+    removeEventListener(event, listener) {
+        this.getPlayer().removeEventListener(event, listener);
+    }
+    addEventListener(event, listener) {
+        this.getPlayer().addEventListener(event, listener);
+    }
 }
 
 VideoElement.propTypes = {

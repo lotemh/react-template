@@ -99,11 +99,13 @@ class StateMachine {
     }
 
     play() {
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'play'});
         this.playbackController.play().then(() => {
         });
     }
 
     pause() {
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'pause'});
         this.playbackController.pause();
     }
 
