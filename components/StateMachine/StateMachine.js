@@ -52,6 +52,7 @@ class StateMachine {
     }
 
     eventHandler(event, params) {
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         if (this[event]) {
             this.logger.log(`handle event ${event}`);
             this[event](params);
@@ -61,7 +62,6 @@ class StateMachine {
     /** **********************/
 
     extend() {
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'extend'});
         this.extendItem(this.segmentsManager.getActive());
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
@@ -87,7 +87,6 @@ class StateMachine {
             itemTimeMs: followingSegment.in,
             activeSegment: followingSegment,
         });
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
             .then(() => {
@@ -102,13 +101,11 @@ class StateMachine {
     }
 
     play() {
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'play'});
         this.playbackController.play().then(() => {
         });
     }
 
     pause() {
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'pause'});
         this.playbackController.pause();
     }
 
