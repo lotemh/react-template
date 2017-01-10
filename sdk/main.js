@@ -14,36 +14,24 @@ if (! window._babelPolyfill) {
 }
 
 const clientMap = {
-    'brightcove': createSdkWithBrightcovePlayer
+    'brightcove': renderSdkWithBrightcovePlayer,
+    'html5': renderHTML5Client
+
 };
 
 main();
 
 function main(){
-    if (isBrightcove()){
-        renderBrightcoveClient();
-    } else if (isHTML5()){
-        renderHTML5Client();
+    const container = document.querySelector('[data-elastic-media-player]');
+    if (container){
+        var player = container.getAttribute('data-elastic-media-player');
+        return clientMap[player](container);
     } else {
         getClientByVideoElement();
     }
 }
 
-function renderBrightcoveClient() {
-    const container = document.querySelector('[data-elastic-media-player]');
-    const client = createSdkCompByAccount(container);
-    renderComponent(client, container);
-}
-
-function isBrightcove(){
-    return !!document.querySelector('[data-elastic-media-player="brightcove"]');
-}
-function isHTML5(){
-    return !!document.querySelector('[data-elastic-media-player="html5"]');
-}
-
-function renderHTML5Client() {
-    const container = document.querySelector('[data-elastic-media-player="html5"]');
+function renderHTML5Client(container) {
     var props = {};
     for (var i=0; i < container.attributes.length; i++){
         var attr = container.attributes[i];
@@ -55,19 +43,15 @@ function renderHTML5Client() {
     renderComponent(client, container);
 }
 
-function createSdkWithBrightcovePlayer(){
-    const container = document.querySelector('[data-elastic-media-player]');
+function renderSdkWithBrightcovePlayer(container){
     var props = {};
     for (var i=0; i < container.attributes.length; i++){
         var attr = container.attributes[i];
         props[attr.nodeName] = attr.nodeValue;
     }
-    return React.createElement(Brightcove, props);
-}
-
-function createSdkCompByAccount(container) {
-    var player = container.getAttribute('data-elastic-media-player');
-    return clientMap[player]();
+    props["publisherId"] = props["data-elastic-media-account"];
+    const client = React.createElement(Brightcove, props);
+    renderComponent(client, container);
 }
 
 function renderComponent(client, container){
