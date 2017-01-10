@@ -25,10 +25,13 @@
     </head>
   <body>
     <div id="parent">
-		<div data-elastic-media-player="html5"
-         data-elastic-media-account="9af0fb40-8c90-4006-a668-7844ed81b4d4"
-         data-video-id="3884616525001"
-         data-video-url="https://brightcove.hs.llnwd.net/e1/uds/pd/136368194/136368194_3885282103001_SA205-RobertaFlack.mp4"></div>
+	    <video
+		   data-video-id="3884616525001"
+		   data-account="136368194"
+		   data-player="r1hasDFSe"
+		   data-embed="default"
+		   class="video-js" controls></video>
+	    <script src="//players.brightcove.net/136368194/r1hasDFSe_default/index.min.js"></script>
 	    <script src="<%= webpackConfig.sdk.js %>"></script>
     </div>
     <% for (key in htmlWebpackPlugin.files.chunks) { %>

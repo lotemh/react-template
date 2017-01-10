@@ -75,7 +75,6 @@ function renderPlugin() {
     }
     let container = null;
 
-    hideVjsControlsBar();
     var players = document.currentScript.parentNode.querySelectorAll("[data-account]");
     let foundClient = false;
     let props = {};
@@ -84,8 +83,9 @@ function renderPlugin() {
             return;
         }
         let brightcovePlayerId = player.getAttribute("data-player");
-        if (brightcovePlayerId !== "V1xBaDVb6l" && brightcovePlayerId !== "default" && brightcovePlayerId !=="S1eJmZOTml" && brightcovePlayerId !== "S1AxOqLme") {
-            //TODO replace with desired playerId
+        if (brightcovePlayerId !== "r1hasDFSe" &&
+            brightcovePlayerId !=="S1eJmZOTml" &&
+            brightcovePlayerId !== "S1AxOqLme") {
             return;
         }
         if (!player.getAttribute("em-player")) {
@@ -123,10 +123,4 @@ function renderPlugin() {
     }
 }
 
-function hideVjsControlsBar() {
-    const vjsControlBar = document.querySelector('[data-account="136368194"] .vjs-control-bar');
-    if (vjsControlBar) {
-        vjsControlBar.style.display = 'none';
-        vjsControlBar.classList.add('hide-controls');
-    }
-}
+

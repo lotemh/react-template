@@ -32,6 +32,7 @@ const Brightcove = React.createClass({
                         publisherId={this.props.publisherId}
                         videoElements={VideoElements}
                         controls={Controls}
+                        originalPlayerId={this.props["originalPlayerId"]}
                         episodeId={this.props["data-video-id"]}/>
             </div>
         );
