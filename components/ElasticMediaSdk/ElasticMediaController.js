@@ -20,7 +20,7 @@ const ElasticMediaController = React.createClass({
                 if (xmlhttp.status == 200) {
                     console.log("got metadata!");
                     if (that.props["originalPlayerId"]) {
-                        hideVjsControlsBar(that.props["originalPlayerId"]);
+                        //hideVjsControlsBar(that.props["originalPlayerId"]);
                     }
                     try {
                         metadata = JSON.parse(xmlhttp.responseText);
