@@ -4,7 +4,8 @@ import StateMachine from '../StateMachine/StateMachine';
 const ElasticMediaSdk = React.createClass({
     propTypes: {
         publisherId: PropTypes.string.isRequired,
-        episodeId: PropTypes.string.isRequired
+        episodeId: PropTypes.string.isRequired,
+        metadata: PropTypes.object.isRequired
     },
     contextTypes: {
         store: React.PropTypes.object
