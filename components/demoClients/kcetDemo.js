@@ -21,7 +21,6 @@ const Brightcove = React.createClass({
             } else {
                 id = "player" + i;
             }
-            console.log("id is", id);
             return (
                 <BrightCovePlayer key={`player${i}`} playerId={id} {...this.props}/>
             );
