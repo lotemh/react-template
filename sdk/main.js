@@ -7,48 +7,51 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import Brightcove from '../components/demoClients/kcetDemo';
+import HTML5 from '../components/demoClients/html5Demo';
 import store from '../core/store';
 if (! window._babelPolyfill) {
     require("babel-polyfill");
 }
 
 const clientMap = {
-    'brightcove': createSdkWithBrightcovePlayer
+    'brightcove': renderBrightcoveClient,
+    'html5': renderHTML5Client
+
 };
 
 main();
 
 function main(){
-    if (isBrightcove()){
-        renderBrightcoveClient();
+    const container = document.querySelector('[data-elastic-media-player]');
+    if (container){
+        var player = container.getAttribute('data-elastic-media-player');
+        return clientMap[player](container);
     } else {
-        getClientByVideoElement();
+        renderPlugin();
     }
 }
 
-function renderBrightcoveClient() {
-    const container = document.querySelector('[data-elastic-media-player]');
-    const client = createSdkCompByAccount(container);
-    renderComponent(client, container);
-}
-
-function isBrightcove(){
-    return !!document.querySelector('[data-elastic-media-player="brightcove"]');
-}
-
-function createSdkWithBrightcovePlayer(){
-    const container = document.querySelector('[data-elastic-media-player]');
+function renderHTML5Client(container) {
     var props = {};
     for (var i=0; i < container.attributes.length; i++){
         var attr = container.attributes[i];
         props[attr.nodeName] = attr.nodeValue;
     }
-    return React.createElement(Brightcove, props);
+    props["publisherId"] = props["data-elastic-media-account"];
+    props["src"] = props["data-video-url"];
+    const client = React.createElement(HTML5, props);
+    renderComponent(client, container);
 }
 
-function createSdkCompByAccount(container) {
-    var player = container.getAttribute('data-elastic-media-player');
-    return clientMap[player]();
+function renderBrightcoveClient(container){
+    var props = {};
+    for (var i=0; i < container.attributes.length; i++){
+        var attr = container.attributes[i];
+        props[attr.nodeName] = attr.nodeValue;
+    }
+    props["publisherId"] = props["data-elastic-media-account"];
+    const client = React.createElement(Brightcove, props);
+    renderComponent(client, container);
 }
 
 function renderComponent(client, container){
@@ -66,13 +69,12 @@ function render(client, container) {
     ReactDOM.render(<Provider store={store}>{client}</Provider>, container);
 }
 
-function getClientByVideoElement() {
+function renderPlugin() {
     if (!document.currentScript || !document.currentScript.parentNode) {
         return;
     }
     let container = null;
 
-    hideVjsControlsBar();
     var players = document.currentScript.parentNode.querySelectorAll("[data-account]");
     let foundClient = false;
     let props = {};
@@ -81,8 +83,9 @@ function getClientByVideoElement() {
             return;
         }
         let brightcovePlayerId = player.getAttribute("data-player");
-        if (brightcovePlayerId !== "V1xBaDVb6l" && brightcovePlayerId !== "default" && brightcovePlayerId !=="S1eJmZOTml" && brightcovePlayerId !== "S1AxOqLme") {
-            //TODO replace with desired playerId
+        if (brightcovePlayerId !== "r1hasDFSe" &&
+            brightcovePlayerId !=="S1eJmZOTml" &&
+            brightcovePlayerId !== "S1AxOqLme") {
             return;
         }
         if (!player.getAttribute("em-player")) {
@@ -121,10 +124,4 @@ function getClientByVideoElement() {
     }
 }
 
-function hideVjsControlsBar() {
-    const vjsControlBar = document.querySelector('[data-account="136368194"] .vjs-control-bar');
-    if (vjsControlBar) {
-        vjsControlBar.style.display = 'none';
-        vjsControlBar.classList.add('hide-controls');
-    }
-}
+
