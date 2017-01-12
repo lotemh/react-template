@@ -131,7 +131,7 @@ class Player {
                 setTimeout(()=>{
                     reject();
                 }, 1000);
-        })])
+            })])
             .then(() => {
                 return this.play(segment);
             },() => {
