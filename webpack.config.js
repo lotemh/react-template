@@ -108,13 +108,6 @@ const config = {
             filename: 'assets.json',
             prettyPrint: true,
         }),
-        new BannerPlugin({
-            chunks: {
-                'elasticprogram-sdk': {
-                    beforeContent: `/* Elastic Media elasticprogram-sdk v${pkg.version} */\n`
-                }
-            }
-        }),
         new ExtractTextPlugin(isDebug ? '[name].css?[hash]' : '[name].css'),
     ],
 
@@ -248,6 +241,18 @@ if (isDebug && useHMR) {
     config.entry['hot-middleware'] = 'webpack-hot-middleware/client';
     config.plugins.push(new webpack.HotModuleReplacementPlugin());
     config.plugins.push(new webpack.NoErrorsPlugin());
+}
+
+if (!useHMR) {
+    config.plugins.push(
+        new BannerPlugin({
+            chunks: {
+                'elasticprogram-sdk': {
+                    beforeContent: `/* Elastic Media elasticprogram-sdk v${pkg.version} */\n`
+                }
+            }
+        })
+    );
 }
 
 const demo = {

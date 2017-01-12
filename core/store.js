@@ -54,7 +54,7 @@ function reducer(state, action){
                     newState = {isPlaying: false};
                     break;
                 case 'play':
-                    newState = {isPlaying: true};
+                    newState = {isPlaying: true, startStatus: ControlsStartStatus.ACTIVE};
                     break;
                 default:
                     return state;

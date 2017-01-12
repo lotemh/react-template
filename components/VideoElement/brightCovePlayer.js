@@ -85,8 +85,7 @@ class BrightCovePlayer extends React.Component {
         var that = this;
         let videoElement = this.getPlayerMediaElement();
         if (!this.state.shouldLoad) {
-            videoElement.setAttribute("crossOrigin", "anonymous");
-            videoElement.setAttribute("src", videoElement.getAttribute("src"));
+            videoElement.setAttribute("playsinline", "");
         }
         this.player = window.videojs(videoElement.id);
         this.gestureListener = new Hammer(videoElement, {velocity: 0.80});
@@ -208,27 +207,14 @@ class BrightCovePlayer extends React.Component {
     /** ****************************/
 
     pause() {
-        this.getPlayer().pause();
+        if (!this.getPlayer().paused()){
+            this.getPlayer().pause();
+        }
     }
 
     play() {
-        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING){
-            if (isIphone()){
-                return Promise.reject("NotAllowedError");
-            }
-            else {
-                return new Promise((resolve, reject) => {
-                    function gotPlayingEvent() {
-                        this.getPlayer().off("play", gotPlayingEvent.bind(this));
-                        return resolve();
-                    }
-                    setTimeout(() => {
-                        return reject("NotAllowedError");
-                    }, 1000);
-                    this.getPlayer().on('play', gotPlayingEvent.bind(this));
-                    this.getPlayer().play();
-                });
-            }
+        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING && isIphone()){
+            return Promise.reject("NotAllowedError");
         }
         this.getPlayer().play();
         return Promise.resolve();
@@ -254,14 +240,17 @@ class BrightCovePlayer extends React.Component {
     }
 
     load(src) {
-        if (src !== this.getSrc()) {
-            this.src = src;
-        }
+        this.setSrc(src);
         return new Promise((resolve, reject) => {
             const player = this.getPlayer();
+            player.on("loadeddata", resolve);
             player.catalog.getVideo(this.getSrc(), function (error, video) {
                 player.catalog.load(video);
-                player.on("loadeddata", resolve, {once: true});
+                if (player.buffered().end(0) > 0){
+                    resolve();
+                } else if (error){
+                    reject(error);
+                }
             });
         });
 

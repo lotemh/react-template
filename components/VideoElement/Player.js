@@ -1,6 +1,7 @@
-import React, { PropTypes } from 'react';
-import Logger from '../Logger/Logger';
-import ControlsStartStatus from '../Controls/ControlsStartStatus';
+import React, {PropTypes} from "react";
+import Logger from "../Logger/Logger";
+import ControlsStartStatus from "../Controls/ControlsStartStatus";
+import {isIphone} from "../utils/webUtils";
 
 class Player {
 
@@ -15,6 +16,7 @@ class Player {
             this.audioContext = new webkitAudioContext();
         }
         this.audioTfxActive = false;
+        this.shouldPlay = false;
     }
 
     getPlayer() {
@@ -47,33 +49,50 @@ class Player {
     }
 
     pause() {
+        this.shouldPlay = false;
         this.getPlayer().pause();
     }
 
     play(segment) {
+        this.shouldPlay = true;
         const src = segment.src;
         const inTime = segment.in;
         const store = this.store;
-        function playListener() {
-            store.dispatch({
-                type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE,
-                isPlaying: true
-            });
-            this.getPlayer().removeEventListener("play", playListener.bind(this));
-        }
-        this.getPlayer().addEventListener("play", playListener.bind(this));
-
         if (!this.isReady(src, inTime)){
             return this.prepareAndPlay(segment);
         } else {
-            const state = this.store.getState();
-            if (state.tfxAudio && !this.audioTfxActive) {
-                this.audioTfxActive = true;
-                this[state.tfxAudio]();
-            }
-            return this.getPlayer().play();
+            return this.playPreparedSegment(store);
         }
     }
+
+    firstTimeActivatePlayerForMobile(shouldPause){
+        if (shouldPause){
+            this.getPlayer().play();
+            this.getPlayer().pause();
+        } else{
+            this.getPlayer().play().then(() => {
+                this.store.dispatch({
+                    type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE,
+                    isPlaying: true
+                });
+            });
+        }
+    }
+
+    playPreparedSegment() {
+        const store = this.store;
+        const state = store.getState();
+        if (state.tfxAudio && !this.audioTfxActive) {
+            this.audioTfxActive = true;
+            this[state.tfxAudio]();
+        }
+        return this.playIfShould().then(() => {
+            store.dispatch({
+                type: 'PLAY'
+            });
+        });
+    }
+
     show() {
         this.getPlayer().show();
     }
@@ -81,50 +100,42 @@ class Player {
         this.getPlayer().hide();
     }
     load(src) {
-        const player = this.getPlayer();
-        return new Promise((resolve, reject) => {
-            let returned = false;
-            player.addEventListener("loadeddata", gotLoadingEvent.bind(this));
-            function gotLoadingEvent() {
-                if (!returned) {
-                    returned = true;
-                    player.removeEventListener("loadeddata", gotLoadingEvent.bind(this));
-                    return resolve();
-                }
-            }
-            setTimeout(() => {
-                if (!returned) {
-                    player.removeEventListener("loadeddata", gotLoadingEvent.bind(this));
-                    return reject();
-                }
-            }, 1500);
-            player.load(src);
-        });
+        if (this.store.getState().startStatus === ControlsStartStatus.PENDING && isIphone()){
+            return Promise.reject();
+        } else{
+            return this.getPlayer().load(src);
+        }
     }
 
-    prepare(src, inTime, segmentTitle) {
-        this.loading = segmentTitle;
-        if (!this.isReady(src, inTime)){
+    prepare(src, inTime) {
+        if (!(this.getPlayer().getSrc() && this.getPlayer().getSrc() === src)){
             return this.load(src).then(() => {
-                return this.prepare(src, inTime, segmentTitle);
-            }, ()=> {
                 this.seek(inTime / 1000);
-                this.pause();
-                return Promise.reject();
+                if (!this.shouldPlay){
+                    this.pause();
+                }
+                return Promise.resolve();
             });
         }
         this.seek(inTime / 1000);
-        this.pause();
+        if (!this.shouldPlay){
+            this.pause();
+        }
         //todo: wait for player to reach seeked timestamp
         return Promise.resolve();
     }
 
     prepareAndPlay(segment) {
-        return this.prepare(segment.src, segment.in, segment.title)
+        return Promise.race([this.prepare(segment.src, segment.in),
+            new Promise((resolve, reject)=>{
+                setTimeout(()=>{
+                    reject();
+                }, 1000);
+            })])
             .then(() => {
                 return this.play(segment);
             },() => {
-                return this.getPlayer().play()
+                return this.playPreparedSegment();
             });
     }
 
@@ -192,8 +203,15 @@ class Player {
     isReady(src, inTime) {
         return this.getPlayer().getSrc() &&
             this.getPlayer().getSrc() === src &&
-            this.getCurrentTime() === inTime &&
-            this.getPlayer().getPlayer().buffered().end(0) > 0;
+            this.getCurrentTime() === inTime;
+    }
+
+    playIfShould(){
+        if (this.shouldPlay){
+            return this.getPlayer().play();
+        } else {
+            return Promise.reject();
+        }
     }
 }
 
