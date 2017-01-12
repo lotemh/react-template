@@ -129,7 +129,6 @@ function getTfx(programId){
 }
 
 function getFullScreenMode() {
-    alert(screenfull.enabled);
     if (!screenfull.enabled) {
         return false;
     } else if (screenfull.isFullscreen) {

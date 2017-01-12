@@ -49,8 +49,6 @@ const ElasticMediaController = React.createClass({
         if (screenfull.enabled && 
             ((!screenfull.isFullscreen && this.context.store.getState().isFullscreen) || 
             (screenfull.isFullscreen && !this.context.store.getState().isFullscreen))) {
-            console.log("should toggle full screen");
-            console.log("requesting full screen");
             screenfull.toggle(screen);
         }
     },
