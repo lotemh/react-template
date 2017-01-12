@@ -83,7 +83,11 @@ function renderPlugin() {
             return;
         }
         let brightcovePlayerId = player.getAttribute("data-player");
+        if (brightcovePlayerId === "V1xBaDVb6l" && process.env.NODE_ENV !== "development") {
+            return;
+        }
         if (brightcovePlayerId !== "r1hasDFSe" &&
+            brightcovePlayerId !== "V1xBaDVb6l" &&
             brightcovePlayerId !=="S1eJmZOTml" &&
             brightcovePlayerId !== "S1AxOqLme") {
             return;
