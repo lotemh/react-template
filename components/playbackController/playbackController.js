@@ -39,11 +39,10 @@ class PlaybackController {
                 let nextPlayer = this.getFreePlayer();
                 if (nextPlayer) {
                     this.setSegmentReady(segment.title, nextPlayer);
-                    return this.loadSegment(nextPlayer, segment).then(()=>{
-                        resolve();
-                    }, reject);
+                    this.logger.log(`prepare player ${nextPlayer.getId()} with segment ${segment.title}`);
+                    return nextPlayer.prepare(segment.src, segment.in);
                 } else {
-                    reject();
+                    reject("no available player");
                 }
             }
         });
@@ -59,8 +58,8 @@ class PlaybackController {
         return this.switchPlayers(this.activePlayer, nextPlayer, segment);
     }
 
-    play() {
-        return this.getActive().play();
+    play(src, timestamp) {
+        return this.getActive().play(src, timestamp);
     }
 
     pause() {
@@ -107,13 +106,6 @@ class PlaybackController {
 
     /** *******     Private Methods       ***********/
 
-    loadSegment(player, segment) {
-        this.logger.log(`prepare player ${player.getId()} with segment ${segment.title}`);
-        const src = segment.src;
-        const inTime = segment.in;
-        return player.prepare(src, inTime, segment.title);
-    }
-
     unloadSegment(segmentId, segmentPool) {
         const deprecatedPlayer = segmentPool[segmentId];
         if (deprecatedPlayer) {
@@ -146,13 +138,12 @@ class PlaybackController {
         this.logger.log(`play segment ${segment.title} on player ${nextPlayer.getId()}`);
 
         this.store.dispatch({type: 'TFX_AUDIO_SET'});
-
-        return this.activatePlayer(nextPlayer, segment).then(() => {
-            this.store.dispatch({type: 'SWITCH_PLAYERS'});
-            if (oldPlayer !== nextPlayer) {
-                this.deactivatePlayer(oldPlayer);
-            }
-        });
+        const activePlayerPromise = this.activatePlayer(nextPlayer, segment);
+        if (oldPlayer !== nextPlayer) {
+            this.deactivatePlayer(oldPlayer);
+        }
+        this.store.dispatch({type: 'SWITCH_PLAYERS'});
+        return activePlayerPromise;
     }
 
     deactivatePlayer(player) {
@@ -184,13 +175,14 @@ class PlaybackController {
     }
 
     startPlaying() {
-        this.players.concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
-            p.play();
-            p.pause();
+        this.players.concat(Object.values(this.segmentToPlayerMap)).concat(this.activePlayer).forEach(p => {
+            if (p === this.activePlayer){
+                p.firstTimeActivatePlayerForMobile();
+            } else {
+                p.firstTimeActivatePlayerForMobile(true);
+            }
         });
-        if (this.activePlayer) {
-            this.activePlayer.play();
-        }
+        this.store.dispatch({type: 'FIRST_PLAY'});
     }
 
 

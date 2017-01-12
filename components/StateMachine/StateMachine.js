@@ -99,7 +99,8 @@ class StateMachine {
     }
 
     play() {
-        this.playbackController.play().then(() => {
+        const activeSegment = this.segmentsManager.getActive();
+        this.playbackController.play(activeSegment.src, activeSegment.in).then(() => {
         });
     }
 
