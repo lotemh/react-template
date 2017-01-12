@@ -10,9 +10,9 @@ class Player {
         this.loading = null;
         this.id = id;
         this.logger = new Logger();
-        if ('AudioContext' in window) {
+        if (false && 'AudioContext' in window) {
             this.audioContext = new AudioContext();
-        } else if('webkitAudioContext' in window) {
+        } else if(false && 'webkitAudioContext' in window) {
             this.audioContext = new webkitAudioContext();
         }
         this.audioTfxActive = false;
