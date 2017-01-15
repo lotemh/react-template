@@ -85,8 +85,8 @@ class BrightCovePlayer extends React.Component {
         var that = this;
         let videoElement = this.getPlayerMediaElement();
         if (!this.state.shouldLoad) {
-            videoElement.setAttribute("crossOrigin", "anonymous");
-            videoElement.setAttribute("src", videoElement.getAttribute("src"));
+            //videoElement.setAttribute("crossOrigin", "anonymous");
+            //videoElement.setAttribute("src", videoElement.getAttribute("src"));
             videoElement.setAttribute("playsinline", "");
         }
         this.player = window.videojs(videoElement.id);
