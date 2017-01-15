@@ -1,5 +1,7 @@
 import React, {PropTypes} from "react";
+import ReactDOM from 'react-dom';
 import ElasticMediaSdk from "./ElasticMediaSdk";
+const screenfull = require('screenfull');
 
 const ElasticMediaController = React.createClass({
     propTypes: {
@@ -13,17 +15,20 @@ const ElasticMediaController = React.createClass({
     componentWillMount() {
         let metadata,
             that = this;
-        this.state = this.calcWidthAndHeight();
+        this.state = {};
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
                 if (xmlhttp.status == 200) {
                     console.log("got metadata!");
                     if (that.props["originalPlayerId"]) {
-                        hideVjsControlsBar(that.props["originalPlayerId"]);
+                        //hideVjsControlsBar(that.props["originalPlayerId"]);
                     }
                     try {
                         metadata = JSON.parse(xmlhttp.responseText);
+                        if (metadata.segments.root.src === undefined){
+                            that.setState({contentUrl: that.props.contentUrl});
+                        }
                         that.setState({metadata: metadata});
                     } catch(e) {
                         console.log(e);
@@ -39,7 +44,17 @@ const ElasticMediaController = React.createClass({
     },
 
     componentDidMount() {
-        window.addEventListener('resize', this.handleResize);
+        this.unsubscribe = this.context.store.subscribe(() => {
+            this.forceUpdate();
+        })
+    },
+    componentDidUpdate() {
+        let screen = ReactDOM.findDOMNode(this.refs.playerContainer);
+        if (screenfull.enabled && 
+            ((!screenfull.isFullscreen && this.context.store.getState().isFullscreen) || 
+            (screenfull.isFullscreen && !this.context.store.getState().isFullscreen))) {
+            screenfull.toggle(screen);
+        }
     },
     calcWidthAndHeight() {
         let result = {
@@ -62,12 +77,6 @@ const ElasticMediaController = React.createClass({
         }
         return result;
     },
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
-    },
-    handleResize() {
-        this.setState(this.calcWidthAndHeight());
-    },
     eventHandler(event, props){
         this.refs.sdk.eventHandler(event, props);
     },
@@ -75,8 +84,9 @@ const ElasticMediaController = React.createClass({
         return (
             <div>
                 { this.state.metadata ?
-                <div className="player-container" style={this.state}>
+                <div className="player-container" ref="playerContainer">
                     <ElasticMediaSdk ref="sdk"
+                                     contentUrl = {this.state.contentUrl}
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}
                         episodeId={this.props.episodeId}>

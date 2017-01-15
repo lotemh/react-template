@@ -21,19 +21,19 @@ const Brightcove = React.createClass({
             } else {
                 id = "player" + i;
             }
-            console.log("id is", id);
             return (
                 <BrightCovePlayer key={`player${i}`} playerId={id} {...this.props}/>
             );
         })
         return (
             <div id="elasticPlayer">
-                <ElasticMediaController 
-                        publisherId={this.props.publisherId}
-                        videoElements={VideoElements}
-                        controls={Controls}
-                        originalPlayerId={this.props["originalPlayerId"]}
-                        episodeId={this.props["data-video-id"]}/>
+                <ElasticMediaController
+                    contentUrl = {this.props.contentUrl}
+                    publisherId={this.props.publisherId}
+                    videoElements={VideoElements}
+                    controls={Controls}
+                    originalPlayerId={this.props["originalPlayerId"]}
+                    episodeId={this.props["data-video-id"]}/>
             </div>
         );
     }

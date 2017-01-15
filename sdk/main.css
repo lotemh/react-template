@@ -1,6 +1,8 @@
 
 .player-container {
     position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 .player-wrapper {
@@ -51,6 +53,9 @@
 
 .vjs-control-bar > .vjs-time-divider{
     display: none
+}
+
+.vjs-big-play-button {
 }
 
 button {

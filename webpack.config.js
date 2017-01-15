@@ -28,23 +28,23 @@ const babelConfig = Object.assign({}, pkg.babel, {
 });
 
 const environments = {
-  dev: {
-    publicPath: `https://cdn-dev.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
-  },
-  prod: {
-    publicPath: `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
-  },
-  local: {
-    publicPath: `/sdk/`
-  },
+    dev: {
+        publicPath: `https://cdn-dev.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
+    },
+    prod: {
+        publicPath: `https://cdn.elasticmedia.io/lib/elasticprogram-sdk/${pkg.version}/`
+    },
+    local: {
+        publicPath: `/sdk/`
+    },
 };
 
 let env;
 for (let e in environments) {
-  if (process.argv.includes(`--${e}`)) {
-    env = e;
-    break;
-  }
+    if (process.argv.includes(`--${e}`)) {
+        env = e;
+        break;
+    }
 }
 
 
@@ -99,7 +99,8 @@ const config = {
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': isDebug ? '"development"' : '"production"',
             __DEV__: isDebug,
-            MINI_CMS_BASE_URL: isDebug ? '"http://mini-cms-dev.elasticmedia.io/em/v2/"' : '"https://mini-cms.elasticmedia.io/em/v2/"'
+            MINI_CMS_BASE_URL: isDebug ? '"http://mini-cms-dev.elasticmedia.io/em/v2/"' : '"https://mini-cms.elasticmedia.io/em/v2/"',
+            ANALYTICS_BASE_URL: isDebug ? '"http://analytics-dev.elasticmedia.io/em/v2/"' : '"http://analytics-dev.elasticmedia.io/em/v2/"'
         }),
         // Emit a JSON file with assets paths
         // https://github.com/sporto/assets-webpack-plugin#options
@@ -107,13 +108,6 @@ const config = {
             path: path.resolve(__dirname, './dist'),
             filename: 'assets.json',
             prettyPrint: true,
-        }),
-        new BannerPlugin({
-            chunks: {
-                'elasticprogram-sdk': {
-                    beforeContent: `/* Elastic Media elasticprogram-sdk v${pkg.version} */\n`
-                }
-            }
         }),
         new ExtractTextPlugin(isDebug ? '[name].css?[hash]' : '[name].css'),
     ],
@@ -248,6 +242,18 @@ if (isDebug && useHMR) {
     config.entry['hot-middleware'] = 'webpack-hot-middleware/client';
     config.plugins.push(new webpack.HotModuleReplacementPlugin());
     config.plugins.push(new webpack.NoErrorsPlugin());
+}
+
+if (!useHMR) {
+    config.plugins.push(
+        new BannerPlugin({
+            chunks: {
+                'elasticprogram-sdk': {
+                    beforeContent: `/* Elastic Media elasticprogram-sdk v${pkg.version} */\n`
+                }
+            }
+        })
+    );
 }
 
 const demo = {
