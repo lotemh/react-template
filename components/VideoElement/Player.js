@@ -78,12 +78,7 @@ class Player {
             this.getPlayer().play();
             this.getPlayer().pause();
         } else{
-            this.getPlayer().play().then(() => {
-                this.store.dispatch({
-                    type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE,
-                    isPlaying: true
-                });
-            });
+            this.getPlayer().play();
         }
     }
 
