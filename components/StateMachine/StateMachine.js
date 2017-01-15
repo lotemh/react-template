@@ -42,7 +42,6 @@ class StateMachine {
     }
 
     start() {
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: "next"});
         this.actionHandler('next').catch((error) => {
             if (error === "NotAllowedError" || error.name === 'NotAllowedError') {
                 this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
@@ -53,7 +52,6 @@ class StateMachine {
     }
 
     eventHandler(event, params) {
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: event});
         if (this[event]) {
             this.logger.log(`handle event ${event}`);
             this[event](params);
@@ -63,6 +61,7 @@ class StateMachine {
     /** **********************/
 
     extend() {
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: "extend"});
         this.extendItem(this.segmentsManager.getActive());
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
@@ -75,6 +74,7 @@ class StateMachine {
     }
 
     actionHandler(action) {
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.logger.log(`handle action ${action}`);
         this.playbackController.onSegmentEndAction = null;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
