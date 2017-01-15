@@ -1,7 +1,6 @@
 import React, {PropTypes} from "react";
 import ReactDOM from 'react-dom';
 import ElasticMediaSdk from "./ElasticMediaSdk";
-import Controls from "../Controls/BrightcoveControls";
 const screenfull = require('screenfull');
 
 const ElasticMediaController = React.createClass({
@@ -16,12 +15,15 @@ const ElasticMediaController = React.createClass({
     componentWillMount() {
         let metadata,
             that = this;
-        this.state = this.calcWidthAndHeight();
+        this.state = {};
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
                 if (xmlhttp.status == 200) {
                     console.log("got metadata!");
+                    if (that.props["originalPlayerId"]) {
+                        //hideVjsControlsBar(that.props["originalPlayerId"]);
+                    }
                     try {
                         metadata = JSON.parse(xmlhttp.responseText);
                         that.setState({metadata: metadata});
@@ -39,7 +41,6 @@ const ElasticMediaController = React.createClass({
     },
 
     componentDidMount() {
-        window.addEventListener('resize', this.handleResize);
         this.unsubscribe = this.context.store.subscribe(() => {
             this.forceUpdate();
         })
@@ -73,12 +74,6 @@ const ElasticMediaController = React.createClass({
         }
         return result;
     },
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
-    },
-    handleResize() {
-        this.setState(this.calcWidthAndHeight());
-    },
     eventHandler(event, props){
         this.refs.sdk.eventHandler(event, props);
     },
@@ -86,19 +81,26 @@ const ElasticMediaController = React.createClass({
         return (
             <div>
                 { this.state.metadata ?
-                <div className='player-container' style={this.state} ref="playerContainer">
+                <div className="player-container" ref="playerContainer">
                     <ElasticMediaSdk ref="sdk"
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}
                         episodeId={this.props.episodeId}>
-                                    {this.props.children}
+                        {this.props.videoElements}
                     </ElasticMediaSdk>
-                    <Controls eventHandler={this.eventHandler} ref="controls"/>
+                    {React.createElement(this.props.controls, {eventHandler:this.eventHandler, ref:"controls"})}
                 </div>
                 : null}
             </div>
         );
     }
 });
+
+function hideVjsControlsBar(id) {
+    const vjsControlBar = document.querySelector('#' + id +' .vjs-control-bar');
+    if (vjsControlBar) {
+        vjsControlBar.style.display = 'none';
+    }
+}
 
 export default ElasticMediaController;

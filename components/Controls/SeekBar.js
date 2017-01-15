@@ -47,7 +47,7 @@ const SeekBar = React.createClass({
     },
     render() {
         return (
-            <div className='seekBar'>
+            <div className='emHTML5SeekBar'>
                 <span ref="currentTime" id="leftTime">{this.getCurrentTimeInItemHHMMSS()}</span>
                 <input ref="bar" type="range"
                        min={0}

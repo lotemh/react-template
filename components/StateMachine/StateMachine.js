@@ -1,5 +1,6 @@
 import Logger from '../Logger/Logger';
 import SegmentManager from './SegmentManager';
+import AnalyticsReporter from './AnalyticsReporter';
 import PlaybackController from '../playbackController/playbackController';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
 
@@ -13,6 +14,7 @@ class StateMachine {
         this.store = store;
         this.playbackController = new PlaybackController(this.store);
         this.playbackController.setTimeUpdate(this.timeUpdate.bind(this));
+        AnalyticsReporter.start(this.store);
     }
 
     /** **  public APi ****/
@@ -59,7 +61,7 @@ class StateMachine {
     /** **********************/
 
     extend() {
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'extend'});
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: "extend"});
         this.extendItem(this.segmentsManager.getActive());
         this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
@@ -72,6 +74,7 @@ class StateMachine {
     }
 
     actionHandler(action) {
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.logger.log(`handle action ${action}`);
         this.playbackController.onSegmentEndAction = null;
         const followingSegment = this.segmentsManager.getNextSegmentAccordingToAction(action);
@@ -79,12 +82,13 @@ class StateMachine {
             this.playbackController.pause();
             return;
         }
-        this.updateView({
+        this.store.dispatch({
+            type: "SET_SEGMENT",
             itemNum: SegmentManager.getItemNum(followingSegment.title),
             itemTimeMs: followingSegment.in,
+            itemStart: followingSegment.in,
             activeSegment: followingSegment,
         });
-        this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.segmentsManager.setActive(followingSegment);
         return this.playbackController.playSegment(followingSegment, this.actionHandler.bind(this, 'no_action'))
             .then(() => {
@@ -129,7 +133,12 @@ class StateMachine {
         } else {
             itemLength = (activeSegment.out - activeSegment.in);
         }
-        this.updateView({itemLength: itemLength, itemStart: activeSegment.in});
+        this.store.dispatch({
+            type: "SET_SEGMENT",
+            itemLength: itemLength,
+            itemStart: activeSegment.in,
+            activeSegment: followingSegment,
+        });
     }
 
     timeUpdate(timeMs) {
