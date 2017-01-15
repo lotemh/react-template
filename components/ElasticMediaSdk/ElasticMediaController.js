@@ -13,7 +13,7 @@ const ElasticMediaController = React.createClass({
     componentWillMount() {
         let metadata,
             that = this;
-        this.state = this.calcWidthAndHeight();
+        this.state = {};
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
@@ -37,10 +37,6 @@ const ElasticMediaController = React.createClass({
         xmlhttp.open("GET", MINI_CMS_BASE_URL + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId, true);
         xmlhttp.send();
     },
-
-    componentDidMount() {
-        window.addEventListener('resize', this.handleResize);
-    },
     calcWidthAndHeight() {
         let result = {
                 width: window.innerWidth,
@@ -62,12 +58,6 @@ const ElasticMediaController = React.createClass({
         }
         return result;
     },
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
-    },
-    handleResize() {
-        this.setState(this.calcWidthAndHeight());
-    },
     eventHandler(event, props){
         this.refs.sdk.eventHandler(event, props);
     },
@@ -75,7 +65,7 @@ const ElasticMediaController = React.createClass({
         return (
             <div>
                 { this.state.metadata ?
-                <div className="player-container" style={this.state}>
+                <div className="player-container">
                     <ElasticMediaSdk ref="sdk"
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}
