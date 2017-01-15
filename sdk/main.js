@@ -2,7 +2,6 @@
  * Created by user on 10/9/2016.
  */
 import './main.css';
-import 'whatwg-fetch';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';

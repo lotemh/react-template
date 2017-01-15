@@ -11,6 +11,13 @@ const ElasticMediaSdk = React.createClass({
     },
     componentWillMount() {
         const {store} = this.context;
+        this.context.store.dispatch({
+            type: 'SET_DATA',
+            programId: this.props.metadata.programId,
+            publisherId: this.props.publisherId,
+            episodeId: this.props.episodeId,
+            metadataId: this.props.metadata._id
+        });
         this.stateMachine = new StateMachine(store);
     },
 
@@ -21,9 +28,6 @@ const ElasticMediaSdk = React.createClass({
         stateMachine.setSegments(this.props.metadata.segments);
         if (this.props.contentUrl){
             stateMachine.setContentUrl(this.props.contentUrl);
-        }
-        if (this.props.metadata.programId) {
-            this.context.store.dispatch({type: 'SET_DATA', programId: this.props.metadata.programId});
         }
         waitForPlayersReady.then(()=> {
             stateMachine.start();
