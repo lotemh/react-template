@@ -8,12 +8,15 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 import ControlsStartStatus from '../components/Controls/ControlsStartStatus';
+import AnalyticsReporter from '../components/StateMachine/AnalyticsReporter';
 import { createStore } from 'redux';
+const screenfull = require('screenfull');
 
 const defaultState = {
     startStatus: ControlsStartStatus.PENDING,
     inExtend: false,
     isPlaying: false,
+    isFullscreen: false,
     shouldShowExtendBtn: false,
 
     numOfItems: 0,
@@ -32,10 +35,7 @@ function reducer(state, action){
     // TODO: Add action handlers (aka "reduces")
     switch (action.type) {
         case 'EVENT_HANDLER':
-            const generalData = {
-                segmentProgress: calcSegmentProgress(state.activeSegment, state.itemTimeMs),
-                shouldShowExtendBtn: shouldShowExtendButton(state.activeSegment, action.actionName)
-            };
+            AnalyticsReporter.storeEvent(action.actionName, state);
             let newState;
             switch (action.actionName) {
                 case 'extend':
@@ -59,7 +59,7 @@ function reducer(state, action){
                 default:
                     return state;
             }
-            return Object.assign({}, state, generalData, newState);
+            return Object.assign({}, state, newState);
         case 'SET_PENDING_FIRST_PLAY':
             return Object.assign({}, state, {pendingFirstPlayClick: action.pendingFirstPlayClick, isPlaying: !action.pendingFirstPlayClick});
         case 'FIRST_PLAY':
@@ -68,8 +68,15 @@ function reducer(state, action){
             return Object.assign({}, state, {isPlaying: true, pendingFirstPlayClick: false});
         case 'TOGGLE_PLAY':
             return Object.assign({}, state, {isPlaying: !state.isPlaying});
+        case 'TOGGLE_FULLSCREEN':
+            return Object.assign({}, state, {isFullscreen: !getFullScreenMode()});
         case  'SET_DATA':
             var data = Object.assign({}, action);
+            delete data.type;
+            return Object.assign({}, state, data);
+        case  'SET_SEGMENT':
+            var data = Object.assign({}, action);
+            data.shouldShowExtendBtn = shouldShowExtendButton(data.activeSegment),
             delete data.type;
             return Object.assign({}, state, data);
         case 'SWITCH_PLAYERS':
@@ -98,8 +105,8 @@ function reducer(state, action){
     }
 }
 
-function shouldShowExtendButton(activeSegment, action){
-    return action !== 'extend' && activeSegment.extend ? true : false;
+function shouldShowExtendButton(activeSegment){
+    return activeSegment.extend ? true : false;
 }
 
 function calcSegmentProgress(segment, currentTime) {
@@ -122,6 +129,16 @@ function getTfx(programId){
         'e603fdcf-fab1-4b67-8dc6-90bf82c35d58': 'STUDIO_A'
     };
     return tfxMap[programId] || 'NO_TFX';
+}
+
+function getFullScreenMode() {
+    if (!screenfull.enabled) {
+        return false;
+    } else if (screenfull.isFullscreen) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // Centralized application state

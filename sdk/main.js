@@ -2,7 +2,6 @@
  * Created by user on 10/9/2016.
  */
 import './main.css';
-import 'whatwg-fetch';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -83,7 +82,11 @@ function renderPlugin() {
             return;
         }
         let brightcovePlayerId = player.getAttribute("data-player");
+        if (brightcovePlayerId === "V1xBaDVb6l" && process.env.NODE_ENV !== "development") {
+            return;
+        }
         if (brightcovePlayerId !== "r1hasDFSe" &&
+            brightcovePlayerId !== "V1xBaDVb6l" &&
             brightcovePlayerId !=="S1eJmZOTml" &&
             brightcovePlayerId !== "S1AxOqLme") {
             return;

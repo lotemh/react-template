@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import * as ReactDOM from 'react/lib/ReactDOM';
+import * as ReactDOM from 'react-dom';
 
 class VideoElement extends React.Component {
 
@@ -83,7 +83,7 @@ class VideoElement extends React.Component {
     addLoadedDataEvent(listener) {
         this.getPlayer().addEventListener('canplay', listener);
     }
-    
+
     addTimeUpdateEvent(listener) {
         this.getPlayer().addEventListener('timeupdate', listener);
     }
