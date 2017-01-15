@@ -1,5 +1,7 @@
 import React, {PropTypes} from "react";
+import ReactDOM from 'react-dom';
 import ElasticMediaSdk from "./ElasticMediaSdk";
+const screenfull = require('screenfull');
 
 const ElasticMediaController = React.createClass({
     propTypes: {
@@ -37,6 +39,20 @@ const ElasticMediaController = React.createClass({
         xmlhttp.open("GET", MINI_CMS_BASE_URL + this.props.publisherId + '/metadata?episodeId=' + this.props.episodeId, true);
         xmlhttp.send();
     },
+
+    componentDidMount() {
+        this.unsubscribe = this.context.store.subscribe(() => {
+            this.forceUpdate();
+        })
+    },
+    componentDidUpdate() {
+        let screen = ReactDOM.findDOMNode(this.refs.playerContainer);
+        if (screenfull.enabled && 
+            ((!screenfull.isFullscreen && this.context.store.getState().isFullscreen) || 
+            (screenfull.isFullscreen && !this.context.store.getState().isFullscreen))) {
+            screenfull.toggle(screen);
+        }
+    },
     calcWidthAndHeight() {
         let result = {
                 width: window.innerWidth,
@@ -65,7 +81,7 @@ const ElasticMediaController = React.createClass({
         return (
             <div>
                 { this.state.metadata ?
-                <div className="player-container">
+                <div className="player-container" ref="playerContainer">
                     <ElasticMediaSdk ref="sdk"
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}
