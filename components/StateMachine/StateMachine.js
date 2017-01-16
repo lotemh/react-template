@@ -103,11 +103,13 @@ class StateMachine {
     }
 
     play() {
-        this.playbackController.play().then(() => {
-        });
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'play'});
+        const activeSegment = this.segmentsManager.getActive();
+        this.playbackController.play(activeSegment.src, activeSegment.in);
     }
 
     pause() {
+        this.store.dispatch({type: 'EVENT_HANDLER', actionName: 'pause'});
         this.playbackController.pause();
     }
 

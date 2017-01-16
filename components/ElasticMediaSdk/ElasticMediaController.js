@@ -26,6 +26,9 @@ const ElasticMediaController = React.createClass({
                     }
                     try {
                         metadata = JSON.parse(xmlhttp.responseText);
+                        if (metadata.segments.root.src === undefined){
+                            that.setState({contentUrl: that.props.contentUrl});
+                        }
                         that.setState({metadata: metadata});
                     } catch(e) {
                         console.log(e);
@@ -83,6 +86,7 @@ const ElasticMediaController = React.createClass({
                 { this.state.metadata ?
                 <div className="player-container" ref="playerContainer">
                     <ElasticMediaSdk ref="sdk"
+                                     contentUrl = {this.state.contentUrl}
                         publisherId={this.props.publisherId}
                         metadata={this.state.metadata}
                         episodeId={this.props.episodeId}>

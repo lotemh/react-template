@@ -103,6 +103,7 @@ function renderPlugin() {
             parent.appendChild(container);
 
             props["data-video-id"] = player.getAttribute("data-video-id");
+            props["contentUrl"] = props["data-video-id"];
             props["data-account"] = player.getAttribute("data-account");
             props["data-embed"] =  "default";
             props["data-player"] = player.getAttribute("data-player");

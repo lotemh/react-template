@@ -55,6 +55,9 @@
     display: none
 }
 
+.vjs-big-play-button {
+}
+
 button {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
