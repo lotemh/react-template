@@ -124,7 +124,7 @@ function getTfx(programId){
     const tfxMap = {
         '1234': 'NO_TFX',
         '5678': 'WHOOSH_REV',
-        'd943a98e-d05b-4c9f-8370-c198a2105d34': 'SOCAL',
+        'd943a98e-d05b-4c9f-8370-c198a2105d34': 'NO_TFX',
         'e59df5d0-db3c-4d7e-8304-2ced65e952ac': 'BORDER_BLASTERS',
         'e603fdcf-fab1-4b67-8dc6-90bf82c35d58': 'STUDIO_A'
     };

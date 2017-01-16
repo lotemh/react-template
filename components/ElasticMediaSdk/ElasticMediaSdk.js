@@ -26,6 +26,9 @@ const ElasticMediaSdk = React.createClass({
         const stateMachine = this.stateMachine;
         var waitForPlayersReady = this.stateMachine.setPlayers(players);
         stateMachine.setSegments(this.props.metadata.segments);
+        if (this.props.contentUrl){
+            stateMachine.setContentUrl(this.props.contentUrl);
+        }
         waitForPlayersReady.then(()=> {
             stateMachine.start();
         });
