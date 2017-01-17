@@ -13,25 +13,25 @@
     <% for (key in htmlWebpackPlugin.files.css) { %>
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[key] %>">
     <% } %>
-    <script>
-        if (screen.width < 450) {
-            var mvp = document.getElementById('vp');
-            mvp.setAttribute('content','width=450');
-        }
-    </script>
 	<style>
-		
+        #parent {
+            width: 100vw;
+            height: 56.25vw;
+            max-width: 177.77vh;
+            max-height: 100vh;
+            position: absolute;
+        }
 	</style>
     </head>
   <body>
     <div id="parent">
 	    <video
-		   data-video-id="3884616525001"
+		   data-video-id="5004997295001"
 		   data-account="136368194"
-		   data-player="r1hasDFSe"
+		   data-player="V1xBaDVb6l"
 		   data-embed="default"
 		   class="video-js" controls></video>
-	    <script src="//players.brightcove.net/136368194/r1hasDFSe_default/index.min.js"></script>
+	    <script src="//players.brightcove.net/136368194/V1xBaDVb6l_default/index.min.js"></script>
 	    <script src="<%= webpackConfig.sdk.js %>"></script>
     </div>
     <% for (key in htmlWebpackPlugin.files.chunks) { %>

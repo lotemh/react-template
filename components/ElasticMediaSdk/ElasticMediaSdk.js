@@ -4,13 +4,21 @@ import StateMachine from '../StateMachine/StateMachine';
 const ElasticMediaSdk = React.createClass({
     propTypes: {
         publisherId: PropTypes.string.isRequired,
-        episodeId: PropTypes.string.isRequired
+        episodeId: PropTypes.string.isRequired,
+        metadata: PropTypes.object.isRequired
     },
     contextTypes: {
         store: React.PropTypes.object
     },
     componentWillMount() {
         const {store} = this.context;
+        this.context.store.dispatch({
+            type: 'SET_DATA',
+            programId: this.props.metadata.programId,
+            publisherId: this.props.publisherId,
+            episodeId: this.props.episodeId,
+            metadataId: this.props.metadata._id
+        });
         this.stateMachine = new StateMachine(store);
     },
 
@@ -19,8 +27,8 @@ const ElasticMediaSdk = React.createClass({
         const stateMachine = this.stateMachine;
         var waitForPlayersReady = this.stateMachine.setPlayers(players);
         stateMachine.setSegments(this.props.metadata.segments);
-        if (this.props.metadata.programId) {
-            this.context.store.dispatch({type: 'SET_DATA', programId: this.props.metadata.programId});
+        if (this.props.contentUrl){
+            stateMachine.setContentUrl(this.props.contentUrl);
         }
         waitForPlayersReady.then(()=> {
             stateMachine.start();

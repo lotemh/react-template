@@ -18,6 +18,8 @@
     "react-dom": "^15.2.1",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
+    "screenfull": "^3.0.2",
+    "uuid": "^3.0.1",
     "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
@@ -74,6 +76,7 @@
     "react-addons-test-utils": "^15.4.0",
     "react-hot-loader": "^3.0.0-beta.2",
     "s3": "^4.4.0",
+    "sinon": "^1.17.6",
     "style-loader": "^0.13.1",
     "stylelint": "^7.0.3",
     "stylelint-config-standard": "^11.0.0",
