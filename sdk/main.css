@@ -98,7 +98,7 @@ button:active {
     width: 50px;
 }
 
-.progress-container {
+.player-wrapper .vjs-control-bar .progress-container {
     flex-grow: 1;
     order: 5;
     width: 148px;
