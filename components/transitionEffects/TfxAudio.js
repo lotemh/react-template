@@ -76,7 +76,7 @@ class TfxAudioFadeOut extends TfxAudio {
 }
 
 const TFX_AUDIO = {
-    IN: new TfxAudioFadeIn(4000),
+    IN: new TfxAudioFadeIn(40),
     NO_ACTION_OUT: new TfxAudioFadeOut(1000),
 }
 
