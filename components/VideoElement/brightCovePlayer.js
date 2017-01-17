@@ -85,6 +85,8 @@ class BrightCovePlayer extends React.Component {
         var that = this;
         let videoElement = this.getPlayerMediaElement();
         if (!this.state.shouldLoad) {
+            //videoElement.setAttribute("crossOrigin", "anonymous");
+            //videoElement.setAttribute("src", videoElement.getAttribute("src"));
             videoElement.setAttribute("playsinline", "");
         }
         this.player = window.videojs(videoElement.id);
@@ -173,6 +175,21 @@ class BrightCovePlayer extends React.Component {
         }
         store.subscribe(render);
         render();
+
+        var fullScreenControl = document.querySelector('#'+this.props.playerId + ' .vjs-fullscreen-control');
+
+        if (fullScreenControl) {
+            if (isIphone()) {
+                fullScreenControl.parentNode.removeChild(fullScreenControl);
+            } else {
+                var newFullScreenControl = fullScreenControl.cloneNode(true);
+                fullScreenControl.parentNode.replaceChild(newFullScreenControl, fullScreenControl);
+                newFullScreenControl.addEventListener("click", function(event){
+                    store.dispatch({type: 'TOGGLE_FULLSCREEN'});
+                });
+            }
+        }
+
     }
 
     getControlBar(){
