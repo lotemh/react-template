@@ -26,7 +26,7 @@ describe('Player suite', () => {
         expect(player).to.have.property('getId');
     });
 
-    describe('play', () => {
+    xdescribe('play', () => {
         it('should reject promise if play event is not triggered in 1000 ms', (done) => {
             const customStore = Mocks.getStore({startStatus: ControlsStartStatus.ACTIVE});
             const player = Mocks.getBrightcovePlayer({}, customStore);

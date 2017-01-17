@@ -8,7 +8,7 @@ import Mocks from './mocks';
 
 describe('Playback Controller suite', () => {
 
-    describe('play segment', (done) => {
+    xdescribe('play segment', (done) => {
         it('should continue playing if src and time are equal', () => {
             const playbackController = Mocks.getPlaybackController();
             const segment = new Segment({in: 3030, out: 4040}, "h1");

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import Mocks from './mocks';
 
-describe('Brightcove Player suite', () => {
+xdescribe('Brightcove Player suite', () => {
     let brightcovePlayer;
 
     beforeEach(()=>{
