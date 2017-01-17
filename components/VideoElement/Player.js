@@ -1,7 +1,7 @@
 import React, {PropTypes} from "react";
 import Logger from "../Logger/Logger";
 import ControlsStartStatus from "../Controls/ControlsStartStatus";
-import {isMobileAgent, isIphone} from "../utils/webUtils";
+import {isIphone} from "../utils/webUtils";
 
 class Player {
 
@@ -44,11 +44,6 @@ class Player {
     onReady(callback) {
         this.getPlayer().onReady(()=> {
             this.addTimeUpdateEvent();
-            function playListener(event) {
-                this.store.dispatch({type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE, isPlaying: true});
-                this.getPlayer().removeEventListener("play", playListener.bind(this));
-            }
-            this.getPlayer().addEventListener("play", playListener.bind(this));
             callback();
         });
     }
@@ -63,9 +58,6 @@ class Player {
         const src = segment.src;
         const inTime = segment.in;
         const store = this.store;
-        if (this.store.getState().startStatus === ControlsStartStatus.PENDING && isMobileAgent()){
-            return Promise.reject("NotAllowedError");
-        }
         if (!this.isReady(src, inTime)){
             return this.prepareAndPlay(segment);
         } else {

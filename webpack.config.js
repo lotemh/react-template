@@ -160,7 +160,7 @@ const config = {
                 loader: path.resolve(__dirname, './utils/markdown-loader.js'),
             },
             {
-                test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/,
+                test: /\.(png|jpg|jpeg|gif|webp|svg|woff|woff2)$/,
                 loader: 'url-loader',
                 query: {
                     limit: 10000,
@@ -242,6 +242,15 @@ if (isDebug && useHMR) {
     config.entry['hot-middleware'] = 'webpack-hot-middleware/client';
     config.plugins.push(new webpack.HotModuleReplacementPlugin());
     config.plugins.push(new webpack.NoErrorsPlugin());
+}
+
+let client = process.argv.find(function(element) { return element.startsWith('--client=') });
+if (client) {
+    client = client.substr(9);  // Remove "--client=" prefix
+}
+
+if (client) {
+    config.entry = { 'elasticprogram-sdk': `./clients/${client}/${client}.js` };
 }
 
 if (!useHMR) {
