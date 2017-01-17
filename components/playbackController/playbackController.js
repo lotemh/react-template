@@ -3,15 +3,16 @@
  */
 import Logger from '../Logger/Logger';
 import Player from '../VideoElement/Player';
+import { TFX_AUDIO } from '../transitionEffects/TfxAudio';
 
 class PlaybackController {
     constructor(store) {
         this.store = store;
-        this.segmentEndTimeMs = false;
         this.logger = new Logger();
         this.activePlayer = null;
         this.segmentToPlayerMap = {};
         this.loadingSegmentsMap = {};
+        this.schedule = [];
     }
 
     /*********     Public API         ***********/
@@ -86,7 +87,7 @@ class PlaybackController {
         }
         const nextPlayer = this.getPreparedPlayer(segment);
         this.logger.log(`play segment ${segment.title} on player ${nextPlayer.getId()}`);
-        this.waitForSegmentEnd(segment.out, onSegmentEndAction);
+        this.generateSchedule(segment.out, onSegmentEndAction);
         return this.switchPlayers(this.activePlayer, nextPlayer);
     }
 
@@ -130,17 +131,11 @@ class PlaybackController {
         }, () => {});
     }
 
-    waitForSegmentEnd(endTimeStamp, onSegmentEndAction) {
-        this.segmentEndTimeMs = endTimeStamp;
-        this.onSegmentEndAction = onSegmentEndAction;
-    }
-
     playerUpdate(timeMs, playerId) {
         if (this.getActive() && playerId === this.getActive().id) {
-            if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
-                if (this.onSegmentEndAction) {
-                    this.onSegmentEndAction();
-                }
+            while (this.schedule.length && timeMs >= this.schedule[0].startTime) {
+                const task = this.schedule.shift();
+                task.callback();
             }
             this.timeUpdateCallback(timeMs);
         }
@@ -189,7 +184,7 @@ class PlaybackController {
     switchPlayers(oldPlayer, nextPlayer) {
         if (!nextPlayer) return;
 
-        this.store.dispatch({type: 'TFX_AUDIO_SET'});
+        this.store.dispatch({type: 'TFX_AUDIO_SET', tfxAudio: 'IN'});
 
         return this.activatePlayer(nextPlayer).then(() => {
             this.store.dispatch({type: 'SWITCH_PLAYERS'});
@@ -234,7 +229,6 @@ class PlaybackController {
         return isSrcEqual && isInTimeCloseToCurrentTime;
     }
 
-    //Thank you Aaron Atar for finding the solution!!!
     startPlaying() {
         this.players.concat(Object.values(this.loadingSegmentsMap)).concat(Object.values(this.segmentToPlayerMap)).forEach(p => {
             p.play();
@@ -243,6 +237,33 @@ class PlaybackController {
         if (this.activePlayer) {
             this.activePlayer.play();
         }
+    }
+
+    generateSchedule(segmentEndTimeMs, callback) {
+        const schedule = [];
+
+        if (TFX_AUDIO.IN) {
+            schedule.push({
+                startTime: 0,
+                callback: () => {TFX_AUDIO.IN.play(this.getActive());}
+            });
+        }
+        if (TFX_AUDIO.NO_ACTION_OUT && !this.store.getState().inExtend) {
+            schedule.push({
+                startTime: segmentEndTimeMs - TFX_AUDIO.NO_ACTION_OUT.duration,
+                callback: () => {
+                    TFX_AUDIO.NO_ACTION_OUT.play(this.getActive());
+                }
+            });
+        }
+        if (callback) {
+            schedule.push({
+                startTime: segmentEndTimeMs,
+                callback: callback
+            });
+        }
+
+        this.schedule = schedule.sort( (a, b) => { return a.startTime - b.startTime; } );
     }
 
     /**     Loading segments         ***********/
