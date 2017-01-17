@@ -143,14 +143,13 @@ class BrightCovePlayer extends React.Component {
 
     addControls(){
         const container = document.createElement('div');
-        container.id = 'progress-container';
-        container.className = 'vjs-control';
+        container.className = 'vjs-control progress-container';
 
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
 
 
-        var timeContainer = document.querySelector('#' + this.props.playerId + ' #progress-container');
+        var timeContainer = document.querySelector('#' + this.props.playerId + ' .progress-container');
         const { store } = this.context;
         const seekListener = this.seek.bind(this);
 

@@ -80,7 +80,7 @@ const Controls = React.createClass({
     progress() {
         let progress = 0;
         try {
-            const segment = this.context.store.getState().activeSegment;        
+            const segment = this.context.store.getState().activeSegment;
             const segmentLength = (segment.out - segment.in);
             const segmentProgressTime = context.store.getState().itemTimeMs - segment.in;
             progress = segmentProgressTime / segmentLength;
@@ -111,10 +111,10 @@ const Controls = React.createClass({
                 <div className={this.getControlsClassName()}>
                     <div className="controlsTouchScreen" ref="touchScreen"></div>
                     <Extend isVisible={!storeState.inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
-                    {storeState.isPlaying ? 
-                        <img src={require("../../sdk/images/pause.png")} className='controller pause' id="pause" onClick={this.togglePlay}/>
+                    {storeState.isPlaying ?
+                        <img src={require("../../sdk/images/pause.png")} className='controller pause' onClick={this.togglePlay}/>
                     :
-                        <img src={require("../../sdk/images/play.png")} className='controller play' id="play" onClick={this.togglePlay}/>
+                        <img src={require("../../sdk/images/play.png")} className='controller play' onClick={this.togglePlay}/>
                     }
                     {timeElement}
                 </div>
