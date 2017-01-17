@@ -10,9 +10,9 @@ class Player {
         this.store = store;
         this.id = id;
         this.logger = new Logger();
-        if ('AudioContext' in window) {
+        if (false && 'AudioContext' in window) {
             this.audioContext = new AudioContext();
-        } else if ('webkitAudioContext' in window) {
+        } else if(false && 'webkitAudioContext' in window) {
             this.audioContext = new webkitAudioContext();
         }
         this.audioTfxActive = false;
@@ -70,12 +70,7 @@ class Player {
             this.getPlayer().play();
             this.getPlayer().pause();
         } else{
-            this.getPlayer().play().then(() => {
-                this.store.dispatch({
-                    type: 'SET_DATA', startStatus: ControlsStartStatus.ACTIVE,
-                    isPlaying: true
-                });
-            });
+            this.getPlayer().play();
         }
     }
 

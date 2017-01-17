@@ -13,6 +13,15 @@
     <% for (key in htmlWebpackPlugin.files.css) { %>
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[key] %>">
     <% } %>
+	<style>
+        #parent {
+            width: 100vw;
+            height: 56.25vw;
+            max-width: 177.77vh;
+            max-height: 100vh;
+            position: absolute;
+        }
+	</style>
     </head>
   <body>
     <div id="parent">
