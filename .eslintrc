@@ -10,7 +10,7 @@
         "mocha": true
     },
     "rules": {
-        "no-console": 0,
+        "no-console": ["error"],
         "no-unused-expressions": 0,
         "padded-blocks": 0,
         "indent": ["error", 4],

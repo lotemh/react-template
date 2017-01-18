@@ -1,6 +1,7 @@
 import React, {PropTypes} from "react";
 import ReactDOM from 'react-dom';
 import ElasticMediaSdk from "./ElasticMediaSdk";
+import Logger from "../Logger/Logger";
 const screenfull = require('screenfull');
 
 const ElasticMediaController = React.createClass({
@@ -16,11 +17,11 @@ const ElasticMediaController = React.createClass({
         let metadata,
             that = this;
         this.state = {};
+        this.logger = new Logger();
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
                 if (xmlhttp.status == 200) {
-                    console.log("got metadata!");
                     if (that.props["originalPlayerId"]) {
                         //hideVjsControlsBar(that.props["originalPlayerId"]);
                     }
@@ -31,11 +32,11 @@ const ElasticMediaController = React.createClass({
                         }
                         that.setState({metadata: metadata});
                     } catch(e) {
-                        console.log(e);
+                        that.logger.log(e);
                     }
                 }
                 else {
-                    console.log("got " + xmlhttp.status);
+                    that.logger.log("got " + xmlhttp.status);
                 }
             }
         };
