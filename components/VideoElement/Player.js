@@ -10,9 +10,9 @@ class Player {
         this.store = store;
         this.id = id;
         this.logger = new Logger();
-        if (false && 'AudioContext' in window) {
+        if ('AudioContext' in window) {
             this.audioContext = new AudioContext();
-        } else if(false && 'webkitAudioContext' in window) {
+        } else if('webkitAudioContext' in window) {
             this.audioContext = new webkitAudioContext();
         }
         this.audioTfxActive = false;
@@ -75,14 +75,8 @@ class Player {
     }
 
     playPreparedSegment() {
-        const store = this.store;
-        const state = store.getState();
-        if (state.tfxAudio && !this.audioTfxActive) {
-            this.audioTfxActive = true;
-            this[state.tfxAudio]();
-        }
         return this.playIfShould().then(() => {
-            store.dispatch({
+            this.store.dispatch({
                 type: 'PLAY'
             });
         });
@@ -167,30 +161,6 @@ class Player {
 
     setTimeUpdateCallback(cb) {
         this.timeUpdateCallback = cb;
-    }
-
-    tfxAudioFadeIn() {
-        const audioCtx = this.getAudioContext();
-        if (!audioCtx) {
-            return;
-        }
-        const gainNode = audioCtx.createGain();
-        const source = this.getMediaElementSource();
-
-        const fadeTimeMs = 40;
-
-        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(1.0, audioCtx.currentTime + fadeTimeMs / 1000);
-
-        source.disconnect();
-        source.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
-        window.setTimeout(() => {
-            source.connect(audioCtx.destination);
-            this.audioTfxActive = false;
-            this.store.dispatch({type: 'TFX_AUDIO_END'});
-        }, fadeTimeMs);
     }
 
     /*******************  private methods  ***************************/
