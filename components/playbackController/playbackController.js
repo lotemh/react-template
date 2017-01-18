@@ -93,7 +93,7 @@ class PlaybackController {
         if (this.getActive() && playerId === this.getActive().id) {
             while (this.schedule.length && timeMs >= this.schedule[0].startTime) {
                 const task = this.schedule.shift();
-                task.callback();
+                setTimeout(task.callback, 0);  // breaks the loop when callback modifies schedule
             }
             this.timeUpdateCallback(timeMs);
         }
