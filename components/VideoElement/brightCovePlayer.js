@@ -7,7 +7,7 @@ import Hammer from 'hammerjs';
 import Dots from '../Controls/Dots';
 import BrightcoveSeekBar from '../Controls/BrightcoveSeekBar';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
-import {isIphone} from '../utils/webUtils';
+import {isIphone, isSafari} from '../utils/webUtils';
 
 const SWIPES = {
     LEFT: 'swipeleft',
@@ -178,7 +178,7 @@ class BrightCovePlayer extends React.Component {
         var fullScreenControl = document.querySelector('#'+this.props.playerId + ' .vjs-fullscreen-control');
 
         if (fullScreenControl) {
-            if (isIphone()) {
+            if (isIphone() || isSafari()) {
                 fullScreenControl.parentNode.removeChild(fullScreenControl);
             } else {
                 var newFullScreenControl = fullScreenControl.cloneNode(true);
