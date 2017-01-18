@@ -13,6 +13,7 @@
         "no-console": 0,
         "no-unused-expressions": 0,
         "padded-blocks": 0,
-        "indent": ["error", 4]
+        "indent": ["error", 4],
+        "max-statements": ["error", 17]
     }
 }
