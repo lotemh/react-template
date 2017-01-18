@@ -15,6 +15,7 @@ const ElasticMediaSdk = React.createClass({
         this.context.store.dispatch({
             type: 'SET_DATA',
             programId: this.props.metadata.programId,
+            programPreviewImageUrl: this.props.metadata.programPreviewImageUrl,
             publisherId: this.props.publisherId,
             episodeId: this.props.episodeId,
             metadataId: this.props.metadata._id

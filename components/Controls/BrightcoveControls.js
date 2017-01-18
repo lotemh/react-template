@@ -84,9 +84,6 @@ const Controls = React.createClass({
         return (
             <div>
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
-                    {isIphone() && this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ?
-                        <img src={require("../../sdk/images/play.png")} className="bigPlay"/>
-                    : null }
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
                     <Extend isVisible={store.getState().shouldShowExtendBtn} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>

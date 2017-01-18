@@ -7,7 +7,7 @@ import Hammer from 'hammerjs';
 import Dots from '../Controls/Dots';
 import BrightcoveSeekBar from '../Controls/BrightcoveSeekBar';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
-import {isIphone} from '../utils/webUtils';
+import {isIphone, isMobileAgent} from '../utils/webUtils';
 
 const SWIPES = {
     LEFT: 'swipeleft',
@@ -100,6 +100,7 @@ class BrightCovePlayer extends React.Component {
             if (that.state.readyCallback){
                 that.state.readyCallback();
             }
+            that.addEventListener("playing", that.playingListener.bind(that));
             that.getControlBar().style.display = "flex";
         });
     }
@@ -143,18 +144,49 @@ class BrightCovePlayer extends React.Component {
 
     addControls(){
         const container = document.createElement('div');
+        const playerId = this.props.playerId;
+        const { store } = this.context;
+        let that = this;
         container.id = 'progress-container';
         container.className = 'vjs-control';
 
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
 
+        var posterControl  = document.querySelector('#'+this.props.playerId + ' .vjs-poster');
+        if (store.getState().programPreviewImageUrl) {
+            let posterControlCln = posterControl.cloneNode();
+            posterControlCln.setAttribute("style", "background-image: url('" + store.getState().programPreviewImageUrl + "');");
+            posterControl.parentNode.replaceChild(posterControlCln, posterControl);
+            posterControl = posterControlCln;
+        }
+        let gestureListener = new Hammer(posterControl, {velocity: 0.80});
+        gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
+        gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
 
         var timeContainer = document.querySelector('#' + this.props.playerId + ' #progress-container');
-        const { store } = this.context;
         const seekListener = this.seek.bind(this);
 
         function render(){
+            var bigPlayButton = document.querySelector('#'+playerId + ' .vjs-big-play-button');
+            var myPosterControl  = document.querySelector('#'+playerId + ' .vjs-poster');
+            var spinnerControl  = document.querySelector('#'+playerId + ' .vjs-loading-spinner');
+            if (bigPlayButton && store.getState().startStatus === ControlsStartStatus.ACTIVE) {
+                bigPlayButton.style.display = "none";
+            } else {
+                bigPlayButton.style.display = "block";
+            }
+            if (that.state.waitForPlaying) {
+                myPosterControl.classList.add("em-show");
+                myPosterControl.classList.remove("em-hide");
+                spinnerControl.classList.add("em-show");
+                spinnerControl.classList.remove("em-hide");
+            } else {
+                myPosterControl.classList.add("em-hide", "fade");
+                myPosterControl.classList.remove("em-show");
+                spinnerControl.classList.add("em-hide");
+                spinnerControl.classList.remove("em-show");
+            }
             ReactDOM.render(
                 <div>
                     <Dots
@@ -189,7 +221,6 @@ class BrightCovePlayer extends React.Component {
                 });
             }
         }
-
     }
 
     getControlBar(){
@@ -230,16 +261,23 @@ class BrightCovePlayer extends React.Component {
     }
 
     play() {
-        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING && isIphone()){
+        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING && isMobileAgent()){
             return Promise.reject("NotAllowedError");
         }
         this.getPlayer().play();
+        this.setState({ waitForPlaying: true });
         return Promise.resolve();
     }
 
     show() {
+        let newState = {
+            isHidden: false
+        }
         this.getPlayer().userActive(true);
-        this.setState({ isHidden: false });
+        if (this.context.store.getState().startStatus === ControlsStartStatus.ACTIVE){
+            newState.waitForPlaying = true;
+        }
+        this.setState(newState);
     }
 
     hide() {
@@ -307,6 +345,9 @@ class BrightCovePlayer extends React.Component {
 
     addEventListener(event, listener) {
         this.getPlayer().on(event, listener, false);
+    }
+    playingListener(event) {
+        this.setState({ waitForPlaying: false });
     }
 
     removeEventListener(event, listener) {
