@@ -17,16 +17,16 @@ const Dots = React.createClass({
     getClassName(name) {
         let className;
         if (name === 'dots') {
-            className = this.props.isVisible? this.props.dotsClassName || 'dots' : 'hidden';
+            className = this.props.isVisible? this.props.dotsClassName || 'em-dots' : 'em-hidden';
         } else {
-            className = 'dot';
+            className = 'em-dot';
             let num = parseInt(name.match(/[\d\.]+/)[0], 10),
                 lastSectionNum = Math.floor(this.props.numOfItems / 5),
                 currentSection = Math.floor(this.props.itemNum / 5);
             if (currentSection === lastSectionNum) {
                 const numOfDots = this.props.numOfItems % 5;
                 if (num > numOfDots) {
-                    className += ' hidden';
+                    className += ' em-hidden';
                 }
             }
         }
@@ -38,7 +38,7 @@ const Dots = React.createClass({
             dots.push(<img src={this.getImgSource(i)} className={this.getClassName(`dot${i.toString()}`)} key={i.toString()} />);
         }
         return (
-            <span id="dots" className={this.getClassName('dots')}>
+            <span className={this.getClassName('dots')}>
                 {dots}
             </span>
         );

@@ -50,8 +50,8 @@ const ElasticMediaController = React.createClass({
     },
     componentDidUpdate() {
         let screen = ReactDOM.findDOMNode(this.refs.playerContainer);
-        if (screenfull.enabled && 
-            ((!screenfull.isFullscreen && this.context.store.getState().isFullscreen) || 
+        if (screenfull.enabled &&
+            ((!screenfull.isFullscreen && this.context.store.getState().isFullscreen) ||
             (screenfull.isFullscreen && !this.context.store.getState().isFullscreen))) {
             screenfull.toggle(screen);
         }
@@ -84,7 +84,7 @@ const ElasticMediaController = React.createClass({
         return (
             <div>
                 { this.state.metadata ?
-                <div className="player-container" ref="playerContainer">
+                <div className="em-player-container" ref="playerContainer">
                     <ElasticMediaSdk ref="sdk"
                                      contentUrl = {this.state.contentUrl}
                         publisherId={this.props.publisherId}
