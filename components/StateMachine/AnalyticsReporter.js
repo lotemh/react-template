@@ -35,28 +35,24 @@ AnalyticsReporter.start = function start(store) {
 }
 
 AnalyticsReporter.storeEvent = function storeEvent(action, currentState) {
-    let event;
+    let event = {
+        eventTime: Date.now(),
+    }
     if (!EVENT_NUM[action]) {
         return;
     }
     if (!currentState.activeSegment) {
-        event = {
-            eventTime: Date.now(),
-            itemNum: 0,
-            segmentType: 0,
-            itemPlayedTime: 0,
-            itemRealTime: 0,
-            event: EVENT_NUM[action]
-        }
+        event.itemNum = 0;
+        event.segmentType = 0;
+        event.itemPlayedTime = 0;
+        event.itemRealTime = 0;
+        event.event = EVENT_NUM[action];
     } else {
-        event = {
-            eventTime: Date.now(),
-            itemNum: currentState.itemNum + 1,
-            segmentType: getSegmentType(currentState),
-            itemPlayedTime: getPlayedTime(currentState),
-            itemRealTime: Date.now() - AnalyticsReporter.lastActionTime,
-            event: EVENT_NUM[action]
-        }
+        event.itemNum = currentState.itemNum + 1;
+        event.segmentType = getSegmentType(currentState);
+        event.itemPlayedTime = getPlayedTime(currentState);
+        event.itemRealTime = Date.now() - AnalyticsReporter.lastActionTime;
+        event.event = EVENT_NUM[action];
     }
     AnalyticsReporter.lastActionTime = Date.now();
     AnalyticsReporter.events.push(event);
