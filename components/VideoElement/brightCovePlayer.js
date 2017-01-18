@@ -7,7 +7,7 @@ import Hammer from 'hammerjs';
 import Dots from '../Controls/Dots';
 import BrightcoveSeekBar from '../Controls/BrightcoveSeekBar';
 import ControlsStartStatus from '../Controls/ControlsStartStatus';
-import {isIphone} from '../utils/webUtils';
+import {isIphone, isSafari, isMobileAgent} from '../utils/webUtils';
 
 const SWIPES = {
     LEFT: 'swipeleft',
@@ -18,6 +18,7 @@ class BrightCovePlayer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            waitForPlaying: false,
             src: this.props["data-video-id"] || null,
             shouldLoad: false,
             isHidden: true
@@ -41,7 +42,7 @@ class BrightCovePlayer extends React.Component {
         script.src = this.props["data-brightcove-script"];
         var playerElement = document.getElementById(this.props.playerId);
         if (this.state.shouldLoad === false) {
-            playerElement.classList.add("player", "brightcove-player");
+            playerElement.classList.add("em-player");
             document.getElementById(this.props.playerId + "_wrapper").appendChild(playerElement);
         } else {
             playerElement.setAttribute("em-player", true);
@@ -100,6 +101,7 @@ class BrightCovePlayer extends React.Component {
             if (that.state.readyCallback){
                 that.state.readyCallback();
             }
+            that.addEventListener("playing", that.playingListener.bind(that));
             that.getControlBar().style.display = "flex";
         });
     }
@@ -109,9 +111,9 @@ class BrightCovePlayer extends React.Component {
     }
 
     getClassName() {
-        let className = 'player-wrapper';
+        let className = 'em-player-wrapper';
         className += (this.state.isHidden && this.context.store.getState().startStatus !== ControlsStartStatus.PENDING) ?
-            ' hidden' : '';
+            ' em-hidden' : '';
         className += this.context.store.getState().inExtend ? ' show-progress-bar' : ' show-item-dots';
         return className;
     }
@@ -141,27 +143,30 @@ class BrightCovePlayer extends React.Component {
         this.setState({inExtend: !this.state.inExtend});
     }
 
+    
+
     addControls(){
         const container = document.createElement('div');
-        container.id = 'progress-container';
-        container.className = 'vjs-control';
+        const { store } = this.context;
+        const that = this;
+        container.className = 'vjs-control progress-container';
 
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
+        this.addPoster();
 
-
-        var timeContainer = document.querySelector('#' + this.props.playerId + ' #progress-container');
-        const { store } = this.context;
+        var timeContainer = document.querySelector('#' + this.props.playerId + ' .progress-container');
         const seekListener = this.seek.bind(this);
 
         function render(){
+            that.renderPoster();
             ReactDOM.render(
                 <div>
                     <Dots
                         isVisible={!store.getState().inExtend}
                         itemNum={store.getState().itemNum}
                         numOfItems={store.getState().numOfItems}
-                        dotsClassName="brightcove-dots"
+                        dotsClassName="em-brightcove-dots"
                     />
                     <BrightcoveSeekBar
                         isVisible={store.getState().inExtend}
@@ -177,9 +182,8 @@ class BrightCovePlayer extends React.Component {
         render();
 
         var fullScreenControl = document.querySelector('#'+this.props.playerId + ' .vjs-fullscreen-control');
-
         if (fullScreenControl) {
-            if (isIphone()) {
+            if (isIphone() || isSafari()) {
                 fullScreenControl.parentNode.removeChild(fullScreenControl);
             } else {
                 var newFullScreenControl = fullScreenControl.cloneNode(true);
@@ -189,7 +193,44 @@ class BrightCovePlayer extends React.Component {
                 });
             }
         }
+    }
 
+    addPoster() {
+        const { store } = this.context;
+        var posterControl  = document.querySelector('#'+this.props.playerId + ' .vjs-poster');
+        if (store.getState().programPreviewImageUrl) {
+            let posterControlCln = posterControl.cloneNode();
+            posterControlCln.setAttribute("style", "background-image: url('" + store.getState().programPreviewImageUrl + "');");
+            posterControl.parentNode.replaceChild(posterControlCln, posterControl);
+            posterControl = posterControlCln;
+        }
+        let gestureListener = new Hammer(posterControl, {velocity: 0.80});
+        gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
+        gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
+
+    }
+
+    renderPoster() {
+        const { store } = this.context;
+        var bigPlayButton = document.querySelector('#'+this.props.playerId + ' .vjs-big-play-button');
+        var myPosterControl  = document.querySelector('#'+this.props.playerId + ' .vjs-poster');
+        var spinnerControl  = document.querySelector('#'+this.props.playerId + ' .vjs-loading-spinner');
+        if (bigPlayButton && store.getState().startStatus === ControlsStartStatus.ACTIVE) {
+            bigPlayButton.style.display = "none";
+        } else {
+            bigPlayButton.style.display = "block";
+        }
+        if (this.state.waitForPlaying) {
+            myPosterControl.classList.add("em-show");
+            myPosterControl.classList.remove("em-hide");
+            spinnerControl.classList.add("em-show");
+            spinnerControl.classList.remove("em-hide");
+        } else {
+            myPosterControl.classList.add("em-hide", "em-fade");
+            myPosterControl.classList.remove("em-show");
+            spinnerControl.classList.add("em-hide");
+            spinnerControl.classList.remove("em-show");
+        }
     }
 
     getControlBar(){
@@ -206,7 +247,7 @@ class BrightCovePlayer extends React.Component {
                 { this.state.shouldLoad ?
                 <div>
                     <video ref="player"
-                            className="player brightcove-player video-js"
+                            className="em-player video-js"
                             id={this.props.playerId}
                             playsInline
                             data-embed="default"
@@ -230,16 +271,23 @@ class BrightCovePlayer extends React.Component {
     }
 
     play() {
-        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING && isIphone()){
+        if (this.context.store.getState().startStatus === ControlsStartStatus.PENDING && isMobileAgent()){
             return Promise.reject("NotAllowedError");
         }
         this.getPlayer().play();
+        this.setState({ waitForPlaying: true });
         return Promise.resolve();
     }
 
     show() {
+        let newState = {
+            isHidden: false
+        }
         this.getPlayer().userActive(true);
-        this.setState({ isHidden: false });
+        if (this.context.store.getState().startStatus === ControlsStartStatus.ACTIVE){
+            newState.waitForPlaying = true;
+        }
+        this.setState(newState);
     }
 
     hide() {
@@ -308,6 +356,9 @@ class BrightCovePlayer extends React.Component {
     addEventListener(event, listener) {
         this.getPlayer().on(event, listener, false);
     }
+    playingListener(event) {
+        this.setState({ waitForPlaying: false });
+    }
 
     removeEventListener(event, listener) {
         this.getPlayer().off(event, listener);
@@ -316,7 +367,6 @@ class BrightCovePlayer extends React.Component {
 
 BrightCovePlayer.propTypes = {
     src: PropTypes.string,
-    className: PropTypes.string,
     account: PropTypes.string
 };
 

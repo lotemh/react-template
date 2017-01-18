@@ -28,7 +28,7 @@ describe('Brightcove Seek bar test suite', () => {
         const component = ReactTestUtils.renderIntoDocument(
             <BrightcoveSeekBar seekListener={function(){}} itemStart={10000} itemLength={33000} itemTimeMs={19000} isVisible={true}/>
         );
-        const bar = ReactDOM.findDOMNode(component).getElementsByClassName("vjs-load-progress")[0];
+        const bar = ReactDOM.findDOMNode(component).getElementsByClassName("vjs-play-progress vjs-slider-bar")[0];
         var width = parseInt(bar.style.width.replace('%',''), 10);
         expect(width).to.be.equal(27);
     });

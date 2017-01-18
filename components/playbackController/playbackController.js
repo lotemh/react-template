@@ -3,14 +3,16 @@
  */
 import Logger from '../Logger/Logger';
 import Player from '../VideoElement/Player';
+import { TFX_AUDIO } from '../transitionEffects/TfxAudio';
+import {isIphone} from '../utils/webUtils';
 
 class PlaybackController {
     constructor(store) {
         this.store = store;
-        this.segmentEndTimeMs = false;
         this.logger = new Logger();
         this.activePlayer = null;
         this.segmentToPlayerMap = {};
+        this.schedule = [];
     }
 
     /*********     Public API         ***********/
@@ -54,7 +56,7 @@ class PlaybackController {
             this.setSegmentReady(segment.title, this.getActive());
         }
         const nextPlayer = this.getPreparedPlayer(segment);
-        this.waitForSegmentEnd(segment.out, onSegmentEndAction);
+        this.generateSchedule(segment.out, onSegmentEndAction);
         return this.switchPlayers(this.activePlayer, nextPlayer, segment);
     }
 
@@ -88,17 +90,11 @@ class PlaybackController {
         }, () => {});
     }
 
-    waitForSegmentEnd(endTimeStamp, onSegmentEndAction) {
-        this.segmentEndTimeMs = endTimeStamp;
-        this.onSegmentEndAction = onSegmentEndAction;
-    }
-
     playerUpdate(timeMs, playerId) {
         if (this.getActive() && playerId === this.getActive().id) {
-            if (this.segmentEndTimeMs && this.segmentEndTimeMs <= timeMs) {
-                if (this.onSegmentEndAction) {
-                    this.onSegmentEndAction();
-                }
+            while (this.schedule.length && timeMs >= this.schedule[0].startTime) {
+                const task = this.schedule.shift();
+                setTimeout(task.callback, 0);  // breaks the loop when callback modifies schedule
             }
             this.timeUpdateCallback(timeMs);
         }
@@ -137,7 +133,7 @@ class PlaybackController {
         nextPlayer = nextPlayer || this.getFreePlayer() || this.getActive();
         this.logger.log(`play segment ${segment.title} on player ${nextPlayer.getId()}`);
 
-        this.store.dispatch({type: 'TFX_AUDIO_SET'});
+        this.store.dispatch({type: 'TFX_AUDIO_SET', tfxAudio: 'IN'});
         const activePlayerPromise = this.activatePlayer(nextPlayer, segment);
         if (oldPlayer !== nextPlayer) {
             this.deactivatePlayer(oldPlayer);
@@ -178,11 +174,38 @@ class PlaybackController {
         this.players.concat(Object.values(this.segmentToPlayerMap)).concat(this.activePlayer).forEach(p => {
             if (p === this.activePlayer){
                 p.firstTimeActivatePlayerForMobile();
-            } else {
+            } else if (isIphone()) { //No need to prepare other players in android
                 p.firstTimeActivatePlayerForMobile(true);
             }
         });
         this.store.dispatch({type: 'FIRST_PLAY'});
+    }
+
+    generateSchedule(segmentEndTimeMs, callback) {
+        const schedule = [];
+
+        if (TFX_AUDIO.IN) {
+            schedule.push({
+                startTime: 0,
+                callback: () => {TFX_AUDIO.IN.play(this.getActive());}
+            });
+        }
+        if (TFX_AUDIO.NO_ACTION_OUT && !this.store.getState().inExtend) {
+            schedule.push({
+                startTime: segmentEndTimeMs - TFX_AUDIO.NO_ACTION_OUT.duration,
+                callback: () => {
+                    TFX_AUDIO.NO_ACTION_OUT.play(this.getActive());
+                }
+            });
+        }
+        if (callback) {
+            schedule.push({
+                startTime: segmentEndTimeMs,
+                callback: callback
+            });
+        }
+
+        this.schedule = schedule.sort( (a, b) => { return a.startTime - b.startTime; } );
     }
 
 

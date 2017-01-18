@@ -65,7 +65,7 @@ class StateMachine {
     extend() {
         this.store.dispatch({type: 'EVENT_HANDLER', actionName: "extend"});
         this.extendItem(this.segmentsManager.getActive());
-        this.playbackController.waitForSegmentEnd(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
+        this.playbackController.generateSchedule(this.segmentsManager.getActive().out, this.actionHandler.bind(this, 'no_action'));
     }
 
     previous() {
