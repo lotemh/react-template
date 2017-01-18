@@ -150,10 +150,10 @@ class BrightCovePlayer extends React.Component {
         const { store } = this.context;
         const that = this;
         container.className = 'vjs-control progress-container';
-
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
         this.addPoster();
+        this.addFullscreen();
 
         var timeContainer = document.querySelector('#' + this.props.playerId + ' .progress-container');
         const seekListener = this.seek.bind(this);
@@ -176,23 +176,9 @@ class BrightCovePlayer extends React.Component {
                         seekListener={seekListener}
                     />
                 </div>, timeContainer);
-
         }
         store.subscribe(render);
         render();
-
-        var fullScreenControl = document.querySelector('#'+this.props.playerId + ' .vjs-fullscreen-control');
-        if (fullScreenControl) {
-            if (isIphone() || isSafari()) {
-                fullScreenControl.parentNode.removeChild(fullScreenControl);
-            } else {
-                var newFullScreenControl = fullScreenControl.cloneNode(true);
-                fullScreenControl.parentNode.replaceChild(newFullScreenControl, fullScreenControl);
-                newFullScreenControl.addEventListener("click", function(event){
-                    store.dispatch({type: 'TOGGLE_FULLSCREEN'});
-                });
-            }
-        }
     }
 
     addPoster() {
@@ -207,7 +193,22 @@ class BrightCovePlayer extends React.Component {
         let gestureListener = new Hammer(posterControl, {velocity: 0.80});
         gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
         gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
+    }
 
+    addFullscreen() {
+        const { store } = this.context;
+        var fullScreenControl = document.querySelector('#'+this.props.playerId + ' .vjs-fullscreen-control');
+        if (fullScreenControl) {
+            if (isIphone() || isSafari()) {
+                fullScreenControl.parentNode.removeChild(fullScreenControl);
+            } else {
+                var newFullScreenControl = fullScreenControl.cloneNode(true);
+                fullScreenControl.parentNode.replaceChild(newFullScreenControl, fullScreenControl);
+                newFullScreenControl.addEventListener("click", function(event){
+                    store.dispatch({type: 'TOGGLE_FULLSCREEN'});
+                });
+            }
+        }
     }
 
     renderPoster() {
