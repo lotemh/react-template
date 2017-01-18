@@ -11,7 +11,7 @@
     },
     "rules": {
         "no-console": ["error"],
-        "no-unused-expressions": 0,
+        "no-unused-vars": ["error"],
         "padded-blocks": 0,
         "indent": ["error", 4],
         "max-statements": ["error", 17]
