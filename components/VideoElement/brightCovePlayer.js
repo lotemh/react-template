@@ -101,6 +101,9 @@ class BrightCovePlayer extends React.Component {
                 that.state.readyCallback();
             }
             that.getControlBar().style.display = "flex";
+            that.addEventListener('volumechange', ()=>{
+                that.context.store.dispatch({type: 'VOLUME_CHANGE', volume: that.getPlayer().volume()});
+            });
         });
     }
 
@@ -237,6 +240,7 @@ class BrightCovePlayer extends React.Component {
     }
 
     show() {
+        this.getPlayer().volume(this.context.store.getState().volume);
         this.getPlayer().userActive(true);
         this.setState({ isHidden: false });
     }
