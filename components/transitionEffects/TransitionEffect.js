@@ -4,4 +4,4 @@ const TransitionEffect = {
     NO_TFX: '',
 };
 
-export { TransitionEffect };
+export default TransitionEffect;

@@ -1,9 +1,8 @@
-require('./kcet.css');
-require('../../sdk/main.js')
+import './kcet.css';
+import '../../sdk/main.js';
 
-const Tfx = require('../../components/transitionEffects/TransitionEffect');
+import Tfx from '../../components/transitionEffects/TransitionEffect';
 
-console.log(Tfx);
 
 const kcetTfx = {
     SOCAL: 'tfx socal-tfx',
@@ -11,4 +10,4 @@ const kcetTfx = {
     BORDER_BLASTERS: 'tfx tfx-whoosh border-blasters-tfx',
 }
 
-Object.assign(Tfx.TransitionEffect, kcetTfx);
+Object.assign(Tfx, kcetTfx);
