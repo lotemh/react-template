@@ -11,8 +11,8 @@ class VideoElement extends React.Component {
     }
 
     getClassName() {
-        let className = 'player';
-        className += this.state.isHidden ? ' hidden' : '';
+        let className = 'em-player';
+        className += this.state.isHidden ? ' em-hidden' : '';
         return className;
     }
 

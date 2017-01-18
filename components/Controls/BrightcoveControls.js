@@ -38,13 +38,13 @@ const Controls = React.createClass({
     },
     getStartPlayingClass() {
         return this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE ?
-            'controller bigPlayWrapper' : 'hidden';
+            'em-controller em-big-play-wrapper' : 'em-hidden';
     },
     getControlsClassName() {
         if (this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE){
-            return 'hidden';
+            return 'em-hidden';
         }
-        let className =  'controls';
+        let className =  'em-controls';
         if (this.state && this.state.teClass){
             className += ' ' + this.state.teClass;
         }
@@ -85,7 +85,7 @@ const Controls = React.createClass({
             <div>
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
                     {isIphone() && this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ?
-                        <img src={require("../../sdk/images/play.png")} className="bigPlay"/>
+                        <img src={require("../../sdk/images/play.png")} className="em-big-play"/>
                     : null }
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">

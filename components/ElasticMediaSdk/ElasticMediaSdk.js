@@ -40,7 +40,7 @@ const ElasticMediaSdk = React.createClass({
     },
     render() {
         return (
-            <div className="screen playerHolder">
+            <div className="em-screen em-player-holder">
                 {React.Children.map(this.props.children, (child) => {
                     return React.cloneElement(child, {
                         ref: child.props.playerId,
