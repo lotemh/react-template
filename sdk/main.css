@@ -226,7 +226,7 @@ button:active {
     border-radius: 50%;
     background: #339EFF;
     margin-top: -4.5px;
-}  
+}
 .brightcoveSeekBar {
     display: flex;
 }
@@ -260,23 +260,23 @@ button:active {
     display:none;
 }
 
-@keyframes tfx-sprite {
+@keyframes em-tfx-sprite {
     from  {background-position: 0}
     to    {background-position: -1900%}
 }
 
-.tfx {
+.em-tfx {
   background-size: cover;
 }
 
-.tfx-whoosh {
+.em-tfx-whoosh {
     animation-duration: 0.8s;
-    animation-name: tfx-sprite;
+    animation-name: em-tfx-sprite;
     animation-timing-function: steps(19);
-    -webkit-animation-name: tfx-sprite;
+    -webkit-animation-name: em-tfx-sprite;
 }
 
-.tfx-reverse {
+.em-tfx-reverse {
     animation-direction: reverse;
 }
 

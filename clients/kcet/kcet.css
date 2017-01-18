@@ -4,7 +4,7 @@
     to { transform: scale(1.2); }
 }
 
-.socal-tfx:before {
+.em-socal-tfx:before {
     content: '';
     display: block;
     position: absolute;
@@ -25,7 +25,7 @@
     to { opacity: 1; }
 }
 
-.socal-tfx:after {
+.em-socal-tfx:after {
     content: '';
     display: block;
     position: absolute;
@@ -39,10 +39,10 @@
     animation-duration: 2s;
 }
 
-.studio-a-tfx {
+.em-studio-a-tfx {
     background-image: url(./images/StudioA.png);
 }
 
-.border-blasters-tfx {
+.em-border-blasters-tfx {
     background-image: url(./images/border-short.png);
 }

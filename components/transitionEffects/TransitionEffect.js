@@ -1,6 +1,6 @@
 const TransitionEffect = {
-    WHOOSH: 'tfx tfx-whoosh',
-    WHOOSH_REV: 'tfx tfx-whoosh tfx-reverse',
+    WHOOSH: 'em-tfx em-tfx-whoosh',
+    WHOOSH_REV: 'em-tfx em-tfx-whoosh em-tfx-reverse',
     NO_TFX: '',
 };
 

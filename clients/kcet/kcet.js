@@ -5,9 +5,9 @@ import Tfx from '../../components/transitionEffects/TransitionEffect';
 
 
 const kcetTfx = {
-    SOCAL: 'tfx socal-tfx',
-    STUDIO_A: 'tfx tfx-whoosh studio-a-tfx',
-    BORDER_BLASTERS: 'tfx tfx-whoosh border-blasters-tfx',
+    SOCAL: 'em-tfx em-socal-tfx',
+    STUDIO_A: 'em-tfx em-tfx-whoosh em-studio-a-tfx',
+    BORDER_BLASTERS: 'em-tfx em-tfx-whoosh em-border-blasters-tfx',
 }
 
 Object.assign(Tfx, kcetTfx);
