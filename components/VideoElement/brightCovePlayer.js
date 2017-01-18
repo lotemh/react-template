@@ -18,6 +18,7 @@ class BrightCovePlayer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            waitForPlaying: false,
             src: this.props["data-video-id"] || null,
             shouldLoad: false,
             isHidden: true
@@ -142,50 +143,23 @@ class BrightCovePlayer extends React.Component {
         this.setState({inExtend: !this.state.inExtend});
     }
 
+    
+
     addControls(){
         const container = document.createElement('div');
-        const playerId = this.props.playerId;
         const { store } = this.context;
-        let that = this;
+        const that = this;
         container.className = 'vjs-control progress-container';
 
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
-
-        var posterControl  = document.querySelector('#'+this.props.playerId + ' .vjs-poster');
-        if (store.getState().programPreviewImageUrl) {
-            let posterControlCln = posterControl.cloneNode();
-            posterControlCln.setAttribute("style", "background-image: url('" + store.getState().programPreviewImageUrl + "');");
-            posterControl.parentNode.replaceChild(posterControlCln, posterControl);
-            posterControl = posterControlCln;
-        }
-        let gestureListener = new Hammer(posterControl, {velocity: 0.80});
-        gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
-        gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
+        this.addPoster();
 
         var timeContainer = document.querySelector('#' + this.props.playerId + ' .progress-container');
         const seekListener = this.seek.bind(this);
 
         function render(){
-            var bigPlayButton = document.querySelector('#'+playerId + ' .vjs-big-play-button');
-            var myPosterControl  = document.querySelector('#'+playerId + ' .vjs-poster');
-            var spinnerControl  = document.querySelector('#'+playerId + ' .vjs-loading-spinner');
-            if (bigPlayButton && store.getState().startStatus === ControlsStartStatus.ACTIVE) {
-                bigPlayButton.style.display = "none";
-            } else {
-                bigPlayButton.style.display = "block";
-            }
-            if (that.state.waitForPlaying) {
-                myPosterControl.classList.add("em-show");
-                myPosterControl.classList.remove("em-hide");
-                spinnerControl.classList.add("em-show");
-                spinnerControl.classList.remove("em-hide");
-            } else {
-                myPosterControl.classList.add("em-hide", "fade");
-                myPosterControl.classList.remove("em-show");
-                spinnerControl.classList.add("em-hide");
-                spinnerControl.classList.remove("em-show");
-            }
+            that.renderPoster();
             ReactDOM.render(
                 <div>
                     <Dots
@@ -208,7 +182,6 @@ class BrightCovePlayer extends React.Component {
         render();
 
         var fullScreenControl = document.querySelector('#'+this.props.playerId + ' .vjs-fullscreen-control');
-
         if (fullScreenControl) {
             if (isIphone()) {
                 fullScreenControl.parentNode.removeChild(fullScreenControl);
@@ -219,6 +192,44 @@ class BrightCovePlayer extends React.Component {
                     store.dispatch({type: 'TOGGLE_FULLSCREEN'});
                 });
             }
+        }
+    }
+
+    addPoster() {
+        const { store } = this.context;
+        var posterControl  = document.querySelector('#'+this.props.playerId + ' .vjs-poster');
+        if (store.getState().programPreviewImageUrl) {
+            let posterControlCln = posterControl.cloneNode();
+            posterControlCln.setAttribute("style", "background-image: url('" + store.getState().programPreviewImageUrl + "');");
+            posterControl.parentNode.replaceChild(posterControlCln, posterControl);
+            posterControl = posterControlCln;
+        }
+        let gestureListener = new Hammer(posterControl, {velocity: 0.80});
+        gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
+        gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
+
+    }
+
+    renderPoster() {
+        const { store } = this.context;
+        var bigPlayButton = document.querySelector('#'+this.props.playerId + ' .vjs-big-play-button');
+        var myPosterControl  = document.querySelector('#'+this.props.playerId + ' .vjs-poster');
+        var spinnerControl  = document.querySelector('#'+this.props.playerId + ' .vjs-loading-spinner');
+        if (bigPlayButton && store.getState().startStatus === ControlsStartStatus.ACTIVE) {
+            bigPlayButton.style.display = "none";
+        } else {
+            bigPlayButton.style.display = "block";
+        }
+        if (this.state.waitForPlaying) {
+            myPosterControl.classList.add("em-show");
+            myPosterControl.classList.remove("em-hide");
+            spinnerControl.classList.add("em-show");
+            spinnerControl.classList.remove("em-hide");
+        } else {
+            myPosterControl.classList.add("em-hide", "em-fade");
+            myPosterControl.classList.remove("em-show");
+            spinnerControl.classList.add("em-hide");
+            spinnerControl.classList.remove("em-show");
         }
     }
 

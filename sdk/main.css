@@ -126,7 +126,7 @@
     width: 26px;
 }
 
-.vjs-poster.fade {
+.vjs-poster.em-fade {
     animation: prviewImageFadeOut linear 3s;
 }
 
