@@ -2,9 +2,9 @@ import v4 from 'uuid/v4';
 import {setCookie, getCookie} from '../utils/cookieUtils';
 const LIMIT = 50;
 const SEGMENT_TYPE = {
-    'h': 1,
-    'b': 2,
-    't': 3
+    'h': 0,
+    'b': 1,
+    't': 2
 };
 const EVENT_NUM = {
     'extend': 1,
@@ -35,21 +35,24 @@ AnalyticsReporter.start = function start(store) {
 }
 
 AnalyticsReporter.storeEvent = function storeEvent(action, currentState) {
-    let event;
+    let event = {
+        eventTime: Date.now(),
+    }
     if (!EVENT_NUM[action]) {
         return;
     }
     if (!currentState.activeSegment) {
-        AnalyticsReporter.lastActionTime = Date.now();
-        return;
-    }
-    event = {
-        eventTime: Date.now(),
-        itemNum: currentState.itemNum + 1,
-        segmentType: getSegmentType(currentState),
-        itemPlayedTime: getPlayedTime(currentState),
-        itemRealTime: Date.now() - AnalyticsReporter.lastActionTime,
-        event: EVENT_NUM[action]
+        event.itemNum = 0;
+        event.segmentType = 0;
+        event.itemPlayedTime = 0;
+        event.itemRealTime = 0;
+        event.event = EVENT_NUM[action];
+    } else {
+        event.itemNum = currentState.itemNum + 1;
+        event.segmentType = getSegmentType(currentState);
+        event.itemPlayedTime = getPlayedTime(currentState);
+        event.itemRealTime = Date.now() - AnalyticsReporter.lastActionTime;
+        event.event = EVENT_NUM[action];
     }
     AnalyticsReporter.lastActionTime = Date.now();
     AnalyticsReporter.events.push(event);

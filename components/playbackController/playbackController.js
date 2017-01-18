@@ -4,6 +4,7 @@
 import Logger from '../Logger/Logger';
 import Player from '../VideoElement/Player';
 import { TFX_AUDIO } from '../transitionEffects/TfxAudio';
+import {isIphone} from '../utils/webUtils';
 
 class PlaybackController {
     constructor(store) {
@@ -173,7 +174,7 @@ class PlaybackController {
         this.players.concat(Object.values(this.segmentToPlayerMap)).concat(this.activePlayer).forEach(p => {
             if (p === this.activePlayer){
                 p.firstTimeActivatePlayerForMobile();
-            } else {
+            } else if (isIphone()) { //No need to prepare other players in android
                 p.firstTimeActivatePlayerForMobile(true);
             }
         });
