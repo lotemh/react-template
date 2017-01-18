@@ -251,6 +251,7 @@ if (client) {
 
 if (client) {
     config.entry = { 'elasticprogram-sdk': `./clients/${client}/${client}.js` };
+}
 
 if (!useHMR) {
     config.plugins.push(
