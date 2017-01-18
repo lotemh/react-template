@@ -1,0 +1,48 @@
+
+@keyframes em-socal-background-scale {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+}
+
+.em-socal-tfx:before {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: url(./images/socal-background.jpeg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    transform-origin: bottom;
+    animation-timing-function: linear;
+    animation-name: em-socal-background-scale;
+    animation-duration: 2s;
+}
+
+@keyframes em-socal-logo-fade-in {
+    from { opacity: 0; }
+    25% { opacity: 1; }
+    to { opacity: 1; }
+}
+
+.em-socal-tfx:after {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: url(./images/socal-logo.png);
+    background-size: 46.875% 48.333%;
+    background-position: center;
+    background-repeat: no-repeat;
+    animation-name: em-socal-logo-fade-in;
+    animation-duration: 2s;
+}
+
+.em-studio-a-tfx {
+    background-image: url(./images/StudioA.png);
+}
+
+.em-border-blasters-tfx {
+    background-image: url(./images/border-short.png);
+}
