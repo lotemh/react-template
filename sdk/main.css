@@ -1,29 +1,29 @@
 
-.player-container {
+.em-player-container {
     position: absolute;
     width: 100%;
     height: 100%;
 }
 
-.player-wrapper {
+.em-player-wrapper {
     width: 100%;
     height: 100%;
     position: absolute;
 }
 
-.playerHolder {
+.em-player-holder {
     width: 100%;
     height: 100%;
     position: absolute;
 }
 
-.controls {
+.em-controls {
     width: 100%;
     height: 100%;
     position: absolute;
     pointer-events: none;
 }
-.controlsTouchScreen {
+.eem-controls-touch-screen {
     width: 100%;
     height: 80%;
     top: 0;
@@ -32,7 +32,7 @@
     pointer-events: auto;
 }
 
-.player {
+.em-player {
     width: 100%;
     height: 100%;
     top: 0;
@@ -58,76 +58,58 @@
 .vjs-big-play-button {
 }
 
-button {
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
-    font-size: 30px;
-    text-decoration: none;
-    color: rgb(255, 255, 255);
-    background: #8686e5;
-    padding: 4px 18px;
-    outline: none;
-    border: none;
-    margin-left: 20px;
-}
-
-button:active {
-    background-color: #5d5da8;
-}
-
-.hidden {
+.em-hidden {
     display: none;
 }
 
-.screen {
+.em-screen {
 
 }
 
-.play {
+.em-play {
     bottom: 10px;
     left: 10px;
 }
 
-.controller.pause {
+.em-controller.em-pause {
     bottom: 10px;
     left: 10px;
 }
 
-.player-wrapper .bc-player-V1xBaDVb6l_default .vjs-control {
+.em-player-wrapper .bc-player-V1xBaDVb6l_default .vjs-control {
     width: 50px;
 }
 
-.player-wrapper .vjs-control-bar .progress-container {
+.em-player-wrapper .vjs-control-bar .progress-container {
     flex-grow: 1;
     order: 5;
     width: 148px;
 }
 
-.dots {
+.em-dots {
     position: absolute;
     bottom: 14px;
     left: 50% !important;
     margin-left: -50px;
 }
 
-.brightcove-dots {
+.em-brightcove-dots {
     display: flex;
     justify-content: center;
     margin: 20px 0;
 }
 
-.vjs-mouse .brightcove-dots {
+.vjs-mouse .em-brightcove-dots {
     margin: 11.5px 0;
 }
 
-.dot {
+.em-dot {
     height: 10px;
     width: 10px;
     margin-right: 10px;
 }
 
-.controller {
+.em-controller {
     cursor: pointer;
     z-index: 2147483647;
     pointer-events:auto;
@@ -136,7 +118,7 @@ button:active {
     width: 26px;
 }
 
-.extend {
+.em-extend {
     height: 33px;
     width: 33px;
     top: 10px;
@@ -144,7 +126,7 @@ button:active {
     border-radius: 50%;
 }
 
-.extend:after{
+.em-extend:after{
     background: url(./images/extend_overlay.png) no-repeat;
     border-radius: 50%;
     content: '';
@@ -158,19 +140,19 @@ button:active {
     transform: scale(calc(27/172)) translate(20px, 20px);
 }
 
-.extend .extend-progress {
+.em-extend .em-extend-progress {
     height: 100%;
     width: 100%;
 }
 
-.bigPlayWrapper {
+.em-big-play-wrapper {
     cursor: pointer;
     width: 100%;
     height: 100%;
     position: absolute;
 }
 
-.bigPlay {
+.em-big-play {
     top: 50%;
     left: 50%;
     width: 80px;
@@ -179,7 +161,7 @@ button:active {
     position: absolute;
 }
 
-.emHTML5SeekBar {
+.em-HTML5-seekbar {
     color: white;
     pointer-events:auto;
     font-family: Arial, serif;
@@ -193,27 +175,27 @@ button:active {
     height: 10px;
 }
 
-.emHTML5SeekBar input[type=range] {
+.em-HTML5-seekbar input[type=range] {
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
     width: 100%; /* Specific width is required for Firefox. */
     background: transparent; /* Otherwise white in Chrome */
 }
-.emHTML5SeekBar input[type=range]::-webkit-slider-thumb {
+.em-HTML5-seekbar input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
 }
 
-.emHTML5SeekBar input[type=range]:focus {
+.em-HTML5-seekbar input[type=range]:focus {
     outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
 }
 
-.emHTML5SeekBar input[type=range]::-webkit-slider-runnable-track {
+.em-HTML5-seekbar input[type=range]::-webkit-slider-runnable-track {
     height: 2px;
     background: white;
     border: none;
     border-radius: 1px;
 }
 
-.emHTML5SeekBar input[type=range]::-webkit-slider-thumb {
+.em-HTML5-seekbar input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
     border: white;
     height: 12px;
@@ -222,15 +204,11 @@ button:active {
     background: #339EFF;
     margin-top: -4.5px;
 }
-.brightcoveSeekBar {
+.em-brightcove-seekbar {
     display: flex;
 }
 
-.brightcoveTimeLine {
-    width: 100%;
-}
-
-.redSeekBar {
+.em-red-seekbar {
     box-sizing:content-box;
     position: absolute;
     right: 75px;
@@ -238,13 +216,13 @@ button:active {
     width: calc(100% - 140px);
     top: 5px;
 }
-.rightTime {
+.em-right-time {
     position: absolute;
     right: 25px;
     width: 40px;
 }
 
-.leftTime {
+.em-left-time {
     left: 25px;
     position: absolute;
     width: 40px;
@@ -303,6 +281,3 @@ button:active {
     -webkit-appearance: none;
 }
 
-.hide-controls {
-    display: none;
-}

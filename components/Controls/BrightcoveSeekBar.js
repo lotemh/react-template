@@ -25,7 +25,7 @@ const BrightcoveSeekBar = React.createClass({
             var pageX = event.changedTouches[0].pageX;
         else
             var pageX = event.clientX;
-          
+
         const seekPosition = pageX - position.left;
         const progress = seekPosition / position.width;
         const seekTime = (progress * this.props.itemLength + this.props.itemStart)/ 1000.0;
@@ -97,7 +97,7 @@ const BrightcoveSeekBar = React.createClass({
             width: `${this.progress() * 100}%`
         }
         return (
-            <div className={this.props.isVisible? 'brightcoveSeekBar' : 'hidden'}>
+            <div className={this.props.isVisible? 'em-brightcove-seekbar' : 'em-hidden'}>
                 <div className="vjs-current-time vjs-time-control vjs-control vjs-time-controls">
                     <div className="vjs-current-time-display">
                         <span ref="currentTime">{this.getCurrentTimeInItemHHMMSS()}</span>

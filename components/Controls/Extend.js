@@ -14,7 +14,7 @@ const Extend = React.createClass({
     drawProgress(progress) {
         let canvas = this.refs.extendProgress;
         let ctx = canvas.getContext("2d");
-        
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
         ctx.arc(50, 50, 45, 0, 2 * Math.PI);
@@ -32,8 +32,8 @@ const Extend = React.createClass({
     },
     render() {
         return (
-            <div className={this.props.isVisible? 'controller extend' : 'hidden'} onClick={this.props.onClick}>
-                <canvas className='extend-progress' ref="extendProgress" width='100' height='100'/>
+            <div className={this.props.isVisible? 'em-controller em-extend' : 'em-hidden'} onClick={this.props.onClick}>
+                <canvas className='em-extend-progress' ref="extendProgress" width='100' height='100'/>
             </div>
         );
     }

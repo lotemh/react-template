@@ -47,8 +47,8 @@ const SeekBar = React.createClass({
     },
     render() {
         return (
-            <div className='emHTML5SeekBar redSeekBar'>
-                <span ref="currentTime" className="leftTime">{this.getCurrentTimeInItemHHMMSS()}</span>
+            <div className='em-HTML5-seekbar em-red-seekbar'>
+                <span ref="currentTime" className="em-left-time">{this.getCurrentTimeInItemHHMMSS()}</span>
                 <input ref="bar" type="range"
                        min={0}
                        max={this.props.itemLength / 1000}
@@ -59,7 +59,7 @@ const SeekBar = React.createClass({
                        onTouchStart={this.onMouseDown}
                        onTouchEnd={this.onMouseUp}
                        step="any" />
-                <span ref="itemLength" className="rightTime">{this.getTimeInHHMMSS(this.props.itemLength)}</span>
+                <span ref="itemLength" className="em-right-time">{this.getTimeInHHMMSS(this.props.itemLength)}</span>
             </div>
         );
     }

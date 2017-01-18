@@ -36,15 +36,15 @@ const Controls = React.createClass({
     },
 
     getClassName(name) {
-        let className = 'controller';
+        let className = 'em-controller';
         if (name === 'extend' && this.context.store.getState().inExtend) {
-            className += ' hidden';
+            className += ' em-hidden';
         }
         if (name === 'play') {
             className += ' play';
-            className += this.context.store.getState().isPlaying ? ' hidden' : '';
+            className += this.context.store.getState().isPlaying ? ' em-hidden' : '';
         } else if (name === 'pause') {
-            className += !this.context.store.getState().isPlaying ? ' hidden' : '';
+            className += !this.context.store.getState().isPlaying ? ' em-hidden' : '';
         }
         return className;
     },
@@ -60,13 +60,13 @@ const Controls = React.createClass({
         this.props.eventHandler(action);
     },
     getStartPlayingClass() {
-        return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'controller bigPlay' : 'hidden';
+        return this.context.store.getState().startStatus === ControlsStartStatus.PENDING_USER_ACTION ? 'em-controller bigPlay' : 'em-hidden';
     },
     getControlsClassName() {
         if (this.context.store.getState().startStatus !== ControlsStartStatus.ACTIVE){
-            return 'hidden';
+            return 'em-hidden';
         }
-        let className = 'controls';
+        let className = 'em-controls';
         if (this.state && this.state.teClass){
             className += ' ' + this.state.teClass;
         }
@@ -106,15 +106,15 @@ const Controls = React.createClass({
         return (
             <div>
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
-                    <img src={require("../../sdk/images/play.png")} className="bigPlay"/>
+                    <img src={require("../../sdk/images/play.png")} className="em-big-play"/>
                 </div>
                 <div className={this.getControlsClassName()}>
-                    <div className="controlsTouchScreen" ref="touchScreen"></div>
+                    <div className="em-controls-touch-screen" ref="touchScreen"></div>
                     <Extend isVisible={!storeState.inExtend} progress={this.progress()} onClick={this.eventHandler.bind(this, "extend")}/>
                     {storeState.isPlaying ?
-                        <img src={require("../../sdk/images/pause.png")} className='controller pause' onClick={this.togglePlay}/>
+                        <img src={require("../../sdk/images/pause.png")} className='em-controller em-pause' onClick={this.togglePlay}/>
                     :
-                        <img src={require("../../sdk/images/play.png")} className='controller play' onClick={this.togglePlay}/>
+                        <img src={require("../../sdk/images/play.png")} className='em-controller em-play' onClick={this.togglePlay}/>
                     }
                     {timeElement}
                 </div>
