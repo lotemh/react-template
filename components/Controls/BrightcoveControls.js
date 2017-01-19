@@ -78,6 +78,14 @@ const Controls = React.createClass({
         }
     },
 
+    next() {
+        this.props.eventHandler('next');
+    },
+
+    previous(){
+        this.props.eventHandler('previous');
+    },
+
     render(){
         const { store } = this.context;
         return (
@@ -85,6 +93,8 @@ const Controls = React.createClass({
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
+                    <img src={require("../../sdk/images/icon_swift_right.png")} className="em-controller-front em-next-prev-button em-next-button" onClick={this.next}/>
+                    <img src={require("../../sdk/images/icon_swift_left.png")} className="em-controller-front em-next-prev-button em-prev-button" onClick={this.previous}/>
                     <Extend isVisible={store.getState().shouldShowExtendBtn} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
             </div>

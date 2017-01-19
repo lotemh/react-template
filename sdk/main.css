@@ -126,6 +126,25 @@
     width: 26px;
 }
 
+.em-controller-front {
+    z-index: 2147483647;
+    position: absolute;
+    pointer-events: auto;
+}
+
+.em-next-button {
+    right: 6px;
+}
+
+.em-prev-button {
+    left: 6px;
+}
+
+.em-next-prev-button {
+    top: calc(50% - 20px);
+    height: 40px;
+}
+
 .vjs-poster.em-fade {
     animation: prviewImageFadeOut linear 3s;
 }
