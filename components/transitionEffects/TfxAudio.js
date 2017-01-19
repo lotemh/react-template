@@ -69,14 +69,14 @@ class TfxAudioFadeOut extends TfxAudio {
         const gainNode = audioCtx.createGain();
 
         gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + this.duration / 1000);
+        gainNode.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + this.duration / 1000);
 
         return gainNode;
     }
 }
 
 const TFX_AUDIO = {
-    IN: new TfxAudioFadeIn(40),
+    IN: new TfxAudioFadeIn(80),
     NO_ACTION_OUT: new TfxAudioFadeOut(1000),
 }
 
