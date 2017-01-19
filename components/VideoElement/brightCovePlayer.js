@@ -102,6 +102,9 @@ class BrightCovePlayer extends React.Component {
                 that.state.readyCallback();
             }
             that.addEventListener("playing", that.playingListener.bind(that));
+            that.addEventListener('volumechange', ()=>{
+                that.context.store.dispatch({type: 'VOLUME_CHANGE', volume: that.getPlayer().volume()});
+            });
             that.getControlBar().style.display = "flex";
         });
     }
@@ -142,8 +145,6 @@ class BrightCovePlayer extends React.Component {
     onExtendClick(){
         this.setState({inExtend: !this.state.inExtend});
     }
-
-    
 
     addControls(){
         const container = document.createElement('div');
@@ -283,7 +284,8 @@ class BrightCovePlayer extends React.Component {
     show() {
         let newState = {
             isHidden: false
-        }
+        };
+        this.getPlayer().volume(this.context.store.getState().volume);
         this.getPlayer().userActive(true);
         if (this.context.store.getState().startStatus === ControlsStartStatus.ACTIVE){
             newState.waitForPlaying = true;

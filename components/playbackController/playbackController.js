@@ -65,7 +65,9 @@ class PlaybackController {
 
     pause() {
         const activePlayer = this.getActive();
-        activePlayer && activePlayer.pause();
+        if (activePlayer) {
+            activePlayer.pause();
+        }
     }
 
     updateSegments(segmentsToPrepare) {

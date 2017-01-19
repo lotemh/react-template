@@ -11,9 +11,8 @@
     },
     "rules": {
         "no-console": ["error"],
-        "no-unused-expressions": 0,
-        "padded-blocks": 0,
         "indent": ["error", 4],
-        "max-statements": ["error", 17]
+        "max-statements": ["error", 17],
+        "max-depth": ["error", 4]
     }
 }
