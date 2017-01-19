@@ -72,6 +72,9 @@ function renderPlugin() {
     if (!document.currentScript || !document.currentScript.parentNode) {
         return;
     }
+    if (window.location.search && window.location.search.indexOf("disableemplugin") >= 0 && process.env.NODE_ENV === "production") {
+        return;
+    }
     let container = null;
 
     var players = document.currentScript.parentNode.querySelectorAll("[data-account]");
