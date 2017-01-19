@@ -18,6 +18,7 @@ const defaultState = {
     isPlaying: false,
     isFullscreen: false,
     shouldShowExtendBtn: false,
+    volume: 1,
 
     numOfItems: 0,
     programId: '',
@@ -70,6 +71,8 @@ function reducer(state, action){
             return Object.assign({}, state, {isPlaying: !state.isPlaying});
         case 'TOGGLE_FULLSCREEN':
             return Object.assign({}, state, {isFullscreen: !getFullScreenMode()});
+        case 'VOLUME_CHANGE':
+            return Object.assign({}, state, {volume: action.volume});
         case  'SET_DATA':
             var data = Object.assign({}, action);
             delete data.type;
