@@ -10,7 +10,9 @@
 import ControlsStartStatus from '../components/Controls/ControlsStartStatus';
 import AnalyticsReporter from '../components/StateMachine/AnalyticsReporter';
 import { createStore } from 'redux';
-const screenfull = require('screenfull');
+import screenfull from 'screenfull';
+
+const showTutorialCounter = +load('showTutorialCounter', 3);
 
 const defaultState = {
     startStatus: ControlsStartStatus.PENDING,
@@ -18,6 +20,8 @@ const defaultState = {
     isPlaying: false,
     isFullscreen: false,
     shouldShowExtendBtn: false,
+    shouldShowTutorial: (showTutorialCounter > 0),
+    showTutorialCounter: showTutorialCounter,
     volume: 1,
 
     numOfItems: 0,
@@ -103,6 +107,9 @@ function reducer(state, action){
             }
         case 'TFX_AUDIO_END':
             return Object.assign({}, state, {tfxAudio: null});
+        case 'DISMISS_TUTORIAL':
+            save('showTutorialCounter', Math.max(0, state.showTutorialCounter - 1));
+            return Object.assign({}, state, {shouldShowTutorial: false});
         default:
             return state;
     }
@@ -142,6 +149,15 @@ function getFullScreenMode() {
     } else {
         return false;
     }
+}
+
+function save(key, value) {
+    localStorage.setItem('elasticprogram-sdk.' + key, value);
+}
+
+function load(key, defaultValue) {
+    const value = localStorage.getItem('elasticprogram-sdk.' + key);
+    return (value === null ? defaultValue : value);
 }
 
 // Centralized application state

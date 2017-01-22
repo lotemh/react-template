@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import ControlsStartStatus from './ControlsStartStatus';
 import Extend from './Extend';
+import Tutorial from './Tutorial';
 import TransitionEffect from '../transitionEffects/TransitionEffect';
 
 const Controls = React.createClass({
@@ -78,15 +79,20 @@ const Controls = React.createClass({
         }
     },
 
+    onTutorialDismiss() {
+        this.context.store.dispatch({type: 'DISMISS_TUTORIAL'});
+    },
+
     render(){
-        const { store } = this.context;
+        const storeState = this.context.store.getState();
         return (
             <div>
                 <div className={this.getStartPlayingClass()} onClick={this.startPlaying} >
                 </div>
                 <div className={this.getControlsClassName()} ref="controls">
-                    <Extend isVisible={store.getState().shouldShowExtendBtn} progress={store.getState().segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
+                    <Extend isVisible={storeState.shouldShowExtendBtn} progress={storeState.segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
+                <Tutorial timeout={8000} show={storeState.shouldShowTutorial} onDismiss={this.onTutorialDismiss}/>
             </div>
         );
     }
