@@ -31,7 +31,7 @@ AnalyticsReporter.start = function start(store) {
     if (!AnalyticsReporter.userId) {
         AnalyticsReporter.userId = v4();
     }
-    setCookie("emid", AnalyticsReporter.userId, 7);
+    setCookie("emid", AnalyticsReporter.userId, 30);
 }
 
 AnalyticsReporter.storeEvent = function storeEvent(action, currentState) {
@@ -50,6 +50,7 @@ AnalyticsReporter.storeEvent = function storeEvent(action, currentState) {
     } else {
         event.itemNum = currentState.itemNum + 1;
         event.segmentType = getSegmentType(currentState);
+        event.itemId = getItemId(currentState);
         event.itemPlayedTime = getPlayedTime(currentState);
         event.itemRealTime = Date.now() - AnalyticsReporter.lastActionTime;
         event.event = EVENT_NUM[action];
@@ -97,6 +98,14 @@ function getSegmentType(currentState) {
         typeString = currentState.activeSegment.title.substring(0, 1);
     }
     return SEGMENT_TYPE[typeString];
+}
+
+function getItemId(currentState) {
+    let itemId;
+    if (currentState.activeSegment && currentState.activeSegment.itemId) {
+        itemId = currentState.activeSegment.itemId
+    }
+    return itemId;
 }
 
 function getPlayedTime(currentState) {
