@@ -153,7 +153,6 @@ class BrightCovePlayer extends React.Component {
         container.className = 'vjs-control progress-container';
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
-        //this.addPoster();
         this.addFullscreen();
 
         var timeContainer = document.querySelector('#' + this.props.playerId + ' .progress-container');
