@@ -44,7 +44,7 @@ class StateMachine {
     }
 
     start() {
-        this.actionHandler('next').catch((error) => {
+        this.actionHandler('next', true).catch((error) => {
             if (error === "NotAllowedError" || error.name === 'NotAllowedError') {
                 this.updateView({ startStatus: ControlsStartStatus.PENDING_USER_ACTION });
             } else {
@@ -75,8 +75,9 @@ class StateMachine {
         this.actionHandler('previous');
     }
 
-    actionHandler(action) {
+    actionHandler(action, inFirstSegment) {
         clearTimeout(this.prepareTimeout);
+        inFirstSegment = inFirstSegment || false;
         this.store.dispatch({type: 'EVENT_HANDLER', actionName: action});
         this.logger.log(`handle action ${action}`);
         this.playbackController.onSegmentEndAction = null;
@@ -87,6 +88,7 @@ class StateMachine {
         }
         this.store.dispatch({
             type: "SET_SEGMENT",
+            inFirstSegment: inFirstSegment,
             itemNum: SegmentManager.getItemNum(followingSegment.title),
             itemTimeMs: followingSegment.in,
             itemStart: followingSegment.in,

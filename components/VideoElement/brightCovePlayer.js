@@ -153,7 +153,7 @@ class BrightCovePlayer extends React.Component {
         container.className = 'vjs-control progress-container';
         var shareControl = document.querySelector('#'+this.props.playerId + ' .vjs-control-bar .vjs-share-control');
         this.getControlBar().insertBefore(container, shareControl);
-        this.addPoster();
+        //this.addPoster();
         this.addFullscreen();
 
         var timeContainer = document.querySelector('#' + this.props.playerId + ' .progress-container');
@@ -182,7 +182,7 @@ class BrightCovePlayer extends React.Component {
         render();
     }
 
-    addPoster() {
+    replacePoster() {
         const { store } = this.context;
         var posterControl  = document.querySelector('#'+this.props.playerId + ' .vjs-poster');
         if (store.getState().programPreviewImageUrl) {
@@ -214,6 +214,10 @@ class BrightCovePlayer extends React.Component {
 
     renderPoster() {
         const { store } = this.context;
+        if (!store.getState().inFirstSegment && !this.changedPoster) {
+            this.replacePoster();
+            this.changedPoster = true;
+        }
         var bigPlayButton = document.querySelector('#'+this.props.playerId + ' .vjs-big-play-button');
         var myPosterControl  = document.querySelector('#'+this.props.playerId + ' .vjs-poster');
         var spinnerControl  = document.querySelector('#'+this.props.playerId + ' .vjs-loading-spinner');
@@ -224,13 +228,9 @@ class BrightCovePlayer extends React.Component {
         }
         if (this.state.waitForPlaying) {
             myPosterControl.classList.add("em-show");
-            myPosterControl.classList.remove("em-hide");
             spinnerControl.classList.add("em-show");
-            spinnerControl.classList.remove("em-hide");
         } else {
-            myPosterControl.classList.add("em-hide", "em-fade");
             myPosterControl.classList.remove("em-show");
-            spinnerControl.classList.add("em-hide");
             spinnerControl.classList.remove("em-show");
         }
     }
