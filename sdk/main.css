@@ -140,9 +140,33 @@
     left: 6px;
 }
 
+.vjs-mouse.vjs-has-started.vjs-user-inactive .em-next-prev-button{
+    transition: opacity;
+    opacity: 0;
+    transition-delay: 3s;
+    -webkit-transition-delay: 3s;
+    -moz-transition-delay: 3s;
+    -ms-transition-delay: 3s;
+    -o-transition-delay: 3s;
+    transition-duration: 0.5s, 0.5s;
+}
+
+.vjs-has-started.vjs-user-inactive .em-next-prev-button{
+    transition: opacity;
+    opacity: 0;
+    transition-delay: 3s;
+    -webkit-transition-delay: 3s;
+    -moz-transition-delay: 3s;
+    -ms-transition-delay: 3s;
+    -o-transition-delay: 3s;
+    transition-duration: 0.5s, 0.5s;
+}
+
 .em-next-prev-button {
     top: calc(50% - 20px);
     height: 40px;
+    opacity: 1;
+    transition: opacity 0.5s;
 }
 
 .vjs-poster.em-fade {
