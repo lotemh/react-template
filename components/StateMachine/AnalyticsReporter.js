@@ -26,7 +26,7 @@ AnalyticsReporter.start = function start(store) {
     AnalyticsReporter.metadataId = store.getState().metadataId;
     AnalyticsReporter.episodeId =  store.getState().episodeId;
     AnalyticsReporter.lastActionTime = Date.now();
-    AnalyticsReporter.interval = setInterval(reportEvents, 3000);
+    AnalyticsReporter.interval = setInterval(reportEvents, 1000);
     AnalyticsReporter.userId = getCookie("emid");
     if (!AnalyticsReporter.userId) {
         AnalyticsReporter.userId = v4();
