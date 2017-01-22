@@ -10,6 +10,7 @@
 import ControlsStartStatus from '../components/Controls/ControlsStartStatus';
 import AnalyticsReporter from '../components/StateMachine/AnalyticsReporter';
 import { createStore } from 'redux';
+import { load, save } from './localStorage';
 import screenfull from 'screenfull';
 
 const showTutorialCounter = +load('showTutorialCounter', 3);
@@ -149,15 +150,6 @@ function getFullScreenMode() {
     } else {
         return false;
     }
-}
-
-function save(key, value) {
-    localStorage.setItem('elasticprogram-sdk.' + key, value);
-}
-
-function load(key, defaultValue) {
-    const value = localStorage.getItem('elasticprogram-sdk.' + key);
-    return (value === null ? defaultValue : value);
 }
 
 // Centralized application state

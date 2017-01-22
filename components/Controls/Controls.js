@@ -122,7 +122,7 @@ const Controls = React.createClass({
                     }
                     {timeElement}
                 </div>
-                <Tutorial timeout={8000} show={storeState.shouldShowTutorial} onDismiss={this.onTutorialDismiss}/>
+                { storeState.shouldShowTutorial && <Tutorial timeout={8000} onDismiss={this.onTutorialDismiss}/> }
             </div>
         );
     }

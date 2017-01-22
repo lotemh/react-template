@@ -92,7 +92,7 @@ const Controls = React.createClass({
                 <div className={this.getControlsClassName()} ref="controls">
                     <Extend isVisible={storeState.shouldShowExtendBtn} progress={storeState.segmentProgress} onClick={this.eventHandler.bind(this, "extend")}/>
                 </div>
-                <Tutorial timeout={8000} show={storeState.shouldShowTutorial} onDismiss={this.onTutorialDismiss}/>
+                { storeState.shouldShowTutorial && <Tutorial timeout={8000} onDismiss={this.onTutorialDismiss}/> }
             </div>
         );
     }
