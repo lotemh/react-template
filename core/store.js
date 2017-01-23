@@ -29,7 +29,8 @@ const defaultState = {
     itemTimeMs: 0,
 
     segmentProgress: 0,
-    activeSegment: null
+    activeSegment: null,
+    inFirstSegment: true
 };
 
 function reducer(state, action){
