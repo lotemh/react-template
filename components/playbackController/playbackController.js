@@ -134,6 +134,7 @@ class PlaybackController {
         nextPlayer = nextPlayer || this.getFreePlayer() || this.getActive();
         this.logger.log(`play segment ${segment.title} on player ${nextPlayer.getId()}`);
 
+        this.timeUpdateCallback(0);  // Reset extend progress
         this.store.dispatch({type: 'TFX_AUDIO_SET', tfxAudio: 'IN'});
         const activePlayerPromise = this.activatePlayer(nextPlayer, segment);
         if (oldPlayer !== nextPlayer) {
