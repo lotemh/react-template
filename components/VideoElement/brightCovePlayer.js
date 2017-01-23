@@ -54,10 +54,10 @@ class BrightCovePlayer extends React.Component {
         this.unsubscribe();
     }
 
-    swipeLeft() {
+    next() {
         this.props.eventHandler('next');
     }
-    swipeRight(){
+    previous(){
         this.props.eventHandler('previous');
     }
     waitForVideoJs(attempt) {
@@ -83,17 +83,15 @@ class BrightCovePlayer extends React.Component {
     }
 
     initPlayer() {
-        var that = this;
+        const that = this;
         let videoElement = this.getPlayerMediaElement();
         if (!this.state.shouldLoad) {
-            //videoElement.setAttribute("crossOrigin", "anonymous");
-            //videoElement.setAttribute("src", videoElement.getAttribute("src"));
             videoElement.setAttribute("playsinline", "");
         }
         this.player = window.videojs(videoElement.id);
         this.gestureListener = new Hammer(videoElement, {velocity: 0.80});
-        this.gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
-        this.gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
+        this.gestureListener.on(SWIPES.LEFT, this.next.bind(this));
+        this.gestureListener.on(SWIPES.RIGHT, this.previous.bind(this));
         this.player.ready(function () {
             that.setState({ready: true, src: that.getPlayer().src()});
             that.addControls();
@@ -180,6 +178,30 @@ class BrightCovePlayer extends React.Component {
         }
         store.subscribe(render);
         render();
+        this.addNextPrevButtons();
+    }
+
+    addNextPrevButtons(){
+        const container = document.createElement('div');
+        container.className = 'em-next-prev-buttons-container';
+        const { store } = this.context;
+        const bcPlayer = document.querySelector('#' + this.props.playerId);
+        bcPlayer.appendChild(container);
+        const that = this;
+        function renderNextPrevButtons(){
+
+            ReactDOM.render(
+                <div>{
+                        <div>
+                            <img src={require("../../sdk/images/icon_swift_right.png")}
+                                 className="em-controller-front em-next-prev-button em-next-button" onClick={that.next.bind(that)}/>
+                            <img src={require("../../sdk/images/icon_swift_left.png")}
+                                 className="em-controller-front em-next-prev-button em-prev-button" onClick={that.previous.bind(that)}/>
+                        </div>
+                        }
+                </div>, container);
+        }
+        store.subscribe(renderNextPrevButtons);
     }
 
     addPoster() {
@@ -192,8 +214,8 @@ class BrightCovePlayer extends React.Component {
             posterControl = posterControlCln;
         }
         let gestureListener = new Hammer(posterControl, {velocity: 0.80});
-        gestureListener.on(SWIPES.LEFT, this.swipeLeft.bind(this));
-        gestureListener.on(SWIPES.RIGHT, this.swipeRight.bind(this));
+        gestureListener.on(SWIPES.LEFT, this.next.bind(this));
+        gestureListener.on(SWIPES.RIGHT, this.previous.bind(this));
     }
 
     addFullscreen() {
@@ -291,6 +313,7 @@ class BrightCovePlayer extends React.Component {
             newState.waitForPlaying = true;
         }
         this.setState(newState);
+        // this.activateUser();
     }
 
     hide() {
