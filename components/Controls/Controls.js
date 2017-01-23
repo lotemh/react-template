@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import SeekBar from './SeekBar';
 import Dots from './Dots';
 import Extend from './Extend';
+import Tutorial from './Tutorial';
 import ControlsStartStatus from './ControlsStartStatus';
 
 const SWIPES = {
@@ -77,6 +78,9 @@ const Controls = React.createClass({
             timestamp: currentTime
         });
     },
+    onTutorialDismiss() {
+        this.context.store.dispatch({type: 'DISMISS_TUTORIAL'});
+    },
     progress() {
         let progress = 0;
         try {
@@ -118,6 +122,7 @@ const Controls = React.createClass({
                     }
                     {timeElement}
                 </div>
+                { storeState.shouldShowTutorial && <Tutorial timeout={8000} onDismiss={this.onTutorialDismiss}/> }
             </div>
         );
     }

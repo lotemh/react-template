@@ -23,7 +23,8 @@
     position: absolute;
     pointer-events: none;
 }
-.eem-controls-touch-screen {
+
+.em-controls-touch-screen {
     width: 100%;
     height: 80%;
     top: 0;
@@ -40,7 +41,7 @@
 }
 
 .vjs-control-bar > .vjs-progress-control{
-     display: none
+    display: none
  }
 
 .vjs-control-bar > .vjs-duration{
@@ -310,3 +311,30 @@
     -webkit-appearance: none;
 }
 
+@media screen {
+    .em-tutorial {
+        background-image: url(./images/tutorial-web.png);
+        background-position: center;
+        background-size: cover;
+        display: block;
+        height: 100%;
+        position: absolute;
+        width: 100%;
+        z-index: 2147483647;
+    }
+
+    .em-close-tutorial {
+        height: 10%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 10%;
+        z-index: 2147483647;
+    }
+}
+
+@media screen and (min-resolution: 2dppx), (max-width: 640px) {
+    .em-tutorial {
+        background-image: url(./images/tutorial-mobile.png);
+    }
+}
