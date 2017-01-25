@@ -1,6 +1,6 @@
 <!doctype html>
 <html class="no-js" lang="">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title><%= webpackConfig.demoConfig.title %></title>
@@ -13,29 +13,13 @@
     <% for (key in htmlWebpackPlugin.files.css) { %>
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[key] %>">
     <% } %>
-	<style>
-        #parent {
-            width: 100vw;
-            height: 56.25vw;
-            max-width: 177.77vh;
-            max-height: 100vh;
-            position: absolute;
-        }
-	</style>
-    </head>
-  <body>
-    <div id="parent">
-	    <video
-		   data-video-id="5004997295001"
-		   data-account="136368194"
-		   data-player="V1xBaDVb6l"
-		   data-embed="default"
-		   class="video-js" controls></video>
-	    <script src="//players.brightcove.net/136368194/V1xBaDVb6l_default/index.min.js"></script>
-	    <script src="<%= webpackConfig.sdk.js %>"></script>
-    </div>
-    <% for (key in htmlWebpackPlugin.files.chunks) { %>
-    <script src="<%= htmlWebpackPlugin.files.chunks[key].entry %>" type="text/javascript"></script>
-    <% } %>
-  </body>
+</head>
+<body>
+<div id="parent">
+    <script src="<%= webpackConfig.sdk.js %>"></script>
+</div>
+<% for (key in htmlWebpackPlugin.files.chunks) { %>
+<script src="<%= htmlWebpackPlugin.files.chunks[key].entry %>" type="text/javascript"></script>
+<% } %>
+</body>
 </html>

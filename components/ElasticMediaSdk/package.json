@@ -1,9 +1,0 @@
-{
-  "name": "ElasticPlayer",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./ElasticPlayer.js",
-  "dependencies": {
-    "jquery": "latest"
-  }
-}
